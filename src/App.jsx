@@ -1,4 +1,4 @@
-import { useState, useEffect, useRef, useMemo } from "react";
+import { useState, useEffect, useRef, useMemo, useCallback } from "react";
 
 /* ─────────────── LOADERS DATA ─────────────── */
 const LOADERS = [
@@ -2008,9 +2008,2692 @@ ${Array.from({length:bars},(_,i)=>{
     };
   }
 },
+/* 2 */ {
+  id: 100, name: "Quantum Atom", tags: ["atom","orbit","science","rings"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", rings: 3, electronSize: 5, thickness: 1.5 },
+  render: (c) => {
+    const n = Math.round(c.rings);
+    const angles = Array.from({length: n}, (_, i) => (i * 180) / n);
+    const ringCSS = angles.map((a, i) => `
+.qa-ring${i}{position:absolute;inset:0;border-radius:50%;border:${c.thickness}px solid ${i%2===0?c.color:c.secondColor}66;transform:rotateX(75deg) rotateZ(${a}deg);animation:qa-spin${i} ${(2.5/(c.speed*(1+i*0.15))).toFixed(2)}s linear infinite}
+@keyframes qa-spin${i}{to{transform:rotateX(75deg) rotateZ(${a}deg) rotate(360deg)}}`).join('');
+    const electronHTML = angles.map((a, i) => `<div class="qa-ring${i}"><div style="position:absolute;top:-${c.electronSize/2}px;left:50%;transform:translateX(-50%);width:${c.electronSize}px;height:${c.electronSize}px;border-radius:50%;background:${i%2===0?c.color:c.secondColor};box-shadow:0 0 6px ${i%2===0?c.color:c.secondColor}"></div></div>`).join('');
+    return {
+      css: `@keyframes qa-nucleus{0%,100%{transform:scale(1)}50%{transform:scale(1.15)}}
+.qa{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:400px}
+.qa-core{position:absolute;width:${Math.max(6,c.size*.14)}px;height:${Math.max(6,c.size*.14)}px;border-radius:50%;background:radial-gradient(circle,${c.color},${c.secondColor});animation:qa-nucleus ${(1/c.speed).toFixed(2)}s ease-in-out infinite;z-index:2}
+${ringCSS}`,
+      html: `<div class="qa">${electronHTML}<div class="qa-core"></div></div>`
+    };
+  }
+},
 
+/* 3 */ {
+  id: 101, name: "DNA Helix", tags: ["dna","helix","science","wave"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", dotCount: 8, dotSize: 6, thickness: 2, gap: 6 },
+  render: (c) => {
+    const n = Math.round(c.dotCount);
+    const dotsA = Array.from({length: n}, (_, i) => {
+      const phase = (i / n) * Math.PI * 2;
+      return `<div class="dna-dot dna-a" style="animation-delay:${-(i/n*(1.6/c.speed)).toFixed(3)}s;top:${(i/(n-1))*100}%;left:50%"></div>`;
+    }).join('');
+    const dotsB = Array.from({length: n}, (_, i) => {
+      return `<div class="dna-dot dna-b" style="animation-delay:${-((i/n*(1.6/c.speed))+(0.8/c.speed)).toFixed(3)}s;top:${(i/(n-1))*100}%;left:50%"></div>`;
+    }).join('');
+    const lines = Array.from({length: n}, (_, i) =>
+      `<div class="dna-line" style="top:${(i/(n-1))*100}%;animation-delay:${-(i/n*(1.6/c.speed)).toFixed(3)}s"></div>`
+    ).join('');
+    return {
+      css: `@keyframes dna-wave-a{0%{transform:translateX(calc(-50% + ${c.gap*3}px))}50%{transform:translateX(calc(-50% - ${c.gap*3}px))}100%{transform:translateX(calc(-50% + ${c.gap*3}px))}}
+@keyframes dna-wave-b{0%{transform:translateX(calc(-50% - ${c.gap*3}px))}50%{transform:translateX(calc(-50% + ${c.gap*3}px))}100%{transform:translateX(calc(-50% - ${c.gap*3}px))}}
+@keyframes dna-line-fade{0%{opacity:0.8;width:${c.gap*3}px}50%{opacity:0.2;width:${c.gap*0.5}px}100%{opacity:0.8;width:${c.gap*3}px}}
+.dna{position:relative;width:${c.size}px;height:${c.size}px}
+.dna-dot{position:absolute;width:${c.dotSize}px;height:${c.dotSize}px;border-radius:50%;margin-top:-${c.dotSize/2}px}
+.dna-a{background:${c.color};animation:dna-wave-a ${(1.6/c.speed).toFixed(2)}s ease-in-out infinite}
+.dna-b{background:${c.secondColor};animation:dna-wave-b ${(1.6/c.speed).toFixed(2)}s ease-in-out infinite}
+.dna-line{position:absolute;height:${c.thickness}px;left:50%;transform:translateX(-50%);background:linear-gradient(90deg,${c.color}88,${c.secondColor}88);border-radius:1px;animation:dna-line-fade ${(1.6/c.speed).toFixed(2)}s ease-in-out infinite;margin-top:-${c.thickness/2}px}`,
+      html: `<div class="dna">${dotsA}${dotsB}${lines}</div>`
+    };
+  }
+},
+
+/* 4 */ {
+  id: 102, name: "Metaball Morph", tags: ["morph","blob","organic","fluid"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", dotCount: 4, dotSize: 14, opacity: 0.85 },
+  render: (c) => {
+    const n = Math.round(c.dotCount);
+    const blobs = Array.from({length: n}, (_, i) => {
+      const angle = (i / n) * 360;
+      const r = c.size * 0.28;
+      return `<div class="mb-blob mb-blob${i}" style="width:${c.dotSize*1.8}px;height:${c.dotSize*1.8}px;animation-delay:${-(i/n*(2/c.speed)).toFixed(3)}s"></div>`;
+    }).join('');
+    const keyframes = Array.from({length: n}, (_, i) => {
+      const steps = Array.from({length: 5}, (_, s) => {
+        const a = ((i / n) + s * 0.25) * Math.PI * 2;
+        const r = c.size * 0.28;
+        const x = Math.cos(a) * r + c.size/2 - c.dotSize*0.9;
+        const y = Math.sin(a) * r + c.size/2 - c.dotSize*0.9;
+        return `${s*25}%{transform:translate(${x.toFixed(1)}px,${y.toFixed(1)}px)}`;
+      });
+      return `@keyframes mb-orbit${i}{${steps.join('')}100%{${steps[0].split('{')[1]}}`;
+    }).join('');
+    const dotCSS = Array.from({length: n}, (_, i) =>
+      `.mb-blob${i}{animation:mb-orbit${i} ${(2/c.speed).toFixed(2)}s ease-in-out infinite;background:${i%2===0?c.color:c.secondColor}}`
+    ).join('');
+    return {
+      css: `${keyframes}
+@keyframes mb-rotate{to{transform:rotate(360deg)}}
+.mb{position:relative;width:${c.size}px;height:${c.size}px;filter:url(#mb-filter)}
+.mb-blob{position:absolute;top:0;left:0;border-radius:50%;opacity:${c.opacity}}
+${dotCSS}`,
+      html: `<svg style="position:absolute;width:0;height:0"><filter id="mb-filter"><feGaussianBlur in="SourceGraphic" stdDeviation="6" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0  0 1 0 0 0  0 0 1 0 0  0 0 0 22 -9" result="cm"/></filter></svg><div class="mb">${blobs}</div>`
+    };
+  }
+},
+
+/* 5 */ {
+  id: 103, name: "Radar Sweep", tags: ["radar","scan","tech","pulse"],
+  controls: { speed: 1.0, size: 64, color: "#22d3ee", secondColor: "#818cf8", ringCount: 3, blipCount: 4, thickness: 1.0, lineOpacity: 0.7 },
+  render: (c) => {
+    const nr = Math.round(c.ringCount);
+    const nb = Math.round(c.blipCount);
+    const rings = Array.from({length: nr}, (_, i) => {
+      const r = ((i+1)/(nr+1)) * 48;
+      return `<circle cx="50" cy="50" r="${r}" fill="none" stroke="${c.color}" stroke-width="${c.thickness}" opacity="${c.lineOpacity*(1-(i*0.2))}"/>`;
+    }).join('');
+    const blips = Array.from({length: nb}, (_, i) => {
+      const a = (i/nb) * Math.PI * 2;
+      const r = (0.3 + (i%3)*0.15) * 46;
+      const x = 50 + Math.cos(a)*r;
+      const y = 50 + Math.sin(a)*r;
+      return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2.5" fill="${c.secondColor}"><animate attributeName="opacity" values="0;1;0" dur="${(1.5/c.speed).toFixed(2)}s" begin="${(i/nb*(3/c.speed)).toFixed(2)}s" repeatCount="indefinite"/></circle>`;
+    }).join('');
+    const crosshairs = `<line x1="50" y1="4" x2="50" y2="96" stroke="${c.color}" stroke-width="${c.thickness*0.5}" opacity="${c.lineOpacity*0.4}"/>
+<line x1="4" y1="50" x2="96" y2="50" stroke="${c.color}" stroke-width="${c.thickness*0.5}" opacity="${c.lineOpacity*0.4}"/>`;
+    return {
+      css: `@keyframes radar-sweep{to{transform:rotate(360deg);transform-origin:50px 50px}}
+.radar-svg{width:${c.size}px;height:${c.size}px}
+.radar-sweep-group{transform-origin:50px 50px;animation:radar-sweep ${(3/c.speed).toFixed(2)}s linear infinite}`,
+      html: `<svg class="radar-svg" viewBox="0 0 100 100" xmlns="http://www.w3.org/2000/svg">
+<circle cx="50" cy="50" r="47" fill="none" stroke="${c.color}" stroke-width="${c.thickness}" opacity="${c.lineOpacity}"/>
+${crosshairs}${rings}${blips}
+<g class="radar-sweep-group">
+<defs><linearGradient id="rsweep" gradientTransform="rotate(90)"><stop offset="0%" stop-color="${c.color}" stop-opacity="0"/><stop offset="100%" stop-color="${c.color}" stop-opacity="0.6"/></linearGradient></defs>
+<path d="M50,50 L97,50 A47,47 0 0,0 50,3 Z" fill="url(#rsweep)" opacity="${c.lineOpacity}"/>
+<line x1="50" y1="50" x2="97" y2="50" stroke="${c.color}" stroke-width="${c.thickness*1.5}" opacity="0.9"/>
+</g></svg>`
+    };
+  }
+},
+
+/* 6 */ {
+  id: 104, name: "Crystalline", tags: ["crystal","geometric","fractal","sharp"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#22d3ee", layers: 3, opacity: 0.8, thickness: 1.5 },
+  render: (c) => {
+    const nl = Math.round(c.layers);
+    const shapes = Array.from({length: nl}, (_, i) => {
+      const s = c.size * (0.9 - i * 0.22);
+      const half = s / 2;
+      const pts = Array.from({length: 6}, (_, j) => {
+        const a = (j / 6) * Math.PI * 2 - Math.PI/2;
+        return `${(Math.cos(a)*half+c.size/2).toFixed(1)},${(Math.sin(a)*half+c.size/2).toFixed(1)}`;
+      }).join(' ');
+      const col = i % 2 === 0 ? c.color : c.secondColor;
+      const dur = (2.4/(c.speed*(1+i*0.3))).toFixed(2);
+      const dir = i % 2 === 0 ? 1 : -1;
+      return `<polygon points="${pts}" fill="none" stroke="${col}" stroke-width="${c.thickness}" opacity="${c.opacity*(1-i*0.1)}">
+<animateTransform attributeName="transform" type="rotate" from="${dir*0} ${c.size/2} ${c.size/2}" to="${dir*360} ${c.size/2} ${c.size/2}" dur="${dur}s" repeatCount="indefinite"/>
+</polygon>`;
+    }).join('');
+    const innerDot = `<circle cx="${c.size/2}" cy="${c.size/2}" r="${c.size*0.06}" fill="${c.color}"><animate attributeName="r" values="${c.size*0.06};${c.size*0.1};${c.size*0.06}" dur="${(1.2/c.speed).toFixed(2)}s" repeatCount="indefinite"/><animate attributeName="fill" values="${c.color};${c.secondColor};${c.color}" dur="${(2.4/c.speed).toFixed(2)}s" repeatCount="indefinite"/></circle>`;
+    return {
+      css: `.cryst-svg{width:${c.size}px;height:${c.size}px}`,
+      html: `<svg class="cryst-svg" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">${shapes}${innerDot}</svg>`
+    };
+  }
+},
+
+/* 7 */ {
+  id: 105, name: "Neon Typewriter", tags: ["text","neon","typing","code"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", fontSize: 18, opacity: 0.9 },
+  render: (c) => {
+    const chars = ['01','10','∞','{}','</>','[]','::','//'];
+    const items = chars.map((ch, i) =>
+      `<span class="nt-char" style="animation-delay:${(i*0.3/c.speed).toFixed(2)}s;color:${i%2===0?c.color:c.secondColor}">${ch}</span>`
+    ).join('');
+    return {
+      css: `@keyframes nt-flicker{0%,100%{opacity:0}4%{opacity:${c.opacity}}8%{opacity:${c.opacity*0.4}}10%{opacity:${c.opacity}}50%{opacity:${c.opacity}}52%{opacity:${c.opacity*0.3}}54%{opacity:${c.opacity}}90%{opacity:${c.opacity}}92%{opacity:0}}
+@keyframes nt-cursor{0%,100%{opacity:1}50%{opacity:0}}
+.nt{display:flex;align-items:center;justify-content:center;gap:8px;width:${c.size*2}px;height:${c.size}px;font-family:monospace;flex-wrap:wrap}
+.nt-char{font-size:${c.fontSize}px;font-weight:700;animation:nt-flicker ${(3/c.speed).toFixed(2)}s ease-in-out infinite;text-shadow:0 0 8px currentColor}
+.nt-cursor{font-size:${c.fontSize}px;color:${c.color};animation:nt-cursor ${(0.8/c.speed).toFixed(2)}s step-start infinite}`,
+      html: `<div class="nt">${items}<span class="nt-cursor">█</span></div>`
+    };
+  }
+},
+
+/* 8 */ {
+  id: 106, name: "Particle Vortex", tags: ["particles","vortex","spiral","spin"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", particleCount: 12, particleSize: 3, opacity: 0.85, thickness: 1.0 },
+  render: (c) => {
+    const n = Math.round(c.particleCount);
+    const keyframes = Array.from({length: n}, (_, i) => {
+      const startAngle = (i/n)*360;
+      return `@keyframes pv-p${i}{0%{transform:rotate(${startAngle}deg) translateX(${c.size*0.08}px) scale(0.5);opacity:0}20%{opacity:${c.opacity}}80%{opacity:${c.opacity}}100%{transform:rotate(${startAngle+360}deg) translateX(${c.size*0.42}px) scale(1.2);opacity:0}}`;
+    }).join('');
+    const particles = Array.from({length: n}, (_, i) => {
+      const col = i < n/2 ? c.color : c.secondColor;
+      const dur = (2/(c.speed*(0.7+i*0.05))).toFixed(2);
+      const delay = (-(i/n * (2/c.speed))).toFixed(2);
+      return `<div style="position:absolute;top:50%;left:50%;margin:-${c.particleSize/2}px;width:${c.particleSize}px;height:${c.particleSize}px;border-radius:50%;background:${col};animation:pv-p${i} ${dur}s linear ${delay}s infinite"></div>`;
+    }).join('');
+    const trailRings = Array.from({length: 2}, (_, i) =>
+      `<div style="position:absolute;inset:${c.size*0.1+i*c.size*0.15}px;border-radius:50%;border:${c.thickness}px solid ${i===0?c.color:c.secondColor}22;animation:pv-ring ${(3/c.speed*(1+i*0.4)).toFixed(2)}s linear infinite"></div>`
+    ).join('');
+    return {
+      css: `${keyframes}
+@keyframes pv-ring{to{transform:rotate(360deg)}}
+.pv{position:relative;width:${c.size}px;height:${c.size}px}`,
+      html: `<div class="pv">${trailRings}${particles}</div>`
+    };
+  }
+},
+
+/* 9 */ {
+  id: 107, name: "Liquid Fill", tags: ["liquid","fill","gauge","wave"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#c4b5fd", fillLevel: 55, thickness: 2.0, amplitude: 6, opacity: 0.9 },
+  render: (c) => {
+    const fl = Math.max(5, Math.min(95, c.fillLevel));
+    const w = c.size;
+    const h = c.size;
+    const fillY = h * (1 - fl/100);
+    const waveH = c.amplitude;
+    const wavePath = `M0,${fillY} Q${w*0.25},${fillY-waveH} ${w*0.5},${fillY} Q${w*0.75},${fillY+waveH} ${w},${fillY} L${w},${h} L0,${h} Z`;
+    const wave2Path = `M0,${fillY+waveH*0.5} Q${w*0.25},${fillY+waveH*1.5} ${w*0.5},${fillY+waveH*0.5} Q${w*0.75},${fillY-waveH*0.5} ${w},${fillY+waveH*0.5} L${w},${h} L0,${h} Z`;
+    return {
+      css: `@keyframes lf-wave{0%{d:path("${wavePath}")}50%{d:path("${wave2Path}")}100%{d:path("${wavePath}")}}
+@keyframes lf-wave2{0%{d:path("${wave2Path}")}50%{d:path("${wavePath}")}100%{d:path("${wave2Path}")}}
+@keyframes lf-bubble{0%{transform:translateY(0);opacity:0.6}100%{transform:translateY(-${h}px);opacity:0}}
+.lf-svg{width:${c.size}px;height:${c.size}px;border-radius:${c.size*0.15}px;overflow:hidden;border:${c.thickness}px solid ${c.color}88}`,
+      html: `<svg class="lf-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<rect width="${w}" height="${h}" fill="${c.color}18"/>
+<path fill="${c.color}" opacity="${c.opacity*0.5}"><animate attributeName="d" values="${wavePath};${wave2Path};${wavePath}" dur="${(2.5/c.speed).toFixed(2)}s" repeatCount="indefinite"/></path>
+<path fill="${c.color}" opacity="${c.opacity}"><animate attributeName="d" values="${wave2Path};${wavePath};${wave2Path}" dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite"/></path>
+<text x="${w/2}" y="${h/2+5}" text-anchor="middle" fill="${c.color}" font-size="13" font-weight="600" font-family="sans-serif">${Math.round(fl)}%</text>
+</svg>`
+    };
+  }
+},
+
+/* 10 */ {
+  id: 108, name: "Neural Net", tags: ["network","neural","nodes","ai"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", nodeSize: 5, cols: 3, layers: 3, lineOpacity: 0.4, thickness: 1.0 },
+  render: (c) => {
+    const cols = Math.round(c.cols);
+    const rows = Math.round(c.layers);
+    const w = c.size * 2;
+    const h = c.size;
+    const nodes = [];
+    for (let r = 0; r < rows; r++) {
+      const nc = r === 0 || r === rows-1 ? Math.ceil(cols*0.7) : cols;
+      for (let n = 0; n < nc; n++) {
+        const x = (w/(rows+1))*(r+1);
+        const y = (h/(nc+1))*(n+1);
+        nodes.push({x, y, layer: r, idx: n, total: nc});
+      }
+    }
+    const lines = [];
+    nodes.forEach((a, ai) => {
+      nodes.forEach((b, bi) => {
+        if (b.layer === a.layer + 1) {
+          const dur = (1.5/c.speed + Math.random()*0.5).toFixed(2);
+          const del = (Math.random()*(2/c.speed)).toFixed(2);
+          lines.push(`<line x1="${a.x.toFixed(1)}" y1="${a.y.toFixed(1)}" x2="${b.x.toFixed(1)}" y2="${b.y.toFixed(1)}" stroke="${c.color}" stroke-width="${c.thickness}" opacity="${c.lineOpacity}"><animate attributeName="opacity" values="${c.lineOpacity};${c.lineOpacity*3};${c.lineOpacity}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/></line>`);
+        }
+      });
+    });
+    const dots = nodes.map((n, i) => {
+      const col = n.layer % 2 === 0 ? c.color : c.secondColor;
+      const dur = (1/c.speed+Math.random()*0.8).toFixed(2);
+      const del = (Math.random()*(1.5/c.speed)).toFixed(2);
+      return `<circle cx="${n.x.toFixed(1)}" cy="${n.y.toFixed(1)}" r="${c.nodeSize}" fill="${col}"><animate attributeName="r" values="${c.nodeSize};${c.nodeSize*1.5};${c.nodeSize}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/><animate attributeName="opacity" values="0.6;1;0.6" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/></circle>`;
+    });
+    return {
+      css: `.nn-svg{width:${w}px;height:${h}px}`,
+      html: `<svg class="nn-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${lines.join('')}${dots.join('')}</svg>`
+    };
+  }
+},
+
+/* 11 */ {
+  id: 109, name: "Pendulum Wave", tags: ["pendulum","wave","physics","sync"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", dotCount: 9, dotSize: 7, amplitude: 18, thickness: 1.0, lineOpacity: 0.3 },
+  render: (c) => {
+    const n = Math.round(c.dotCount);
+    const w = c.size * 2.2;
+    const h = c.size;
+    const items = Array.from({length: n}, (_, i) => {
+      const x = (w/(n+1))*(i+1);
+      const period = (2.5/c.speed + i*0.18/c.speed).toFixed(3);
+      const pivotY = h * 0.08;
+      return `<g>
+<line x1="${x.toFixed(1)}" y1="${pivotY}" x2="${x.toFixed(1)}" y2="${h*0.5}" stroke="${c.color}" stroke-width="${c.thickness}" opacity="${c.lineOpacity}">
+<animateTransform attributeName="transform" type="rotate" values="${c.amplitude} ${x.toFixed(1)} ${pivotY};${-c.amplitude} ${x.toFixed(1)} ${pivotY};${c.amplitude} ${x.toFixed(1)} ${pivotY}" dur="${period}s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95"/>
+</line>
+<circle cx="${x.toFixed(1)}" cy="${h*0.5}" r="${c.dotSize/2}" fill="${i<n/2?c.color:c.secondColor}" opacity="0.9">
+<animateTransform attributeName="transform" type="rotate" values="${c.amplitude} ${x.toFixed(1)} ${pivotY};${-c.amplitude} ${x.toFixed(1)} ${pivotY};${c.amplitude} ${x.toFixed(1)} ${pivotY}" dur="${period}s" repeatCount="indefinite" calcMode="spline" keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95"/>
+</circle></g>`;
+    }).join('');
+    return {
+      css: `.pend-svg{width:${w}px;height:${h}px}`,
+      html: `<svg class="pend-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<line x1="0" y1="${h*0.08}" x2="${w}" y2="${h*0.08}" stroke="${c.color}" stroke-width="${c.thickness*2}" opacity="${c.lineOpacity}"/>
+${items}</svg>`
+    };
+  }
+},
+
+/* 12 */ {
+  id: 110, name: "Mosaic Pulse", tags: ["grid","mosaic","cells","pixel"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", cols: 4, cellSize: 12, gap: 3, opacity: 0.9, layers: 2 },
+  render: (c) => {
+    const cols = Math.round(c.cols);
+    const rows = cols;
+    const cs = c.cellSize;
+    const g = c.gap;
+    const totalW = cols*(cs+g)-g;
+    const totalH = rows*(cs+g)-g;
+    const cells = [];
+    for (let r = 0; r < rows; r++) {
+      for (let col = 0; col < cols; col++) {
+        const i = r*cols+col;
+        const x = col*(cs+g);
+        const y = r*(cs+g);
+        const dist = Math.sqrt((r-rows/2+0.5)**2+(col-cols/2+0.5)**2);
+        const maxDist = Math.sqrt(2)*(rows/2);
+        const del = (dist/maxDist*(2/c.speed)).toFixed(3);
+        const color = (r+col)%2===0 ? c.color : c.secondColor;
+        cells.push(`<rect x="${x}" y="${y}" width="${cs}" height="${cs}" rx="2" fill="${color}" opacity="${c.opacity}">
+<animate attributeName="opacity" values="${c.opacity*0.2};${c.opacity};${c.opacity*0.2}" dur="${(1.5/c.speed).toFixed(2)}s" begin="${del}s" repeatCount="indefinite"/>
+<animate attributeName="rx" values="2;${cs/2};2" dur="${(1.5/c.speed).toFixed(2)}s" begin="${del}s" repeatCount="indefinite"/>
+</rect>`);
+      }
+    }
+    return {
+      css: `.mosaic-svg{width:${totalW}px;height:${totalH}px}`,
+      html: `<svg class="mosaic-svg" viewBox="0 0 ${totalW} ${totalH}" xmlns="http://www.w3.org/2000/svg">${cells.join('')}</svg>`
+    };
+  }
+},
+
+/* 13 */ {
+  id: 111, name: "Comet Tail", tags: ["comet","tail","orbit","streak"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#fbbf24", tailCount: 5, particleSize: 5, opacity: 0.9, radius: 24 },
+  render: (c) => {
+    const n = Math.round(c.tailCount);
+    const trails = Array.from({length: n}, (_, i) => {
+      const scale = 1 - (i/(n+1))*0.75;
+      const alpha = ((n-i)/n * c.opacity * 0.8).toFixed(2);
+      const delay = (-(i * 0.06 / c.speed)).toFixed(3);
+      return `<div style="position:absolute;top:50%;left:50%;width:${c.particleSize*scale}px;height:${c.particleSize*scale}px;margin:-${c.particleSize*scale/2}px;border-radius:50%;background:${c.color};opacity:${alpha};animation:comet-orbit ${(2/c.speed).toFixed(2)}s linear ${delay}s infinite"></div>`;
+    }).join('');
+    const glow = `<div style="position:absolute;top:50%;left:50%;width:${c.particleSize*1.8}px;height:${c.particleSize*1.8}px;margin:-${c.particleSize*0.9}px;border-radius:50%;background:${c.color};box-shadow:0 0 ${c.particleSize*2}px ${c.color};animation:comet-orbit ${(2/c.speed).toFixed(2)}s linear 0s infinite"></div>`;
+    const r = c.radius;
+    return {
+      css: `@keyframes comet-orbit{0%{transform:rotate(0deg) translateX(${r}px) rotate(0deg)}100%{transform:rotate(360deg) translateX(${r}px) rotate(-360deg)}}
+@keyframes comet-halo{0%,100%{transform:scale(1);opacity:0.15}50%{transform:scale(1.4);opacity:0.05}}
+.comet{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.comet-core{position:absolute;width:${c.particleSize*0.6}px;height:${c.particleSize*0.6}px;border-radius:50%;background:${c.secondColor};animation:comet-halo ${(1.5/c.speed).toFixed(2)}s ease-in-out infinite}`,
+      html: `<div class="comet">${trails}${glow}<div class="comet-core"></div></div>`
+    };
+  }
+},
+
+/* 14 */ {
+  id: 112, name: "Ripple Sonar", tags: ["ripple","sonar","ping","wave"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", ringCount: 4, thickness: 1.5, dotSize: 6, opacity: 0.8 },
+  render: (c) => {
+    const n = Math.round(c.ringCount);
+    const dur = (2.5/c.speed).toFixed(2);
+    const rings = Array.from({length: n}, (_, i) => {
+      const delay = (-(i/n * (2.5/c.speed))).toFixed(2);
+      const col = i%2===0 ? c.color : c.secondColor;
+      return `<circle cx="${c.size/2}" cy="${c.size/2}" r="${c.dotSize*0.5}" fill="none" stroke="${col}" stroke-width="${c.thickness}">
+<animate attributeName="r" from="${c.dotSize*0.5}" to="${c.size*0.48}" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
+<animate attributeName="opacity" from="${c.opacity}" to="0" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
+</circle>`;
+    }).join('');
+    return {
+      css: `.sonar-svg{width:${c.size}px;height:${c.size}px}`,
+      html: `<svg class="sonar-svg" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">
+${rings}
+<circle cx="${c.size/2}" cy="${c.size/2}" r="${c.dotSize/2}" fill="${c.color}"><animate attributeName="r" values="${c.dotSize/2};${c.dotSize*0.7};${c.dotSize/2}" dur="${(0.8/c.speed).toFixed(2)}s" repeatCount="indefinite"/></circle>
+</svg>`
+    };
+  }
+},
+
+/* 15 */ {
+  id: 113, name: "Hourglass", tags: ["hourglass","timer","sand","flow"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#fbbf24", particleCount: 8, particleSize: 2.5, thickness: 2.0, opacity: 0.9 },
+  render: (c) => {
+    const n = Math.round(c.particleCount);
+    const w = c.size * 0.8;
+    const h = c.size;
+    const dur = (3/c.speed).toFixed(2);
+    const particles = Array.from({length: n}, (_, i) => {
+      const delay = (-(i/n*(3/c.speed))).toFixed(2);
+      const x = w/2 + (Math.random()-0.5)*w*0.15;
+      return `<circle cx="${x.toFixed(1)}" cy="0" r="${c.particleSize}" fill="${c.secondColor}" opacity="${c.opacity}">
+<animate attributeName="cy" values="${h*0.1};${h*0.5}" dur="${dur}s" begin="${delay}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1"/>
+<animate attributeName="cx" values="${x.toFixed(1)};${(w/2).toFixed(1)}" dur="${dur}s" begin="${delay}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1"/>
+<animate attributeName="opacity" values="${c.opacity};${c.opacity*0.6};${c.opacity}" dur="${dur}s" begin="${delay}s" repeatCount="indefinite"/>
+</circle>`;
+    }).join('');
+    const topPath = `M${w*0.1},${h*0.02} L${w*0.9},${h*0.02} L${w*0.5},${h*0.5}`;
+    const botPath = `M${w*0.5},${h*0.5} L${w*0.1},${h*0.98} L${w*0.9},${h*0.98} Z`;
+    return {
+      css: `@keyframes hg-flip{0%,49%{transform:rotate(0deg)}50%,100%{transform:rotate(180deg)}}
+.hg-wrap{animation:hg-flip ${(6/c.speed).toFixed(2)}s step-end infinite;width:${w}px;height:${h}px}
+.hg-svg{width:${w}px;height:${h}px}`,
+      html: `<div class="hg-wrap"><svg class="hg-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<path d="${topPath}" fill="${c.color}44" stroke="${c.color}" stroke-width="${c.thickness}" stroke-linejoin="round"/>
+<path d="${botPath}" fill="${c.color}22" stroke="${c.color}" stroke-width="${c.thickness}" stroke-linejoin="round"/>
+${particles}
+</svg></div>`
+    };
+  }
+},
+
+/* 16 */ {
+  id: 114, name: "Flower Bloom", tags: ["flower","petal","bloom","organic"],
+  controls: { speed: 1.0, size: 64, color: "#f472b6", secondColor: "#818cf8", petalCount: 6, radius: 18, opacity: 0.8, thickness: 1.5 },
+  render: (c) => {
+    const n = Math.round(c.petalCount);
+    const petals = Array.from({length: n}, (_, i) => {
+      const angle = (i/n)*360;
+      const col = i%2===0 ? c.color : c.secondColor;
+      return `<ellipse cx="${c.size/2}" cy="${c.size/2 - c.radius/2}" rx="${c.radius*0.35}" ry="${c.radius*0.55}" fill="${col}" opacity="${c.opacity}" transform="rotate(${angle} ${c.size/2} ${c.size/2})">
+<animate attributeName="rx" values="${c.radius*0.35};${c.radius*0.55};${c.radius*0.35}" dur="${(1.5/c.speed).toFixed(2)}s" begin="${(i/n*(1.5/c.speed)).toFixed(2)}s" repeatCount="indefinite"/>
+<animate attributeName="opacity" values="${c.opacity};${c.opacity*0.5};${c.opacity}" dur="${(1.5/c.speed).toFixed(2)}s" begin="${(i/n*(1.5/c.speed)).toFixed(2)}s" repeatCount="indefinite"/>
+</ellipse>`;
+    }).join('');
+    return {
+      css: `@keyframes bloom-rotate{to{transform:rotate(360deg);transform-origin:${c.size/2}px ${c.size/2}px}}
+@keyframes bloom-core{0%,100%{r:${c.size*0.07}}50%{r:${c.size*0.12}}}
+.bloom-svg{width:${c.size}px;height:${c.size}px}
+.bloom-g{transform-origin:${c.size/2}px ${c.size/2}px;animation:bloom-rotate ${(4/c.speed).toFixed(2)}s linear infinite}`,
+      html: `<svg class="bloom-svg" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">
+<g class="bloom-g">${petals}</g>
+<circle cx="${c.size/2}" cy="${c.size/2}" r="${c.size*0.09}" fill="${c.secondColor}"><animate attributeName="r" values="${c.size*0.07};${c.size*0.12};${c.size*0.07}" dur="${(1/c.speed).toFixed(2)}s" repeatCount="indefinite"/></circle>
+</svg>`
+    };
+  }
+},
+
+/* 17 */ {
+  id: 115, name: "Signal Bars", tags: ["bars","signal","audio","equalizer"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", barCount: 7, barWidth: 6, maxHeight: 40, gap: 4, opacity: 0.9 },
+  render: (c) => {
+    const n = Math.round(c.barCount);
+    const totalW = n*(c.barWidth+c.gap)-c.gap;
+    const bars = Array.from({length: n}, (_, i) => {
+      const col = i < n/2 ? c.color : c.secondColor;
+      const delay = (-(i/n*(0.8/c.speed))).toFixed(3);
+      const minH = c.maxHeight * 0.1;
+      const peakH = c.maxHeight * (0.4 + Math.sin(i/n*Math.PI)*0.6);
+      return `<rect x="${i*(c.barWidth+c.gap)}" y="${c.maxHeight-minH}" width="${c.barWidth}" height="${minH}" rx="${c.barWidth*0.3}" fill="${col}" opacity="${c.opacity}">
+<animate attributeName="height" values="${minH};${peakH};${minH}" dur="${(0.8/c.speed).toFixed(2)}s" begin="${delay}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+<animate attributeName="y" values="${c.maxHeight-minH};${c.maxHeight-peakH};${c.maxHeight-minH}" dur="${(0.8/c.speed).toFixed(2)}s" begin="${delay}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+</rect>`;
+    }).join('');
+    return {
+      css: `.sig-svg{width:${totalW}px;height:${c.maxHeight}px}`,
+      html: `<svg class="sig-svg" viewBox="0 0 ${totalW} ${c.maxHeight}" xmlns="http://www.w3.org/2000/svg">${bars}</svg>`
+    };
+  }
+},
+
+/* 18 */ {
+  id: 116, name: "Constellation", tags: ["stars","constellation","space","connect"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#fbbf24", particleCount: 10, particleSize: 3, lineOpacity: 0.25, opacity: 0.9, thickness: 0.8 },
+  render: (c) => {
+    const n = Math.round(c.particleCount);
+    const w = c.size*1.8;
+    const h = c.size;
+    const seed = 42;
+    const pts = Array.from({length: n}, (_, i) => {
+      const t = i / n;
+      const x = (Math.sin(i*2.399)*0.45+0.5)*w;
+      const y = (Math.cos(i*2.399)*0.45+0.5)*h;
+      return {x, y};
+    });
+    const lines = pts.map((p, i) => {
+      const j = (i+1)%n;
+      return `<line x1="${p.x.toFixed(1)}" y1="${p.y.toFixed(1)}" x2="${pts[j].x.toFixed(1)}" y2="${pts[j].y.toFixed(1)}" stroke="${c.color}" stroke-width="${c.thickness}" opacity="${c.lineOpacity}">
+<animate attributeName="opacity" values="${c.lineOpacity};${c.lineOpacity*3};${c.lineOpacity}" dur="${(2/c.speed+i*0.15).toFixed(2)}s" begin="${(i*0.1/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</line>`;
+    }).join('');
+    const dots = pts.map((p, i) => {
+      const col = i%3===0 ? c.secondColor : c.color;
+      const r = i%3===0 ? c.particleSize*1.3 : c.particleSize*0.8;
+      return `<circle cx="${p.x.toFixed(1)}" cy="${p.y.toFixed(1)}" r="${r}" fill="${col}" opacity="${c.opacity}">
+<animate attributeName="opacity" values="${c.opacity*0.4};${c.opacity};${c.opacity*0.4}" dur="${(1.5/c.speed+i*0.1).toFixed(2)}s" begin="${(i*0.08/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>`;
+    }).join('');
+    return {
+      css: `.const-svg{width:${w}px;height:${h}px}`,
+      html: `<svg class="const-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">${lines}${dots}</svg>`
+    };
+  }
+},
+
+/* 19 */ {
+  id: 117, name: "Gyroscope", tags: ["gyro","3d","spin","physics"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", rings: 3, thickness: 2.0, opacity: 0.85, electronSize: 6 },
+  render: (c) => {
+    const n = Math.round(c.rings);
+    const tilts = [0, 60, 120].slice(0, n);
+    const ringEls = tilts.map((tilt, i) => {
+      const col = [c.color, c.secondColor, `${c.color}88`][i] || c.color;
+      const dur = (2/(c.speed*(1+i*0.2))).toFixed(2);
+      const dir = i%2===0 ? 1 : -1;
+      return `<div style="position:absolute;inset:${i*c.size*0.04}px;border-radius:50%;border:${c.thickness}px solid ${col};opacity:${c.opacity};transform:rotateX(${tilt}deg) rotateY(${tilt*0.5}deg);animation:gyro-spin${i} ${dur}s linear infinite">
+<div style="position:absolute;top:-${c.electronSize/2}px;left:50%;transform:translateX(-50%);width:${c.electronSize}px;height:${c.electronSize}px;border-radius:50%;background:${col}"></div>
+</div>`;
+    }).join('');
+    const spinAnims = tilts.map((_, i) => {
+      const dir = i%2===0?360:-360;
+      return `@keyframes gyro-spin${i}{0%{transform:rotateX(${tilts[i]}deg) rotateY(${tilts[i]*0.5}deg) rotate(0deg)}100%{transform:rotateX(${tilts[i]}deg) rotateY(${tilts[i]*0.5}deg) rotate(${dir}deg)}}`;
+    }).join('');
+    return {
+      css: `${spinAnims}
+@keyframes gyro-core{0%,100%{transform:scale(1)}50%{transform:scale(1.2)}}
+.gyro{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:300px}
+.gyro-center{width:${c.size*0.12}px;height:${c.size*0.12}px;border-radius:50%;background:${c.color};z-index:10;animation:gyro-core ${(0.8/c.speed).toFixed(2)}s ease-in-out infinite}`,
+      html: `<div class="gyro">${ringEls}<div class="gyro-center"></div></div>`
+    };
+  }
+},
+
+/* 20 */ {
+  id: 118, name: "Heartbeat", tags: ["ecg","pulse","heart","medical"],
+  controls: { speed: 1.0, size: 64, color: "#f472b6", secondColor: "#818cf8", amplitude: 20, thickness: 2.5, opacity: 0.9, dotSize: 5 },
+  render: (c) => {
+    const w = c.size * 2.5;
+    const h = c.size;
+    const mid = h / 2;
+    const a = c.amplitude;
+    const path = `M0,${mid} L${w*0.2},${mid} L${w*0.3},${mid+a*0.2} L${w*0.35},${mid-a} L${w*0.42},${mid+a*0.6} L${w*0.47},${mid} L${w*0.6},${mid} L${w*0.7},${mid+a*0.15} L${w*0.75},${mid-a*0.5} L${w*0.8},${mid} L${w},${mid}`;
+    const pathLen = w * 1.8;
+    return {
+      css: `@keyframes hb-draw{0%{stroke-dashoffset:${pathLen}}100%{stroke-dashoffset:0}}
+@keyframes hb-fade{0%,70%{opacity:${c.opacity}}100%{opacity:0}}
+@keyframes hb-dot{0%{cx:0}100%{cx:${w}}}
+.hb-svg{width:${w}px;height:${h}px}`,
+      html: `<svg class="hb-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<path d="${path}" fill="none" stroke="${c.secondColor}33" stroke-width="${c.thickness*0.6}"/>
+<path d="${path}" fill="none" stroke="${c.color}" stroke-width="${c.thickness}" stroke-dasharray="${pathLen}" stroke-dashoffset="${pathLen}" opacity="${c.opacity}">
+<animate attributeName="stroke-dashoffset" from="${pathLen}" to="0" dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+<animate attributeName="opacity" values="${c.opacity};${c.opacity};0" keyTimes="0;0.7;1" dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</path>
+<circle r="${c.dotSize/2}" cy="${mid}" fill="${c.color}">
+<animate attributeName="cx" values="0;${w}" dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>
+</svg>`
+    };
+  }
+},
+
+/* 21 */ {
+  id: 119, name: "Warp Gate", tags: ["portal","warp","scifi","vortex"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#22d3ee", ringCount: 5, thickness: 1.5, opacity: 0.8, gap: 4 },
+  render: (c) => {
+    const n = Math.round(c.ringCount);
+    const rings = Array.from({length: n}, (_, i) => {
+      const inset = i * (c.size/(n*2.5));
+      const dur = (1.2/(c.speed*(1+i*0.1))).toFixed(2);
+      const col = i%2===0 ? c.color : c.secondColor;
+      const dashLen = Math.PI * (c.size - inset*2) * 0.3;
+      return `<div style="position:absolute;inset:${inset}px;border-radius:50%;border:${c.thickness}px solid ${col};opacity:${c.opacity*(1-i*0.08)};animation:warp-ring${i%2} ${dur}s linear infinite">
+</div>`;
+    }).join('');
+    const centerBeam = `<div style="position:absolute;width:${c.size*0.18}px;height:${c.size*0.18}px;border-radius:50%;background:${c.color};opacity:0.9;animation:warp-core ${(0.6/c.speed).toFixed(2)}s ease-in-out infinite"></div>`;
+    return {
+      css: `@keyframes warp-ring0{to{transform:rotate(360deg)}}
+@keyframes warp-ring1{to{transform:rotate(-360deg)}}
+@keyframes warp-core{0%,100%{transform:scale(0.6);opacity:0.5}50%{transform:scale(1.2);opacity:1}}
+.warp{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}`,
+      html: `<div class="warp">${rings}${centerBeam}</div>`
+    };
+  }
+},
+
+/* 22 */ {
+  id: 120, name: "Ticker Tape", tags: ["ticker","scroll","text","data"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#22d3ee", fontSize: 13, opacity: 0.9, gap: 16 },
+  render: (c) => {
+    const tokens = ['▲ 2.4%','▼ 1.1%','● SYNC','◆ LOAD','▲ 5.7%','◇ INIT','▼ 0.9%','◈ PROC'];
+    const colored = tokens.map((t, i) => {
+      const col = t.includes('▲') ? c.secondColor : t.includes('▼') ? '#f472b6' : c.color;
+      return `<span style="color:${col};margin-right:${c.gap}px;opacity:${c.opacity}">${t}</span>`;
+    }).join('');
+    const line = colored + colored;
+    const totalW = c.size * 5;
+    return {
+      css: `@keyframes ticker-scroll{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}
+.ticker-outer{width:${totalW}px;height:${c.size*0.5}px;overflow:hidden;border-top:1px solid ${c.color}44;border-bottom:1px solid ${c.color}44;display:flex;align-items:center}
+.ticker-inner{display:flex;white-space:nowrap;animation:ticker-scroll ${(8/c.speed).toFixed(2)}s linear infinite;font-size:${c.fontSize}px;font-family:monospace;font-weight:600}`,
+      html: `<div class="ticker-outer"><div class="ticker-inner">${line}${line}</div></div>`
+    };
+  }
+},
+
+/* 23 */ {
+  id: 121, name: "Flame Burst", tags: ["fire","flame","burst","energy"],
+  controls: { speed: 1.0, size: 64, color: "#f97316", secondColor: "#fbbf24", particleCount: 10, particleSize: 5, amplitude: 14, opacity: 0.85 },
+  render: (c) => {
+    const n = Math.round(c.particleCount);
+    const keyframes = Array.from({length: n}, (_, i) => {
+      const xDrift = (Math.sin(i*1.7)*c.amplitude).toFixed(1);
+      const xDrift2 = (Math.sin(i*1.7+1)*c.amplitude*0.6).toFixed(1);
+      return `@keyframes flame${i}{0%{transform:translate(0,0) scale(1);opacity:${c.opacity}}40%{transform:translate(${xDrift}px,-${c.size*0.5}px) scale(0.7);opacity:${c.opacity*0.7}}100%{transform:translate(${xDrift2}px,-${c.size*0.95}px) scale(0);opacity:0}}`;
+    }).join('');
+    const particles = Array.from({length: n}, (_, i) => {
+      const x = c.size/2 + (Math.sin(i*2.1)*c.size*0.2);
+      const size = c.particleSize * (0.6+Math.sin(i)*0.4);
+      const col = i < n*0.4 ? c.secondColor : c.color;
+      const dur = (1.2/(c.speed*(0.7+i*0.06))).toFixed(2);
+      const delay = (-(i/n*(1.2/c.speed))).toFixed(2);
+      return `<div style="position:absolute;bottom:${c.size*0.1}px;left:${x.toFixed(1)}px;width:${size}px;height:${size*1.4}px;border-radius:50% 50% 40% 40%;background:${col};animation:flame${i} ${dur}s ease-out ${delay}s infinite;transform-origin:center bottom"></div>`;
+    }).join('');
+    return {
+      css: `${keyframes}
+.flame{position:relative;width:${c.size}px;height:${c.size}px;overflow:hidden}`,
+      html: `<div class="flame">${particles}</div>`
+    };
+  }
+},
+
+/* 24 */ {
+  id: 122, name: "Oscilloscope", tags: ["wave","oscilloscope","audio","signal"],
+  controls: { speed: 1.0, size: 64, color: "#22d3ee", secondColor: "#818cf8", amplitude: 16, thickness: 2.0, opacity: 0.9, layers: 2 },
+  render: (c) => {
+    const w = c.size * 2.5;
+    const h = c.size;
+    const mid = h/2;
+    const steps = 60;
+    const makePath = (freq, phase, amp) => {
+      const pts = Array.from({length: steps+1}, (_, i) => {
+        const x = (i/steps)*w;
+        const y = mid + Math.sin(i/steps*Math.PI*freq*2+phase)*amp;
+        return `${i===0?'M':'L'}${x.toFixed(1)},${y.toFixed(1)}`;
+      }).join(' ');
+      return pts;
+    };
+    const nl = Math.round(c.layers);
+    const paths = Array.from({length: nl}, (_, i) => {
+      const col = i===0 ? c.color : c.secondColor;
+      const freq = 2 + i;
+      const pathD = makePath(freq, 0, c.amplitude*(1-i*0.2));
+      const pathD2 = makePath(freq, Math.PI, c.amplitude*(1-i*0.2));
+      return `<path d="${pathD}" fill="none" stroke="${col}" stroke-width="${c.thickness}" opacity="${c.opacity*(1-i*0.2)}">
+<animate attributeName="d" values="${pathD};${pathD2};${pathD}" dur="${(1.5/c.speed/(i+1)).toFixed(2)}s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1"/>
+</path>`;
+    }).join('');
+    return {
+      css: `.osc-svg{width:${w}px;height:${h}px}`,
+      html: `<svg class="osc-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<line x1="0" y1="${mid}" x2="${w}" y2="${mid}" stroke="${c.color}" stroke-width="0.5" opacity="0.2"/>
+<line x1="${w/2}" y1="0" x2="${w/2}" y2="${h}" stroke="${c.color}" stroke-width="0.5" opacity="0.2"/>
+${paths}</svg>`
+    };
+  }
+},
+
+/* 25 */ {
+  id: 123, name: "Prism Shatter", tags: ["prism","shatter","geometric","burst"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", petalCount: 8, radius: 22, opacity: 0.75, thickness: 1.0 },
+  render: (c) => {
+    const n = Math.round(c.petalCount);
+    const cx = c.size/2;
+    const cy = c.size/2;
+    const shards = Array.from({length: n}, (_, i) => {
+      const a1 = (i/n)*Math.PI*2 - Math.PI/2;
+      const a2 = ((i+1)/n)*Math.PI*2 - Math.PI/2;
+      const aMid = (a1+a2)/2;
+      const r1 = c.radius * (0.4 + Math.sin(i*1.3)*0.2);
+      const r2 = c.radius;
+      const x1 = cx + Math.cos(a1)*r2;
+      const y1 = cy + Math.sin(a1)*r2;
+      const x2 = cx + Math.cos(a2)*r2;
+      const y2 = cy + Math.sin(a2)*r2;
+      const xm = cx + Math.cos(aMid)*r1;
+      const ym = cy + Math.sin(aMid)*r1;
+      const col = i%2===0 ? c.color : c.secondColor;
+      const delay = (i/n*(2/c.speed)).toFixed(2);
+      return `<path d="M${cx.toFixed(1)},${cy.toFixed(1)} L${x1.toFixed(1)},${y1.toFixed(1)} L${xm.toFixed(1)},${ym.toFixed(1)} L${x2.toFixed(1)},${y2.toFixed(1)} Z" fill="${col}" stroke="${col}" stroke-width="${c.thickness}" opacity="${c.opacity}">
+<animateTransform attributeName="transform" type="rotate" values="0 ${cx} ${cy};${360/n} ${cx} ${cy};0 ${cx} ${cy}" dur="${(2/c.speed).toFixed(2)}s" begin="${delay}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+<animate attributeName="opacity" values="${c.opacity};${c.opacity*0.3};${c.opacity}" dur="${(2/c.speed).toFixed(2)}s" begin="${delay}s" repeatCount="indefinite"/>
+</path>`;
+    }).join('');
+    return {
+      css: `.prism-svg{width:${c.size}px;height:${c.size}px}`,
+      html: `<svg class="prism-svg" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">
+${shards}
+<circle cx="${cx}" cy="${cy}" r="${c.size*0.07}" fill="${c.color}"><animate attributeName="r" values="${c.size*0.07};${c.size*0.12};${c.size*0.07}" dur="${(0.8/c.speed).toFixed(2)}s" repeatCount="indefinite"/></circle>
+</svg>`
+    };
+  }
+},
+
+/* 26 */ {
+  id: 124, name: "Matrix Rain", tags: ["matrix","rain","code","digital"],
+  controls: { speed: 1.0, size: 64, color: "#22d3ee", secondColor: "#818cf8", cols: 4, fontSize: 11, opacity: 0.85, gap: 2 },
+  render: (c) => {
+    const n = Math.round(c.cols);
+    const chars = '01アイウエオカキク∑∂∇∆ΛΣΠΩ';
+    const colW = c.size / n;
+    const rows = Math.ceil(c.size / (c.fontSize + c.gap));
+    const columns = Array.from({length: n}, (_, ci) => {
+      const delay = (-(ci/n*(3/c.speed))).toFixed(2);
+      const items = Array.from({length: rows}, (_, ri) => {
+        const ch = chars[Math.floor((ci*rows+ri)*2.71828)%chars.length];
+        const isHead = ri === rows-1;
+        const opac = isHead ? c.opacity : (c.opacity*(rows-ri)/rows*0.8).toFixed(2);
+        const col = isHead ? '#ffffff' : c.color;
+        return `<text x="${(ci*colW+colW/2).toFixed(1)}" y="${(ri*(c.fontSize+c.gap)+c.fontSize).toFixed(1)}" text-anchor="middle" font-size="${c.fontSize}" font-family="monospace" fill="${col}" opacity="${opac}">${ch}</text>`;
+      }).join('');
+      return `<g opacity="0"><animate attributeName="opacity" values="0;1;1;0" keyTimes="0;0.1;0.9;1" dur="${(2/c.speed).toFixed(2)}s" begin="${delay}s" repeatCount="indefinite"/><animateTransform attributeName="transform" type="translate" values="0,-${c.size};0,${c.size}" dur="${(2/c.speed).toFixed(2)}s" begin="${delay}s" repeatCount="indefinite"/>${items}</g>`;
+    }).join('');
+    return {
+      css: `.matrix-svg{width:${c.size}px;height:${c.size}px;overflow:hidden;border-radius:4px}`,
+      html: `<svg class="matrix-svg" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">
+<rect width="${c.size}" height="${c.size}" fill="${c.secondColor}11"/>
+${columns}</svg>`
+    };
+  }
+},
+
+/* 27 */ {
+  id: 125, name: "Lissajous", tags: ["lissajous","math","wave","trace"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", opacity: 0.8, thickness: 1.5, dotSize: 5 },
+  render: (c) => {
+    const steps = 200;
+    const r = c.size * 0.44;
+    const cx = c.size/2;
+    const cy = c.size/2;
+    const freqs = [[3,2],[5,4],[4,3]];
+    const [fx, fy] = freqs[1];
+    const pts = Array.from({length: steps+1}, (_, i) => {
+      const t = (i/steps)*Math.PI*2;
+      const x = cx + Math.sin(fx*t)*r;
+      const y = cy + Math.sin(fy*t + Math.PI/4)*r;
+      return `${i===0?'M':'L'}${x.toFixed(2)},${y.toFixed(2)}`;
+    }).join(' ');
+    const pathLen = steps*4;
+    return {
+      css: `@keyframes liss-draw{0%{stroke-dashoffset:${pathLen};opacity:0}10%{opacity:${c.opacity}}80%{opacity:${c.opacity}}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes liss-dot{0%{offset-distance:0%}100%{offset-distance:100%}}
+.liss-svg{width:${c.size}px;height:${c.size}px}`,
+      html: `<svg class="liss-svg" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">
+<path id="liss-path" d="${pts}" fill="none" stroke="${c.color}" stroke-width="${c.thickness}" stroke-dasharray="${pathLen}" stroke-dashoffset="${pathLen}" opacity="${c.opacity}">
+<animate attributeName="stroke-dashoffset" from="${pathLen}" to="0" dur="${(4/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+<animate attributeName="opacity" values="0;${c.opacity};${c.opacity};0" keyTimes="0;0.1;0.85;1" dur="${(4/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</path>
+<circle r="${c.dotSize/2}" fill="${c.secondColor}">
+<animateMotion dur="${(4/c.speed).toFixed(2)}s" repeatCount="indefinite" path="${pts}"/>
+</circle>
+</svg>`
+    };
+  }
+},
+
+/* 28 */ {
+  id: 126, name: "Hologram Scan", tags: ["hologram","scan","tech","scifi"],
+  controls: { speed: 1.0, size: 64, color: "#22d3ee", secondColor: "#818cf8", layers: 3, thickness: 1.0, lineOpacity: 0.5, opacity: 0.85, gap: 6 },
+  render: (c) => {
+    const nl = Math.round(c.layers);
+    const w = c.size;
+    const h = c.size;
+    const scanLine = `<rect width="${w}" height="${c.thickness*2}" fill="${c.color}" opacity="${c.opacity}"><animate attributeName="y" from="0" to="${h}" dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite"/></rect>`;
+    const gridLines = Array.from({length: Math.floor(h/c.gap)}, (_, i) =>
+      `<line x1="0" y1="${i*c.gap}" x2="${w}" y2="${i*c.gap}" stroke="${c.color}" stroke-width="0.5" opacity="${c.lineOpacity*0.4}"/>`
+    ).join('');
+    const vGridLines = Array.from({length: Math.floor(w/c.gap)}, (_, i) =>
+      `<line x1="${i*c.gap}" y1="0" x2="${i*c.gap}" y2="${h}" stroke="${c.color}" stroke-width="0.5" opacity="${c.lineOpacity*0.4}"/>`
+    ).join('');
+    const rings = Array.from({length: nl}, (_, i) => {
+      const rx = w*(0.2+i*0.12);
+      const ry = h*(0.1+i*0.06);
+      return `<ellipse cx="${w/2}" cy="${h/2}" rx="${rx}" ry="${ry}" fill="none" stroke="${i%2===0?c.color:c.secondColor}" stroke-width="${c.thickness}" opacity="${c.lineOpacity}">
+<animate attributeName="opacity" values="${c.lineOpacity};${c.lineOpacity*2};${c.lineOpacity}" dur="${(1.5/c.speed+i*0.3).toFixed(2)}s" repeatCount="indefinite"/>
+</ellipse>`;
+    }).join('');
+    return {
+      css: `.holo-svg{width:${c.size}px;height:${c.size}px;overflow:hidden;border-radius:4px}`,
+      html: `<svg class="holo-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<rect width="${w}" height="${h}" fill="${c.color}08"/>
+${gridLines}${vGridLines}${rings}${scanLine}
+<circle cx="${w/2}" cy="${h/2}" r="${w*0.06}" fill="none" stroke="${c.color}" stroke-width="${c.thickness*1.5}" opacity="${c.opacity}">
+<animate attributeName="r" values="${w*0.06};${w*0.1};${w*0.06}" dur="${(1/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>
+</svg>`
+    };
+  }
+},
+
+/* 29 */ {
+  id: 127, name: "Spring Bounce", tags: ["spring","bounce","elastic","physics"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", dotSize: 12, bounceHeight: 30, squish: 0.65, thickness: 1.5, lineOpacity: 0.3 },
+  render: (c) => {
+    const h = c.bounceHeight;
+    const totalH = c.size + h;
+    return {
+      css: `@keyframes sb-ball{0%{transform:translateY(0) scaleX(1) scaleY(1)}40%{transform:translateY(${h}px) scaleX(${2-c.squish}) scaleY(${c.squish})}45%{transform:translateY(${h}px) scaleX(${2-c.squish}) scaleY(${c.squish})}55%{transform:translateY(${h*0.4}px) scaleX(0.9) scaleY(1.1)}100%{transform:translateY(0) scaleX(1) scaleY(1)}}
+@keyframes sb-shadow{0%{transform:scaleX(0.4);opacity:0.1}40%,45%{transform:scaleX(1);opacity:0.35}100%{transform:scaleX(0.4);opacity:0.1}}
+@keyframes sb-spring{0%,100%{scaleY:1}40%,45%{transform:scaleY(0.5)}}
+.sb{position:relative;width:${c.size}px;height:${totalH}px;display:flex;flex-direction:column;align-items:center}
+.sb-ball{width:${c.dotSize}px;height:${c.dotSize}px;border-radius:50%;background:${c.color};animation:sb-ball ${(1.2/c.speed).toFixed(2)}s cubic-bezier(0.36,0,0.66,-0.56) infinite;transform-origin:center bottom;position:absolute;top:0;left:50%;margin-left:-${c.dotSize/2}px}
+.sb-shadow{width:${c.dotSize*1.4}px;height:${c.dotSize*0.25}px;border-radius:50%;background:${c.secondColor};position:absolute;bottom:0;left:50%;margin-left:-${c.dotSize*0.7}px;animation:sb-shadow ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite}
+.sb-trail{position:absolute;top:${c.dotSize*0.5}px;left:50%;width:${c.thickness}px;height:${h}px;background:linear-gradient(${c.color}88,transparent);margin-left:-${c.thickness/2}px;transform-origin:top center;animation:sb-spring ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite;opacity:${c.lineOpacity}}`,
+      html: `<div class="sb"><div class="sb-ball"></div><div class="sb-trail"></div><div class="sb-shadow"></div></div>`
+    };
+  }
+},
+
+/* 30 */ {
+  id: 128, name: "Clock Gears", tags: ["gears","clock","mechanical","steampunk"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#fbbf24", rings: 3, thickness: 1.5, opacity: 0.85, nodeSize: 4 },
+  render: (c) => {
+    const ng = Math.round(c.rings);
+    const cx = c.size/2;
+    const cy = c.size/2;
+    const makeGear = (r, teeth, col, dur, dir, ox=0, oy=0, strokeW=c.thickness) => {
+      const toothH = r * 0.22;
+      const pts = Array.from({length: teeth*2}, (_, i) => {
+        const angle = (i/teeth)*Math.PI - Math.PI/2;
+        const isOuter = i%2===0;
+        const rad = isOuter ? r+toothH : r;
+        const x = (cx+ox) + Math.cos(angle)*rad;
+        const y = (cy+oy) + Math.sin(angle)*rad;
+        return `${x.toFixed(2)},${y.toFixed(2)}`;
+      }).join(' ');
+      return `<polygon points="${pts}" fill="none" stroke="${col}" stroke-width="${strokeW}" opacity="${c.opacity}">
+<animateTransform attributeName="transform" type="rotate" from="0 ${(cx+ox).toFixed(1)} ${(cy+oy).toFixed(1)}" to="${dir*360} ${(cx+ox).toFixed(1)} ${(cy+oy).toFixed(1)}" dur="${dur}s" repeatCount="indefinite"/>
+</polygon>
+<circle cx="${(cx+ox).toFixed(1)}" cy="${(cy+oy).toFixed(1)}" r="${c.nodeSize/2}" fill="${col}" opacity="${c.opacity}"/>`;
+    };
+    const r1 = c.size*0.3; const r2 = c.size*0.16; const r3 = c.size*0.1;
+    const d1 = (3/c.speed).toFixed(2);
+    const d2 = (1.5/c.speed).toFixed(2);
+    const d3 = (0.9/c.speed).toFixed(2);
+    const offset = r1+r2+c.thickness;
+    return {
+      css: `.gear-svg{width:${c.size}px;height:${c.size}px}`,
+      html: `<svg class="gear-svg" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">
+${makeGear(r1, 12, c.color, d1, 1)}
+${ng>=2 ? makeGear(r2, 7, c.secondColor, d2, -1, r1*0.78, r1*0.78) : ''}
+${ng>=3 ? makeGear(r3, 5, c.color, d3, 1, -r1*0.72, r1*0.6) : ''}
+</svg>`
+    };
+  }
+},
+
+/* 31 */ {
+  id: 129, name: "Rorschach Ink", tags: ["ink","symmetric","morph","abstract"],
+  controls: { speed: 1.0, size: 64, color: "#818cf8", secondColor: "#f472b6", opacity: 0.8, layers: 3, amplitude: 10 },
+  render: (c) => {
+    const nl = Math.round(c.layers);
+    const cx = c.size/2;
+    const cy = c.size/2;
+    const blobs = Array.from({length: nl}, (_, i) => {
+      const col = i%2===0 ? c.color : c.secondColor;
+      const dur = (2/c.speed + i*0.4).toFixed(2);
+      const r = c.size*(0.35-i*0.08);
+      const a = c.amplitude*(1-i*0.2);
+      const makeBlob = (phase) => {
+        const pts = Array.from({length: 8}, (_, j) => {
+          const angle = (j/8)*Math.PI*2 + phase;
+          const rad = r + Math.sin(j*2.1+phase)*a + Math.cos(j*1.3+phase)*a*0.5;
+          const x = cx + Math.cos(angle)*rad;
+          const y = cy + Math.sin(angle)*rad;
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        }).join(' ');
+        return pts;
+      };
+      const p1 = makeBlob(0);
+      const p2 = makeBlob(Math.PI/4);
+      const p3 = makeBlob(Math.PI/2);
+      return `<polygon points="${p1}" fill="${col}" opacity="${c.opacity*(1-i*0.15)}">
+<animate attributeName="points" values="${p1};${p2};${p3};${p2};${p1}" dur="${dur}s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1"/>
+</polygon>`;
+    }).join('');
+    return {
+      css: `.rork-svg{width:${c.size}px;height:${c.size}px}`,
+      html: `<svg class="rork-svg" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">
+<defs><filter id="rork-blur"><feGaussianBlur stdDeviation="3"/></filter></defs>
+<g filter="url(#rork-blur)">${blobs}</g>
+</svg>`
+    };
+  }
+},
+/* ─────────────────────────────────────────────────────────────────────────
+   COMPLEX LOADER 200 — Solar System Orrery
+   A fully mechanical solar system: sun pulses, each planet orbits at its
+   own speed, tilted ecliptic plane, orbital path rings, planet shadows,
+   moons on inner planets, asteroid belt, and a sweeping lens-flare.
+   Controls: speed, size, color (sun), secondColor (planets), rings (planet count),
+             particleCount (asteroid belt density), electronSize (planet size),
+             lineOpacity (orbit ring opacity), thickness (orbit stroke)
+───────────────────────────────────────────────────────────────────────── */
+{
+  id: 200,
+  name: "Solar System Orrery",
+  tags: ["solar","orbit","system","space","planets","orrery","mechanical"],
+  controls: {
+    speed: 1.0, size: 120, color: "#fbbf24", secondColor: "#818cf8",
+    rings: 5, particleCount: 18, electronSize: 5,
+    lineOpacity: 0.18, thickness: 0.8
+  },
+  render: (c) => {
+    const np = Math.round(Math.min(8, Math.max(2, c.rings)));
+    const cx = c.size / 2;
+    const cy = c.size / 2;
+    const sunR = Math.max(5, c.size * 0.1);
+
+    // Planet orbital parameters
+    const planetData = [
+      { col: "#f87171", moonCount: 0, inclination: 2  },
+      { col: "#fb923c", moonCount: 0, inclination: 4  },
+      { col: c.secondColor, moonCount: 1, inclination: 0  },
+      { col: "#4ade80", moonCount: 2, inclination: 1.8},
+      { col: "#f97316", moonCount: 3, inclination: 3  },
+      { col: "#e2c97e", moonCount: 2, inclination: 2.6},
+      { col: "#67e8f9", moonCount: 1, inclination: 4.2},
+      { col: "#a78bfa", moonCount: 1, inclination: 1.2},
+    ].slice(0, np);
+
+    const minOrbit = sunR + c.electronSize * 1.8;
+    const maxOrbit = c.size * 0.46;
+    const orbitStep = np > 1 ? (maxOrbit - minOrbit) / (np - 1) : 0;
+
+    // Orbit rings (SVG ellipses tilted via perspective)
+    const orbitRings = planetData.map((p, i) => {
+      const r = minOrbit + i * orbitStep;
+      // Tilt as ellipse: ry = r * cos(inclination_deg)
+      const ryRatio = Math.cos((p.inclination * Math.PI) / 180);
+      return `<ellipse cx="${cx}" cy="${cy}" rx="${r.toFixed(2)}" ry="${(r * ryRatio).toFixed(2)}"
+        fill="none" stroke="${c.color}" stroke-width="${c.thickness}" opacity="${c.lineOpacity}"
+        stroke-dasharray="3 ${(r * 0.12).toFixed(1)}"/>`;
+    }).join('\n');
+
+    // Asteroid belt (between planet np-2 and np-1)
+    const beltR = minOrbit + (np - 1) * orbitStep * 0.72;
+    const beltW = orbitStep * 0.35;
+    const na = Math.round(c.particleCount);
+    const asteroids = Array.from({ length: na }, (_, i) => {
+      const angle = (i / na) * 360;
+      const dist = beltR + (((i * 7919) % 100) / 100 - 0.5) * beltW;
+      const sz = 0.6 + ((i * 3571) % 10) / 10 * 1.2;
+      const ax = (cx + Math.cos((angle * Math.PI) / 180) * dist).toFixed(2);
+      const ay = (cy + Math.sin((angle * Math.PI) / 180) * dist * 0.92).toFixed(2);
+      const delay = ((i / na) * (6 / c.speed)).toFixed(3);
+      return `<circle cx="${ax}" cy="${ay}" r="${sz.toFixed(1)}" fill="#94a3b8" opacity="0.55">
+  <animate attributeName="opacity" values="0.55;0.9;0.55" dur="${(2.5 / c.speed + (i % 5) * 0.3).toFixed(2)}s" begin="-${delay}s" repeatCount="indefinite"/>
+</circle>`;
+    }).join('\n');
+
+    // Planet + moon keyframes and elements
+    const planetKeyframes = planetData.map((p, i) => {
+      const r = minOrbit + i * orbitStep;
+      const ryRatio = Math.cos((p.inclination * Math.PI) / 180);
+      const period = (2.5 / c.speed * Math.pow((i + 1) / np, 1.5) * 4).toFixed(3);
+      // Parametric orbit: x = cx + r*cos(t), y = cy + r*ryRatio*sin(t)
+      const steps = 36;
+      const pathPts = Array.from({ length: steps + 1 }, (_, s) => {
+        const t = (s / steps) * Math.PI * 2;
+        const px = cx + Math.cos(t) * r;
+        const py = cy + Math.sin(t) * r * ryRatio;
+        return `${s === 0 ? 'M' : 'L'}${px.toFixed(2)},${py.toFixed(2)}`;
+      }).join(' ') + ' Z';
+      return { pathPts, period, r, ryRatio };
+    });
+
+    const planetSVG = planetData.map((p, i) => {
+      const { pathPts, period, r } = planetKeyframes[i];
+      const ps = c.electronSize * (1 - i * 0.04);
+      const moonSVG = Array.from({ length: p.moonCount }, (_, m) => {
+        const mr = ps * (1.8 + m * 1.4);
+        const mps = Math.max(1, ps * 0.32);
+        const mperiod = (period * (0.18 + m * 0.12)).toFixed(3);
+        return `<circle r="${mps.toFixed(1)}" fill="#cbd5e1" opacity="0.7">
+    <animateMotion dur="${mperiod}s" repeatCount="indefinite">
+      <mpath href="#moon-orbit-${i}-${m}"/>
+    </animateMotion>
+  </circle>
+  <path id="moon-orbit-${i}-${m}" d="M${mr},0 A${mr},${mr * 0.5} 0 1,1 -${mr},0 A${mr},${mr * 0.5} 0 1,1 ${mr},0" fill="none"/>`;
+      }).join('');
+
+      // Saturn-like rings for larger planets
+      const hasRing = i >= 4 && i <= 5;
+      const ringEl = hasRing ? `<ellipse cx="0" cy="0" rx="${ps * 2}" ry="${ps * 0.45}" fill="none"
+    stroke="${p.col}" stroke-width="${c.thickness * 0.8}" opacity="0.5"/>` : '';
+
+      return `<g>
+  <animateMotion dur="${period}s" repeatCount="indefinite" rotate="auto">
+    <mpath href="#planet-path-${i}"/>
+  </animateMotion>
+  <path id="planet-path-${i}" d="${pathPts}" fill="none"/>
+  ${ringEl}
+  ${moonSVG}
+  <circle r="${ps.toFixed(1)}" fill="${p.col}" opacity="0.92">
+    <animate attributeName="r" values="${ps.toFixed(1)};${(ps * 1.12).toFixed(1)};${ps.toFixed(1)}"
+      dur="${(period * 0.3).toFixed(2)}s" repeatCount="indefinite"/>
+  </circle>
+  <circle r="${(ps * 0.55).toFixed(1)}" cx="${(ps * 0.25).toFixed(1)}" cy="${(-ps * 0.25).toFixed(1)}"
+    fill="white" opacity="0.25"/>
+</g>`;
+    }).join('\n');
+
+    // Sun corona rays
+    const rayCount = 12;
+    const rays = Array.from({ length: rayCount }, (_, i) => {
+      const angle = (i / rayCount) * 360;
+      const inner = sunR * 1.15;
+      const outer = sunR * (1.5 + (i % 3) * 0.25);
+      const x1 = (cx + Math.cos((angle * Math.PI) / 180) * inner).toFixed(2);
+      const y1 = (cy + Math.sin((angle * Math.PI) / 180) * inner).toFixed(2);
+      const x2 = (cx + Math.cos((angle * Math.PI) / 180) * outer).toFixed(2);
+      const y2 = (cy + Math.sin((angle * Math.PI) / 180) * outer).toFixed(2);
+      const delay = ((i / rayCount) * (1 / c.speed)).toFixed(3);
+      return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}"
+    stroke="${c.color}" stroke-width="${c.thickness * 1.2}" opacity="0.4"
+    stroke-linecap="round">
+  <animate attributeName="opacity" values="0.4;0.85;0.4"
+    dur="${(1.4 / c.speed).toFixed(2)}s" begin="-${delay}s" repeatCount="indefinite"/>
+  <animate attributeName="x2" values="${x2};${(parseFloat(x2) + Math.cos((angle * Math.PI) / 180) * sunR * 0.3).toFixed(2)};${x2}"
+    dur="${(1.4 / c.speed).toFixed(2)}s" begin="-${delay}s" repeatCount="indefinite"/>
+  <animate attributeName="y2" values="${y2};${(parseFloat(y2) + Math.sin((angle * Math.PI) / 180) * sunR * 0.3).toFixed(2)};${y2}"
+    dur="${(1.4 / c.speed).toFixed(2)}s" begin="-${delay}s" repeatCount="indefinite"/>
+</line>`;
+    }).join('\n');
+
+    return {
+      css: `.orrery-svg { width:${c.size}px; height:${c.size}px; overflow:visible }`,
+      html: `<svg class="orrery-svg" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="sun-grad" cx="40%" cy="35%">
+    <stop offset="0%" stop-color="white" stop-opacity="0.9"/>
+    <stop offset="40%" stop-color="${c.color}" stop-opacity="1"/>
+    <stop offset="100%" stop-color="#dc2626" stop-opacity="0.8"/>
+  </radialGradient>
+  <filter id="sun-glow">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="2.5" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+${orbitRings}
+${asteroids}
+${planetSVG}
+${rays}
+<circle cx="${cx}" cy="${cy}" r="${(sunR * 1.4).toFixed(1)}" fill="${c.color}" opacity="0.08">
+  <animate attributeName="r" values="${(sunR * 1.4).toFixed(1)};${(sunR * 1.9).toFixed(1)};${(sunR * 1.4).toFixed(1)}"
+    dur="${(2 / c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" values="0.08;0.02;0.08" dur="${(2 / c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>
+<circle cx="${cx}" cy="${cy}" r="${sunR.toFixed(1)}" fill="url(#sun-grad)" filter="url(#sun-glow)">
+  <animate attributeName="r" values="${sunR.toFixed(1)};${(sunR * 1.06).toFixed(1)};${sunR.toFixed(1)}"
+    dur="${(1.2 / c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>
+<circle cx="${(cx - sunR * 0.28).toFixed(1)}" cy="${(cy - sunR * 0.3).toFixed(1)}"
+  r="${(sunR * 0.35).toFixed(1)}" fill="white" opacity="0.18"/>
+</svg>`
+    };
+  }
+},
+
+
+/* ─────────────────────────────────────────────────────────────────────────
+   COMPLEX LOADER 201 — Mechanical Watch Movement
+   A Swiss-inspired watch escapement: mainspring barrel, gear train of 5
+   interlocking wheels (each sized and toothed correctly for gear ratios),
+   escape wheel, pallet fork oscillating with click, balance wheel
+   hairspring, jewel bearings glinting, and hands sweeping.
+   Controls: speed, size, color (gold), secondColor (ruby jewels),
+             rings (gear count), thickness, opacity, nodeSize (jewel size)
+───────────────────────────────────────────────────────────────────────── */
+{
+  id: 201,
+  name: "Mechanical Watch Movement",
+  tags: ["watch","gears","mechanical","clockwork","steampunk","precision"],
+  controls: {
+    speed: 1.0, size: 140, color: "#d4a843", secondColor: "#dc2626",
+    rings: 5, thickness: 0.9, opacity: 0.9, nodeSize: 3.5
+  },
+  render: (c) => {
+    const ng = Math.round(Math.min(6, Math.max(3, c.rings)));
+    const w = c.size;
+    const h = c.size;
+
+    // Gear tooth generator — returns SVG polygon points for a gear
+    const makeGearPath = (cx, cy, r, teeth, toothH, toothW) => {
+      const pts = [];
+      for (let i = 0; i < teeth; i++) {
+        const a0 = (i / teeth) * Math.PI * 2 - Math.PI / 2;
+        const a1 = ((i + toothW) / teeth) * Math.PI * 2 - Math.PI / 2;
+        const a2 = ((i + toothW + 0.5 * (1 - toothW)) / teeth) * Math.PI * 2 - Math.PI / 2;
+        const a3 = ((i + 1 - toothW * 0.5) / teeth) * Math.PI * 2 - Math.PI / 2;
+        pts.push(`${(cx + Math.cos(a0) * r).toFixed(2)},${(cy + Math.sin(a0) * r).toFixed(2)}`);
+        pts.push(`${(cx + Math.cos(a0) * (r + toothH)).toFixed(2)},${(cy + Math.sin(a0) * (r + toothH)).toFixed(2)}`);
+        pts.push(`${(cx + Math.cos(a1) * (r + toothH)).toFixed(2)},${(cy + Math.sin(a1) * (r + toothH)).toFixed(2)}`);
+        pts.push(`${(cx + Math.cos(a1) * r).toFixed(2)},${(cy + Math.sin(a1) * r).toFixed(2)}`);
+      }
+      return pts.join(' ');
+    };
+
+    // Gear train layout — positions and sizes
+    const gearDefs = [
+      { cx: w*0.5,  cy: h*0.5,  r: w*0.18, teeth: 20, dir:  1, period: 8.0,  label: "barrel"   },
+      { cx: w*0.72, cy: h*0.36, r: w*0.10, teeth: 12, dir: -1, period: 4.5,  label: "center"   },
+      { cx: w*0.78, cy: h*0.62, r: w*0.075,teeth: 9,  dir:  1, period: 2.8,  label: "third"    },
+      { cx: w*0.56, cy: h*0.78, r: w*0.06, teeth: 8,  dir: -1, period: 1.8,  label: "fourth"   },
+      { cx: w*0.33, cy: h*0.72, r: w*0.05, teeth: 10, dir:  1, period: 0.9,  label: "escape"   },
+      { cx: w*0.22, cy: h*0.50, r: w*0.035,teeth: 6,  dir: -1, period: 0.45, label: "balance"  },
+    ].slice(0, ng + 1);
+
+    // Build each gear
+    const gearSVG = gearDefs.map((g, i) => {
+      const toothH = g.r * 0.18;
+      const toothW = 0.55;
+      const pts = makeGearPath(0, 0, g.r, g.teeth, toothH, toothW);
+      const dur = (g.period / c.speed).toFixed(3);
+      const fromDeg = g.dir > 0 ? 0 : 0;
+      const toDeg   = g.dir > 0 ? 360 : -360;
+      const jewels  = Array.from({ length: Math.min(4, g.teeth / 3 | 0) }, (_, j) => {
+        const ja = (j / Math.min(4, g.teeth / 3 | 0)) * Math.PI * 2;
+        const jr = g.r * 0.65;
+        return `<circle cx="${(Math.cos(ja)*jr).toFixed(2)}" cy="${(Math.sin(ja)*jr).toFixed(2)}"
+          r="${c.nodeSize * 0.45}" fill="${c.secondColor}" opacity="0.85">
+  <animate attributeName="opacity" values="0.85;1;0.4;0.85"
+    dur="${(0.6 / c.speed + j * 0.15).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>`;
+      }).join('');
+
+      const spokes = Array.from({ length: 5 }, (_, s) => {
+        const sa = (s / 5) * Math.PI * 2;
+        return `<line x1="0" y1="0" x2="${(Math.cos(sa)*g.r*0.85).toFixed(2)}" y2="${(Math.sin(sa)*g.r*0.85).toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness * 0.7}" opacity="${c.opacity * 0.5}"/>`;
+      }).join('');
+
+      return `<g transform="translate(${g.cx.toFixed(2)},${g.cy.toFixed(2)})">
+  <animateTransform attributeName="transform" type="rotate" additive="sum"
+    from="0" to="${toDeg}" dur="${dur}s" repeatCount="indefinite"/>
+  <polygon points="${pts}" fill="${c.color}22" stroke="${c.color}"
+    stroke-width="${c.thickness}" opacity="${c.opacity}"/>
+  ${spokes}
+  <circle r="${(g.r * 0.12).toFixed(2)}" fill="${c.color}" opacity="${c.opacity}"/>
+  ${jewels}
+</g>`;
+    }).join('\n');
+
+    // Balance wheel hairspring (Archimedes spiral, oscillating)
+    const bw = gearDefs[gearDefs.length - 1];
+    const spiralPts = Array.from({ length: 120 }, (_, i) => {
+      const t = (i / 120) * Math.PI * 6;
+      const sr = (t / (Math.PI * 6)) * bw.r * 0.8;
+      const sx = Math.cos(t) * sr;
+      const sy = Math.sin(t) * sr;
+      return `${i === 0 ? 'M' : 'L'}${sx.toFixed(2)},${sy.toFixed(2)}`;
+    }).join(' ');
+    const hairspring = `<g transform="translate(${bw.cx.toFixed(2)},${bw.cy.toFixed(2)})">
+  <path d="${spiralPts}" fill="none" stroke="${c.color}" stroke-width="${c.thickness * 0.5}" opacity="0.4">
+    <animateTransform attributeName="transform" type="rotate"
+      values="0;25;0;-25;0" dur="${(1.2 / c.speed).toFixed(2)}s" repeatCount="indefinite"
+      calcMode="spline" keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95"/>
+  </path>
+</g>`;
+
+    // Pallet fork (escapement lever)
+    const esc = gearDefs.find(g => g.label === "escape") || gearDefs[ng - 1];
+    const forkCx = (esc.cx + bw.cx) / 2;
+    const forkCy = (esc.cy + bw.cy) / 2;
+    const forkL  = w * 0.08;
+    const pallet = `<g transform="translate(${forkCx.toFixed(2)},${forkCy.toFixed(2)})">
+  <animateTransform attributeName="transform" type="rotate" additive="sum"
+    values="0;18;0;-18;0" dur="${(0.9 / c.speed).toFixed(2)}s" repeatCount="indefinite"
+    calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1"/>
+  <line x1="0" y1="0" x2="${forkL.toFixed(1)}" y2="${(-forkL*0.6).toFixed(1)}"
+    stroke="${c.color}" stroke-width="${c.thickness*1.4}" stroke-linecap="round" opacity="${c.opacity}"/>
+  <line x1="0" y1="0" x2="${(-forkL*0.5).toFixed(1)}" y2="${(forkL*0.3).toFixed(1)}"
+    stroke="${c.color}" stroke-width="${c.thickness*1.4}" stroke-linecap="round" opacity="${c.opacity}"/>
+  <rect x="${(forkL - w*0.018).toFixed(2)}" y="${(-forkL*0.6 - w*0.012).toFixed(2)}"
+    width="${(w*0.018).toFixed(2)}" height="${(w*0.024).toFixed(2)}"
+    fill="${c.secondColor}" opacity="0.9" rx="1"/>
+  <rect x="${(-forkL*0.5 - w*0.008).toFixed(2)}" y="${(forkL*0.3 - w*0.012).toFixed(2)}"
+    width="${(w*0.016).toFixed(2)}" height="${(w*0.024).toFixed(2)}"
+    fill="${c.secondColor}" opacity="0.9" rx="1"/>
+  <circle r="${(w*0.012).toFixed(2)}" fill="${c.color}" stroke="${c.secondColor}" stroke-width="0.8"/>
+</g>`;
+
+    // Watch hands at center gear
+    const cg = gearDefs[1];
+    const handsSVG = `
+<g transform="translate(${cg.cx.toFixed(2)},${cg.cy.toFixed(2)})">
+  <line x1="0" y1="0" x2="0" y2="${(-w*0.12).toFixed(1)}"
+    stroke="${c.color}" stroke-width="${c.thickness*2}" stroke-linecap="round" opacity="${c.opacity}">
+    <animateTransform attributeName="transform" type="rotate"
+      from="0" to="360" dur="${(60/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+  </line>
+  <line x1="0" y1="0" x2="0" y2="${(-w*0.085).toFixed(1)}"
+    stroke="${c.color}" stroke-width="${c.thickness*3}" stroke-linecap="round" opacity="${c.opacity}">
+    <animateTransform attributeName="transform" type="rotate"
+      from="0" to="360" dur="${(720/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+  </line>
+  <line x1="0" y1="${(w*0.03).toFixed(1)}" x2="0" y2="${(-w*0.14).toFixed(1)}"
+    stroke="${c.secondColor}" stroke-width="${c.thickness}" stroke-linecap="round" opacity="0.9">
+    <animateTransform attributeName="transform" type="rotate"
+      from="0" to="360" dur="${(5/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+  </line>
+  <circle r="${(w*0.012).toFixed(2)}" fill="${c.color}"/>
+</g>`;
+
+    // Plate screw pillars
+    const screwPositions = [[0.15,0.15],[0.85,0.15],[0.85,0.85],[0.15,0.85],[0.5,0.08]];
+    const screws = screwPositions.map(([px,py]) => {
+      const sx = w*px; const sy = h*py;
+      return `<circle cx="${sx.toFixed(1)}" cy="${sy.toFixed(1)}" r="${(w*0.016).toFixed(2)}"
+  fill="${c.color}44" stroke="${c.color}" stroke-width="${c.thickness*0.7}" opacity="0.6"/>
+<line x1="${(sx-w*0.008).toFixed(2)}" y1="${sy.toFixed(2)}" x2="${(sx+w*0.008).toFixed(2)}" y2="${sy.toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness*0.5}" opacity="0.4"/>
+<line x1="${sx.toFixed(2)}" y1="${(sy-w*0.008).toFixed(2)}" x2="${sx.toFixed(2)}" y2="${(sy+w*0.008).toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness*0.5}" opacity="0.4"/>`;
+    }).join('\n');
+
+    // Mainspring coil inside barrel
+    const barrel = gearDefs[0];
+    const coilSVG = Array.from({ length: 6 }, (_, i) => {
+      const cr = barrel.r * (0.2 + i * 0.12);
+      return `<circle cx="${barrel.cx.toFixed(2)}" cy="${barrel.cy.toFixed(2)}"
+  r="${cr.toFixed(2)}" fill="none" stroke="${c.color}" stroke-width="${c.thickness*0.4}" opacity="${0.35 - i*0.04}">
+  <animateTransform attributeName="transform" type="rotate"
+    from="0 ${barrel.cx.toFixed(2)} ${barrel.cy.toFixed(2)}"
+    to="${(-360).toFixed(0)} ${barrel.cx.toFixed(2)} ${barrel.cy.toFixed(2)}"
+    dur="${(12/c.speed*(1+i*0.15)).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>`;
+    }).join('\n');
+
+    return {
+      css: `.mvmt-svg { width:${c.size}px; height:${c.size}px }`,
+      html: `<svg class="mvmt-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="jewel-glow">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.2" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <radialGradient id="plate-grad" cx="40%" cy="35%">
+    <stop offset="0%" stop-color="${c.color}" stop-opacity="0.08"/>
+    <stop offset="100%" stop-color="${c.color}" stop-opacity="0.02"/>
+  </radialGradient>
+</defs>
+<rect width="${w}" height="${h}" rx="8" fill="url(#plate-grad)" stroke="${c.color}" stroke-width="${c.thickness*0.5}" opacity="0.3"/>
+${screws}
+${coilSVG}
+${gearSVG}
+${hairspring}
+${pallet}
+${handsSVG}
+</svg>`
+    };
+  }
+},
+
+
+/* ─────────────────────────────────────────────────────────────────────────
+   COMPLEX LOADER 202 — Quantum Field Interference
+   Simulates two quantum wave sources interfering: each source emits
+   concentric wavefronts, their superposition is rendered as a grid of
+   amplitude dots that grow/shrink based on combined wave phase,
+   plus probability density contour rings, and two animating source
+   beacons with uncertainty halos.
+   Controls: speed, size, color (wave A), secondColor (wave B),
+             particleCount (grid density), amplitude, lineOpacity,
+             dotSize, thickness, opacity
+───────────────────────────────────────────────────────────────────────── */
+{
+  id: 202,
+  name: "Quantum Field Interference",
+  tags: ["quantum","wave","interference","physics","field","science"],
+  controls: {
+    speed: 1.0, size: 110, color: "#818cf8", secondColor: "#22d3ee",
+    particleCount: 14, amplitude: 12, lineOpacity: 0.35,
+    dotSize: 3.5, thickness: 0.7, opacity: 0.85
+  },
+  render: (c) => {
+    const w = c.size;
+    const h = c.size;
+    const gridN = Math.round(Math.max(6, Math.min(18, c.particleCount)));
+
+    // Two source positions
+    const s1x = w * 0.3; const s1y = h * 0.5;
+    const s2x = w * 0.7; const s2y = h * 0.5;
+
+    const cellW = w / gridN;
+    const cellH = h / gridN;
+    const k  = (2 * Math.PI) / (w * 0.35); // wave number
+    const wv = 1; // angular frequency factor
+
+    // Pre-compute amplitude at each grid point (static snapshot at t=0 for layout)
+    const dots = [];
+    for (let row = 0; row < gridN; row++) {
+      for (let col = 0; col < gridN; col++) {
+        const px = (col + 0.5) * cellW;
+        const py = (row + 0.5) * cellH;
+        const r1 = Math.sqrt((px - s1x) ** 2 + (py - s1y) ** 2);
+        const r2 = Math.sqrt((px - s2x) ** 2 + (py - s2y) ** 2);
+        // Phase difference → interference pattern
+        const phase1 = k * r1;
+        const phase2 = k * r2;
+        const amp = (Math.cos(phase1) + Math.cos(phase2)) / 2; // -1 to 1
+        const normAmp = (amp + 1) / 2; // 0 to 1
+
+        const maxR  = c.dotSize;
+        const minR  = 0.3;
+        const dotR  = minR + normAmp * (maxR - minR);
+
+        // Animation: oscillate based on phase
+        const dur    = (1.5 / c.speed).toFixed(3);
+        const delay  = -((phase1 % (2 * Math.PI)) / (2 * Math.PI) * 1.5 / c.speed).toFixed(3);
+        const colA   = amp > 0 ? c.color : c.secondColor;
+        const alphaV = (0.15 + normAmp * 0.7 * c.opacity).toFixed(2);
+
+        dots.push(
+          `<circle cx="${px.toFixed(2)}" cy="${py.toFixed(2)}" r="${dotR.toFixed(2)}" fill="${colA}" opacity="${alphaV}">
+  <animate attributeName="r" values="${dotR.toFixed(2)};${(dotR * 0.2 + minR).toFixed(2)};${dotR.toFixed(2)}"
+    dur="${dur}s" begin="${delay}s" repeatCount="indefinite" calcMode="spline"
+    keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95"/>
+  <animate attributeName="opacity" values="${alphaV};${(parseFloat(alphaV)*0.25).toFixed(2)};${alphaV}"
+    dur="${dur}s" begin="${delay}s" repeatCount="indefinite" calcMode="spline"
+    keySplines="0.45 0.05 0.55 0.95;0.45 0.05 0.55 0.95"/>
+</circle>`
+        );
+      }
+    }
+
+    // Wavefront rings from each source
+    const waveRingCount = 6;
+    const source1Rings = Array.from({ length: waveRingCount }, (_, i) => {
+      const maxR = w * 0.75;
+      const dur  = (2 / c.speed).toFixed(2);
+      const del  = (-(i / waveRingCount) * (2 / c.speed)).toFixed(3);
+      return `<circle cx="${s1x.toFixed(2)}" cy="${s1y.toFixed(2)}" r="2" fill="none"
+  stroke="${c.color}" stroke-width="${c.thickness}" opacity="${c.lineOpacity}">
+  <animate attributeName="r" from="2" to="${maxR.toFixed(1)}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" from="${c.lineOpacity}" to="0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+</circle>`;
+    }).join('\n');
+
+    const source2Rings = Array.from({ length: waveRingCount }, (_, i) => {
+      const maxR = w * 0.75;
+      const dur  = (2 / c.speed).toFixed(2);
+      const del  = (-(i / waveRingCount) * (2 / c.speed)).toFixed(3);
+      return `<circle cx="${s2x.toFixed(2)}" cy="${s2y.toFixed(2)}" r="2" fill="none"
+  stroke="${c.secondColor}" stroke-width="${c.thickness}" opacity="${c.lineOpacity}">
+  <animate attributeName="r" from="2" to="${maxR.toFixed(1)}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" from="${c.lineOpacity}" to="0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+</circle>`;
+    }).join('\n');
+
+    // Source beacons with uncertainty halos
+    const beacon = (sx, sy, col, id) => `
+<circle cx="${sx.toFixed(2)}" cy="${sy.toFixed(2)}" r="${(w*0.045).toFixed(2)}" fill="${col}" opacity="0.08">
+  <animate attributeName="r" values="${(w*0.045).toFixed(2)};${(w*0.09).toFixed(2)};${(w*0.045).toFixed(2)}"
+    dur="${(0.8/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" values="0.08;0.02;0.08" dur="${(0.8/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>
+<circle cx="${sx.toFixed(2)}" cy="${sy.toFixed(2)}" r="${(w*0.022).toFixed(2)}" fill="${col}" opacity="0.9">
+  <animate attributeName="r" values="${(w*0.022).toFixed(2)};${(w*0.028).toFixed(2)};${(w*0.022).toFixed(2)}"
+    dur="${(0.5/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>
+<circle cx="${sx.toFixed(2)}" cy="${sy.toFixed(2)}" r="${(w*0.009).toFixed(2)}" fill="white" opacity="0.7"/>`;
+
+    // Nodal lines (destructive interference visual guides)
+    const nodalPath = (() => {
+      const pts = [];
+      for (let px = 0; px < w; px += w / 60) {
+        for (let py = 0; py < h; py += h / 60) {
+          const r1 = Math.sqrt((px - s1x) ** 2 + (py - s1y) ** 2);
+          const r2 = Math.sqrt((px - s2x) ** 2 + (py - s2y) ** 2);
+          const diff = Math.abs((r1 - r2) % (w * 0.35));
+          if (diff < w * 0.025 || Math.abs(diff - w * 0.175) < w * 0.02) {
+            pts.push(`<circle cx="${px.toFixed(1)}" cy="${py.toFixed(1)}" r="0.6" fill="${c.color}" opacity="0.12"/>`);
+          }
+        }
+      }
+      return pts.join('');
+    })();
+
+    return {
+      css: `.qfi-svg { width:${c.size}px; height:${c.size}px; overflow:hidden; border-radius:4px }`,
+      html: `<svg class="qfi-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<rect width="${w}" height="${h}" fill="${c.color}06"/>
+${nodalPath}
+${source1Rings}
+${source2Rings}
+${dots.join('\n')}
+${beacon(s1x, s1y, c.color, 's1')}
+${beacon(s2x, s2y, c.secondColor, 's2')}
+<line x1="${s1x.toFixed(2)}" y1="${(s1y-w*0.06).toFixed(2)}" x2="${s2x.toFixed(2)}" y2="${(s2y-w*0.06).toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness*0.5}" stroke-dasharray="2 4" opacity="0.2"/>
+</svg>`
+    };
+  }
+},
+
+
+/* ─────────────────────────────────────────────────────────────────────────
+   COMPLEX LOADER 203 — Bioluminescent Deep Sea Jellyfish
+   A fully-animated jellyfish: pulsing bell with radial segments,
+   trailing oral arms that wave independently, tentacles with nematocyst
+   nodes, bioluminescent glow pulses, and drifting particle plankton in
+   the water column behind it.
+   Controls: speed, size, color (bell), secondColor (tentacles),
+             tailCount (tentacle count), particleCount (plankton),
+             amplitude (tentacle sway), opacity, glowSize, thickness
+───────────────────────────────────────────────────────────────────────── */
+{
+  id: 203,
+  name: "Bioluminescent Jellyfish",
+  tags: ["jellyfish","ocean","bioluminescent","organic","fluid","biology"],
+  controls: {
+    speed: 1.0, size: 110, color: "#818cf8", secondColor: "#22d3ee",
+    tailCount: 8, particleCount: 20, amplitude: 14,
+    opacity: 0.85, glowSize: 8, thickness: 1.2
+  },
+  render: (c) => {
+    const w = c.size;
+    const h = c.size * 1.5; // tall canvas for tentacles
+    const nt = Math.round(Math.min(14, Math.max(4, c.tailCount)));
+    const bellCx = w / 2;
+    const bellCy = h * 0.28;
+    const bellRx = w * 0.38;
+    const bellRy = w * 0.26;
+
+    // Bell segments (radial ribs inside the bell)
+    const ribCount = nt;
+    const ribs = Array.from({ length: ribCount }, (_, i) => {
+      const t = (i / ribCount) * Math.PI; // semicircle across bell
+      const ribX = bellCx + Math.cos(t - Math.PI / 2) * bellRx * 0.92;
+      const ribY = bellCy + Math.sin(t - Math.PI / 2) * bellRy * 0.92;
+      const endX = bellCx + Math.cos(t - Math.PI / 2) * bellRx * 0.15;
+      const endY = bellCy + bellRy * 0.05;
+      return `<line x1="${bellCx.toFixed(2)}" y1="${(bellCy+bellRy*0.05).toFixed(2)}"
+  x2="${ribX.toFixed(2)}" y2="${ribY.toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness * 0.6}" opacity="${c.opacity * 0.35}"
+  stroke-linecap="round">
+  <animate attributeName="opacity" values="${c.opacity*0.35};${c.opacity*0.65};${c.opacity*0.35}"
+    dur="${(1.8/c.speed+i*0.05).toFixed(2)}s" begin="-${(i/ribCount*(1.8/c.speed)).toFixed(3)}s" repeatCount="indefinite"/>
+</line>`;
+    }).join('\n');
+
+    // Bell outer shape — pulsing ellipse with sub-surface anatomy
+    const bellPulse = `
+<ellipse cx="${bellCx}" cy="${bellCy}" rx="${bellRx * 1.08}" ry="${bellRy * 1.08}"
+  fill="${c.color}" opacity="0.06">
+  <animate attributeName="rx" values="${bellRx*1.08};${bellRx*1.25};${bellRx*1.08}"
+    dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+  <animate attributeName="ry" values="${bellRy*1.08};${bellRy*0.82};${bellRy*1.08}"
+    dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+</ellipse>
+<ellipse cx="${bellCx}" cy="${bellCy}" rx="${bellRx}" ry="${bellRy}"
+  fill="${c.color}" opacity="${c.opacity * 0.55}" stroke="${c.color}"
+  stroke-width="${c.thickness}">
+  <animate attributeName="rx" values="${bellRx};${bellRx*1.12};${bellRx}"
+    dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+  <animate attributeName="ry" values="${bellRy};${bellRy*0.78};${bellRy}"
+    dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+  <animate attributeName="cy" values="${bellCy};${bellCy - h*0.018};${bellCy}"
+    dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+</ellipse>
+<ellipse cx="${bellCx}" cy="${(bellCy - bellRy*0.15).toFixed(2)}" rx="${bellRx * 0.72}" ry="${bellRy * 0.55}"
+  fill="${c.color}" opacity="${c.opacity * 0.25}">
+  <animate attributeName="rx" values="${bellRx*0.72};${bellRx*0.82};${bellRx*0.72}"
+    dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</ellipse>`;
+
+    // Bell rim highlight
+    const rimPath = `M${(bellCx - bellRx).toFixed(2)},${bellCy} Q${bellCx},${(bellCy + bellRy*1.1).toFixed(2)} ${(bellCx + bellRx).toFixed(2)},${bellCy}`;
+    const rim = `<path d="${rimPath}" fill="none" stroke="${c.color}" stroke-width="${c.thickness * 2}" opacity="0.5" stroke-linecap="round">
+  <animate attributeName="d"
+    values="M${(bellCx-bellRx).toFixed(2)},${bellCy} Q${bellCx},${(bellCy+bellRy*1.1).toFixed(2)} ${(bellCx+bellRx).toFixed(2)},${bellCy};M${(bellCx-bellRx*1.12).toFixed(2)},${bellCy} Q${bellCx},${(bellCy+bellRy*0.88).toFixed(2)} ${(bellCx+bellRx*1.12).toFixed(2)},${bellCy};M${(bellCx-bellRx).toFixed(2)},${bellCy} Q${bellCx},${(bellCy+bellRy*1.1).toFixed(2)} ${(bellCx+bellRx).toFixed(2)},${bellCy}"
+    dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+</path>`;
+
+    // Oral arms (thick inner arms, 4)
+    const oralCount = 4;
+    const oralArms = Array.from({ length: oralCount }, (_, i) => {
+      const angle = ((i / oralCount) * Math.PI * 2) + Math.PI * 0.5;
+      const startX = bellCx + Math.cos(angle) * bellRx * 0.35;
+      const startY = bellCy + bellRy * 0.7;
+      const len = h * 0.28;
+      const swayA = c.amplitude * 0.5;
+      const phase = (i / oralCount) * Math.PI * 2;
+      const cp1x = startX + Math.cos(phase) * swayA;
+      const cp1y = startY + len * 0.35;
+      const cp2x = startX + Math.cos(phase + 1) * swayA * 1.5;
+      const cp2y = startY + len * 0.7;
+      const endX  = startX + Math.cos(phase + 2) * swayA;
+      const endY  = startY + len;
+      const pathV1 = `M${startX.toFixed(2)},${startY.toFixed(2)} C${cp1x.toFixed(2)},${cp1y.toFixed(2)} ${cp2x.toFixed(2)},${cp2y.toFixed(2)} ${endX.toFixed(2)},${endY.toFixed(2)}`;
+      const cp1x2 = startX + Math.cos(phase + 0.8) * swayA * 1.2;
+      const cp2x2 = startX - Math.cos(phase + 1.2) * swayA;
+      const endX2 = startX - Math.cos(phase + 2.3) * swayA * 0.8;
+      const pathV2 = `M${startX.toFixed(2)},${startY.toFixed(2)} C${cp1x2.toFixed(2)},${cp1y.toFixed(2)} ${cp2x2.toFixed(2)},${cp2y.toFixed(2)} ${endX2.toFixed(2)},${endY.toFixed(2)}`;
+      const dur = (2.5 / c.speed + i * 0.2).toFixed(2);
+      return `<path d="${pathV1}" fill="none" stroke="${c.color}" stroke-width="${c.thickness * 2.5}"
+  opacity="${c.opacity * 0.6}" stroke-linecap="round">
+  <animate attributeName="d" values="${pathV1};${pathV2};${pathV1}" dur="${dur}s" repeatCount="indefinite"
+    calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1"/>
+</path>`;
+    }).join('\n');
+
+    // Tentacles with nematocyst beads
+    const tentacleKeyframes = [];
+    const tentacleSVG = Array.from({ length: nt }, (_, i) => {
+      const tAngle = (i / nt) * Math.PI; // spread across bell bottom
+      const tx = bellCx + (Math.cos(tAngle - Math.PI / 2) * bellRx * 0.9);
+      const ty = bellCy + (Math.sin(tAngle - Math.PI / 2) * bellRy * 0.88) + bellRy * 0.1;
+      const len = h * (0.45 + (i % 3) * 0.12);
+      const sway = c.amplitude * (0.8 + (i % 4) * 0.2);
+      const phase = (i / nt) * Math.PI * 2;
+      const dur = (3 / c.speed + (i % 5) * 0.18).toFixed(3);
+      const del = (-(i / nt) * (3 / c.speed)).toFixed(3);
+
+      const seg = 6;
+      const makeTPath = (phOffset) => {
+        let d = `M${tx.toFixed(2)},${ty.toFixed(2)}`;
+        for (let s = 1; s <= seg; s++) {
+          const t = s / seg;
+          const wx = tx + Math.sin(phase + phOffset + t * Math.PI * 2) * sway * t;
+          const wy = ty + len * t;
+          d += ` L${wx.toFixed(2)},${wy.toFixed(2)}`;
+        }
+        return d;
+      };
+      const p1 = makeTPath(0);
+      const p2 = makeTPath(0.8);
+      const p3 = makeTPath(1.6);
+
+      // Nematocyst nodes along each tentacle
+      const beads = Array.from({ length: 5 }, (_, b) => {
+        const bt = (b + 1) / 6;
+        const bx = tx + Math.sin(phase + bt * Math.PI * 2) * sway * bt;
+        const by = ty + len * bt;
+        return `<circle cx="${bx.toFixed(2)}" cy="${by.toFixed(2)}"
+  r="${(c.thickness * 1.5).toFixed(2)}" fill="${c.secondColor}" opacity="${c.opacity * 0.7}">
+  <animate attributeName="opacity" values="${c.opacity*0.7};1;${c.opacity*0.7}"
+    dur="${(0.8/c.speed+b*0.1).toFixed(2)}s" begin="-${(b*0.15/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>`;
+      }).join('');
+
+      return `<path d="${p1}" fill="none" stroke="${c.secondColor}" stroke-width="${c.thickness}"
+  opacity="${c.opacity * 0.75}" stroke-linecap="round">
+  <animate attributeName="d" values="${p1};${p2};${p3};${p2};${p1}" dur="${dur}s" begin="${del}s"
+    repeatCount="indefinite" calcMode="spline"
+    keySplines="0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1;0.5 0 0.5 1"/>
+</path>
+${beads}`;
+    }).join('\n');
+
+    // Bioluminescent glow pulse rings from bell center
+    const glowRings = Array.from({ length: 4 }, (_, i) => {
+      const gr = bellRx * (0.3 + i * 0.2);
+      const del = (-(i / 4) * (2 / c.speed)).toFixed(3);
+      return `<ellipse cx="${bellCx}" cy="${bellCy}" rx="${gr}" ry="${gr * 0.7}"
+  fill="none" stroke="${c.color}" stroke-width="${c.thickness * 0.7}" opacity="${c.lineOpacity || 0.3}">
+  <animate attributeName="rx" from="${gr}" to="${gr * 1.8}" dur="${(2/c.speed).toFixed(2)}s" begin="${del}s" repeatCount="indefinite"/>
+  <animate attributeName="ry" from="${gr*0.7}" to="${gr*0.7*1.8}" dur="${(2/c.speed).toFixed(2)}s" begin="${del}s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" from="${c.lineOpacity || 0.3}" to="0" dur="${(2/c.speed).toFixed(2)}s" begin="${del}s" repeatCount="indefinite"/>
+</ellipse>`;
+    }).join('\n');
+
+    // Plankton particles drifting
+    const np = Math.round(c.particleCount);
+    const plankton = Array.from({ length: np }, (_, i) => {
+      const px = (((i * 137.5) % 100) / 100 * w).toFixed(2);
+      const py = (((i * 79.3) % 100) / 100 * h).toFixed(2);
+      const pr = 0.8 + ((i * 31) % 10) / 10 * 1.5;
+      const col = i % 3 === 0 ? c.secondColor : c.color;
+      const dur = (4 / c.speed + (i % 7) * 0.4).toFixed(2);
+      const del = (-(i / np * (4 / c.speed))).toFixed(3);
+      const driftX = (((i * 53) % 20) - 10).toFixed(1);
+      return `<circle cx="${px}" cy="${py}" r="${pr.toFixed(1)}" fill="${col}" opacity="${0.2 + ((i*17)%10)/10*0.4}">
+  <animate attributeName="cy" values="${py};${(parseFloat(py)-h*0.15).toFixed(2)};${py}"
+    dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+  <animate attributeName="cx" values="${px};${(parseFloat(px)+parseFloat(driftX)).toFixed(2)};${px}"
+    dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" values="${0.2+((i*17)%10)/10*0.4};0.05;${0.2+((i*17)%10)/10*0.4}"
+    dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+</circle>`;
+    }).join('\n');
+
+    // Central ganglion (nerve ring)
+    const ganglion = `
+<ellipse cx="${bellCx}" cy="${(bellCy - bellRy*0.05).toFixed(2)}"
+  rx="${bellRx * 0.22}" ry="${bellRy * 0.18}"
+  fill="${c.color}" opacity="${c.opacity * 0.35}">
+  <animate attributeName="opacity" values="${c.opacity*0.35};${c.opacity*0.65};${c.opacity*0.35}"
+    dur="${(1/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</ellipse>`;
+
+    return {
+      css: `.jelly-svg { width:${c.size}px; height:${Math.round(h)}px; overflow:hidden }`,
+      html: `<svg class="jelly-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <radialGradient id="jelly-grad" cx="45%" cy="35%">
+    <stop offset="0%" stop-color="white" stop-opacity="0.35"/>
+    <stop offset="55%" stop-color="${c.color}" stop-opacity="${c.opacity * 0.6}"/>
+    <stop offset="100%" stop-color="${c.color}" stop-opacity="${c.opacity * 0.2}"/>
+  </radialGradient>
+  <filter id="jelly-glow">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="${(c.glowSize * 0.4).toFixed(1)}" result="b"/>
+    <feMerge><feMergeNode in="b"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+${plankton}
+${glowRings}
+${oralArms}
+${tentacleSVG}
+${ribs}
+${bellPulse}
+<ellipse cx="${bellCx}" cy="${bellCy}" rx="${bellRx}" ry="${bellRy}"
+  fill="url(#jelly-grad)" opacity="${c.opacity * 0.7}" filter="url(#jelly-glow)">
+  <animate attributeName="rx" values="${bellRx};${bellRx*1.12};${bellRx}"
+    dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+  <animate attributeName="ry" values="${bellRy};${bellRy*0.78};${bellRy}"
+    dur="${(2/c.speed).toFixed(2)}s" repeatCount="indefinite" calcMode="spline" keySplines="0.4 0 0.6 1;0.4 0 0.6 1"/>
+</ellipse>
+${rim}
+${ganglion}
+</svg>`
+    };
+  }
+},
+
+
+/* ─────────────────────────────────────────────────────────────────────────
+   COMPLEX LOADER 204 — Electromagnetic Coil Resonator
+   A Tesla-coil-inspired loader: a stratified toroidal coil with
+   individually-animated wire windings, a magnetic field flux animation
+   with animated Biot-Savart field lines, arc discharge sparks jumping
+   from the top terminal, and oscillating standing wave on the coil body.
+   Controls: speed, size, color (coil), secondColor (sparks/field),
+             rings (winding count), amplitude (arc wildness),
+             particleCount (spark particles), thickness, lineOpacity, opacity
+───────────────────────────────────────────────────────────────────────── */
+{
+  id: 204,
+  name: "Electromagnetic Coil Resonator",
+  tags: ["tesla","coil","electromagnetic","electric","spark","physics","energy"],
+  controls: {
+    speed: 1.0, size: 120, color: "#818cf8", secondColor: "#fbbf24",
+    rings: 10, amplitude: 18, particleCount: 12,
+    thickness: 1.4, lineOpacity: 0.4, opacity: 0.88
+  },
+  render: (c) => {
+    const w = c.size;
+    const h = c.size * 1.3;
+    const nw = Math.round(Math.min(18, Math.max(4, c.rings)));
+    const cx = w / 2;
+
+    // Coil body dimensions
+    const coilTop  = h * 0.2;
+    const coilBot  = h * 0.78;
+    const coilH    = coilBot - coilTop;
+    const coilRx   = w * 0.28; // horizontal radius of toroid
+    const coilRy   = coilH / (nw * 2); // vertical step per winding
+
+    // Each winding is an ellipse arc — front half (lower z) drawn after, simulating 3D
+    const windings = Array.from({ length: nw }, (_, i) => {
+      const cy_w = coilTop + (i / (nw - 1)) * coilH;
+      const phase = (i / nw) * Math.PI * 2;
+      const swingAmp = coilRy * 0.6;
+      const isBack = i % 2 === 0;
+      const strokeCol = isBack ? `${c.color}88` : c.color;
+      const opa = isBack ? c.opacity * 0.45 : c.opacity * 0.9;
+      // Animated wave distortion on the winding
+      const dur = (0.5 / c.speed).toFixed(3);
+      const del = (-(i / nw) * (0.5 / c.speed)).toFixed(3);
+      return `<ellipse cx="${cx}" cy="${cy_w.toFixed(2)}" rx="${coilRx}" ry="${coilRy * 1.2}"
+  fill="none" stroke="${strokeCol}" stroke-width="${c.thickness}" opacity="${opa}">
+  <animate attributeName="ry" values="${coilRy*1.2};${coilRy*1.8};${coilRy*1.2}"
+    dur="${dur}s" begin="${del}s" repeatCount="indefinite" calcMode="spline" keySplines="0.5 0 0.5 1;0.5 0 0.5 1"/>
+  <animate attributeName="opacity" values="${opa};${opa*0.5};${opa}"
+    dur="${(0.4/c.speed).toFixed(3)}s" begin="${del}s" repeatCount="indefinite"/>
+</ellipse>`;
+    }).join('\n');
+
+    // Vertical conductor lines (connecting windings)
+    const condLeft  = `<line x1="${(cx-coilRx).toFixed(2)}" y1="${coilTop.toFixed(2)}" x2="${(cx-coilRx).toFixed(2)}" y2="${coilBot.toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness*1.6}" opacity="${c.opacity * 0.5}" stroke-linecap="round"/>`;
+    const condRight = `<line x1="${(cx+coilRx).toFixed(2)}" y1="${coilTop.toFixed(2)}" x2="${(cx+coilRx).toFixed(2)}" y2="${coilBot.toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness*1.6}" opacity="${c.opacity * 0.5}" stroke-linecap="round"/>`;
+
+    // Top terminal sphere (toroid cap)
+    const termR = w * 0.09;
+    const termY = coilTop - termR * 0.7;
+    const terminal = `
+<ellipse cx="${cx}" cy="${termY.toFixed(2)}" rx="${w*0.22}" ry="${termR*0.45}"
+  fill="${c.color}" opacity="${c.opacity * 0.15}" stroke="${c.color}"
+  stroke-width="${c.thickness*0.8}">
+  <animate attributeName="opacity" values="${c.opacity*0.15};${c.opacity*0.3};${c.opacity*0.15}"
+    dur="${(0.6/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</ellipse>
+<circle cx="${cx}" cy="${termY.toFixed(2)}" r="${termR}"
+  fill="${c.color}" opacity="${c.opacity * 0.35}" stroke="${c.color}" stroke-width="${c.thickness}">
+  <animate attributeName="r" values="${termR};${termR*1.06};${termR}"
+    dur="${(0.4/c.speed).toFixed(2)}s" repeatCount="indefinite"/>
+</circle>
+<circle cx="${(cx - termR*0.3).toFixed(2)}" cy="${(termY - termR*0.3).toFixed(2)}"
+  r="${termR*0.35}" fill="white" opacity="0.2"/>`;
+
+    // Arc discharges from terminal
+    const nArcs = Math.round(Math.min(8, Math.max(3, c.particleCount / 2)));
+    const arcSVG = Array.from({ length: nArcs }, (_, i) => {
+      const angle = ((i / nArcs) * Math.PI * 2) - Math.PI / 2;
+      const arcLen = (c.amplitude * 1.5 + (i % 4) * c.amplitude * 0.5);
+      // Jagged lightning path
+      const makeArc = (seed) => {
+        const endX = cx + Math.cos(angle + ((seed % 5 - 2) * 0.3)) * arcLen;
+        const endY = termY + Math.sin(angle + ((seed % 5 - 2) * 0.3)) * arcLen;
+        const segs = 4;
+        let d = `M${cx.toFixed(2)},${termY.toFixed(2)}`;
+        for (let s = 1; s < segs; s++) {
+          const t = s / segs;
+          const jx = cx + (endX - cx) * t + ((seed * s * 37) % 20 - 10) * c.amplitude * 0.05;
+          const jy = termY + (endY - termY) * t + ((seed * s * 53) % 20 - 10) * c.amplitude * 0.05;
+          d += ` L${jx.toFixed(2)},${jy.toFixed(2)}`;
+        }
+        d += ` L${endX.toFixed(2)},${endY.toFixed(2)}`;
+        return d;
+      };
+      const arc1 = makeArc(i + 1);
+      const arc2 = makeArc(i + 7);
+      const arc3 = makeArc(i + 13);
+      const dur = (0.12 / c.speed + (i % 3) * 0.05 / c.speed).toFixed(3);
+      const del = (-(i / nArcs) * (0.5 / c.speed)).toFixed(3);
+      return `<path d="${arc1}" fill="none" stroke="${c.secondColor}" stroke-width="${c.thickness * 0.8}"
+  opacity="${c.opacity * 0.9}" stroke-linecap="round">
+  <animate attributeName="d" values="${arc1};${arc2};${arc3};${arc1}" dur="${dur}s"
+    begin="${del}s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" values="${c.opacity*0.9};0.3;${c.opacity*0.9};0;${c.opacity*0.9}"
+    dur="${(0.3/c.speed).toFixed(3)}s" begin="${del}s" repeatCount="indefinite"/>
+</path>
+<circle r="2" fill="${c.secondColor}" opacity="0.9">
+  <animateMotion dur="${dur}s" begin="${del}s" repeatCount="indefinite" path="${arc1}"/>
+</circle>`;
+    }).join('\n');
+
+    // Magnetic field flux lines (Biot-Savart approximation — elliptical loops)
+    const fieldLines = Array.from({ length: 7 }, (_, i) => {
+      const fRx = coilRx * (1.4 + i * 0.5);
+      const fRy = coilH * (0.35 + i * 0.18);
+      const fCy = (coilTop + coilBot) / 2;
+      const dur = (2 / c.speed + i * 0.25).toFixed(2);
+      const del = (-(i / 7) * (2 / c.speed)).toFixed(3);
+      return `<ellipse cx="${cx}" cy="${fCy.toFixed(2)}" rx="${fRx.toFixed(2)}" ry="${fRy.toFixed(2)}"
+  fill="none" stroke="${c.secondColor}" stroke-width="${c.thickness * 0.5}"
+  stroke-dasharray="4 ${(fRx * 0.25).toFixed(1)}" opacity="${c.lineOpacity * (1 - i * 0.1)}">
+  <animateTransform attributeName="transform" type="rotate"
+    from="0 ${cx} ${fCy.toFixed(2)}" to="360 ${cx} ${fCy.toFixed(2)}"
+    dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+</ellipse>`;
+    }).join('\n');
+
+    // Ground plate
+    const groundY = coilBot + h * 0.06;
+    const ground = `
+<line x1="${(cx-w*0.2).toFixed(2)}" y1="${groundY.toFixed(2)}" x2="${(cx+w*0.2).toFixed(2)}" y2="${groundY.toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness*2}" opacity="${c.opacity*0.6}" stroke-linecap="round"/>
+<line x1="${(cx-w*0.12).toFixed(2)}" y1="${(groundY+h*0.025).toFixed(2)}" x2="${(cx+w*0.12).toFixed(2)}" y2="${(groundY+h*0.025).toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness*1.5}" opacity="${c.opacity*0.4}" stroke-linecap="round"/>
+<line x1="${(cx-w*0.06).toFixed(2)}" y1="${(groundY+h*0.05).toFixed(2)}" x2="${(cx+w*0.06).toFixed(2)}" y2="${(groundY+h*0.05).toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness}" opacity="${c.opacity*0.25}" stroke-linecap="round"/>
+<line x1="${cx.toFixed(2)}" y1="${coilBot.toFixed(2)}" x2="${cx.toFixed(2)}" y2="${groundY.toFixed(2)}"
+  stroke="${c.color}" stroke-width="${c.thickness*1.2}" opacity="${c.opacity*0.5}"/>`;
+
+    // Floating spark particles
+    const sparks = Array.from({ length: Math.round(c.particleCount) }, (_, i) => {
+      const startX = cx + (((i * 61) % 100) - 50) / 50 * w * 0.3;
+      const startY = termY - termR;
+      const dur = (0.8 / c.speed + (i % 5) * 0.1).toFixed(3);
+      const del = (-(i / c.particleCount) * (0.8 / c.speed)).toFixed(3);
+      const endX = startX + ((i * 37) % 40 - 20);
+      const endY = startY - h * (0.05 + (i % 4) * 0.04);
+      return `<circle r="${(0.8 + (i%4)*0.5).toFixed(1)}" fill="${c.secondColor}" opacity="0.85">
+  <animate attributeName="cx" values="${startX.toFixed(2)};${endX.toFixed(2)};${startX.toFixed(2)}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+  <animate attributeName="cy" values="${startY.toFixed(2)};${endY.toFixed(2)};${startY.toFixed(2)}" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+  <animate attributeName="opacity" values="0;0.9;0" dur="${dur}s" begin="${del}s" repeatCount="indefinite"/>
+</circle>`;
+    }).join('\n');
+
+    return {
+      css: `.coil-svg { width:${c.size}px; height:${Math.round(h)}px }`,
+      html: `<svg class="coil-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg">
+<defs>
+  <filter id="arc-glow">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="2" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+  <filter id="coil-bloom">
+    <feGaussianBlur in="SourceGraphic" stdDeviation="1.5" result="blur"/>
+    <feMerge><feMergeNode in="blur"/><feMergeNode in="SourceGraphic"/></feMerge>
+  </filter>
+</defs>
+${fieldLines}
+${condLeft}${condRight}
+${windings}
+${ground}
+${terminal}
+<g filter="url(#arc-glow)">${arcSVG}</g>
+<g filter="url(#arc-glow)">${sparks}</g>
+</svg>`
+    };
+  }
+},
+// ============================================================
+// LOADERS 205–234  |  Advanced Animated CSS Loaders
+// ============================================================
+
+/* ── 205 · Lightning Strike ───────────────────────────────── */
+{
+  id: 205, name: "Lightning Strike",
+  tags: ["electricity","bolt","electric","plasma","energy"],
+  controls: {
+    speed: 1.0, size: 64, color: "#facc15", secondColor: "#818cf8",
+    thickness: 2.5, glowSize: 14, particleCount: 6
+  },
+  render: (c) => ({
+    css: `
+@keyframes ls-bolt{0%,100%{opacity:0;transform:scaleY(.4) translateX(-2px)}10%,30%{opacity:1;transform:scaleY(1) translateX(0)}50%{opacity:.5;transform:scaleY(.9) translateX(2px)}70%{opacity:1;transform:scaleY(1.05) translateX(-1px)}}
+@keyframes ls-spark{0%{opacity:0;transform:translate(0,0) scale(0)}50%{opacity:1}100%{opacity:0;transform:translate(var(--sx),var(--sy)) scale(.3)}}
+@keyframes ls-glow{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color}44}40%,60%{box-shadow:0 0 ${c.glowSize*2}px ${c.color},0 0 ${c.glowSize*3}px ${c.color}88}}
+.ls{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.ls-bolt{position:absolute;width:${c.thickness*3}px;height:${c.size*.75}px;background:linear-gradient(180deg,${c.color},${c.secondColor});clip-path:polygon(35% 0%,100% 0%,65% 45%,100% 45%,0% 100%,35% 55%,0% 55%);animation:ls-bolt ${(0.9/c.speed).toFixed(2)}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.color})}
+.ls-glow-ring{position:absolute;inset:${c.size*.15}px;border-radius:50%;border:${c.thickness}px solid ${c.color}44;animation:ls-glow ${(0.9/c.speed).toFixed(2)}s ease-in-out infinite}
+.ls-spark{position:absolute;width:${Math.max(2,c.size*.04)}px;height:${Math.max(2,c.size*.04)}px;border-radius:50%;background:${c.color};top:50%;left:50%;animation:ls-spark ${(0.7/c.speed).toFixed(2)}s ease-out infinite}
+${Array.from({length:c.particleCount},(_,i)=>{
+  const a=i*(360/c.particleCount),r=c.size*.38,sx=Math.round(Math.cos(a*Math.PI/180)*r),sy=Math.round(Math.sin(a*Math.PI/180)*r);
+  return `.ls-spark:nth-child(${i+3}){--sx:${sx}px;--sy:${sy}px;animation-delay:${(i*(0.7/c.speed)/c.particleCount).toFixed(2)}s}`;
+}).join('\n')}`,
+    html: `<div class="ls"><div class="ls-glow-ring"></div><div class="ls-bolt"></div>${Array.from({length:c.particleCount},(_,i)=>`<div class="ls-spark"></div>`).join('')}</div>`
+  })
+},
+
+/* ── 206 · Tesla Coil ─────────────────────────────────────── */
+{
+  id: 206, name: "Tesla Coil",
+  tags: ["tesla","electricity","coil","arc","plasma"],
+  controls: {
+    speed: 1.0, size: 64, color: "#a78bfa", secondColor: "#67e8f9",
+    rings: 5, thickness: 1.5, glowSize: 10
+  },
+  render: (c) => ({
+    css: `
+@keyframes tc-spin{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes tc-arc{0%,100%{opacity:0;d:path('M0,0 Q5,-10 0,-20')}25%{opacity:1;d:path('M0,0 Q-8,-12 2,-22')}75%{opacity:.7;d:path('M0,0 Q10,-8 -2,-20')}}
+@keyframes tc-pulse{0%,100%{transform:scale(.85);opacity:.5}50%{transform:scale(1);opacity:1}}
+@keyframes tc-flicker{0%,100%{opacity:.3}${Array.from({length:6},(_,i)=>`${i*17}%{opacity:${(Math.random()*.7+.3).toFixed(2)}}`).join(';')}}
+.tc{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.tc-ring{position:absolute;border-radius:50%;border:${c.thickness}px solid transparent}
+${Array.from({length:c.rings},(_,i)=>{
+  const inset=i*(c.size/(c.rings*2.2)),col=i%2===0?c.color:c.secondColor;
+  return `.tc-ring:nth-child(${i+1}){inset:${inset}px;border-top-color:${col};border-right-color:${col}44;animation:tc-spin ${((1.6-i*.1)/c.speed).toFixed(2)}s linear infinite ${i%2===0?'':'reverse'};box-shadow:0 0 ${c.glowSize*(1-i/(c.rings+1))}px ${col}88}`;
+}).join('\n')}
+.tc-core{position:absolute;width:${Math.max(6,c.size*.14)}px;height:${Math.max(6,c.size*.14)}px;border-radius:50%;background:radial-gradient(circle,#fff,${c.color});animation:tc-pulse ${(0.6/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}}
+.tc-arc{position:absolute;top:50%;left:50%;overflow:visible;animation:tc-flicker ${(0.3/c.speed).toFixed(2)}s step-end infinite}`,
+    html: `<div class="tc">${Array.from({length:c.rings},()=>`<div class="tc-ring"></div>`).join('')}<svg class="tc-arc" width="0" height="0"><line x1="0" y1="${-c.size*.5}" x2="${c.size*.08}" y2="${-c.size*.3}" stroke="${c.color}" stroke-width="1.5" opacity="0.85"/><line x1="0" y1="${-c.size*.3}" x2="${-c.size*.06}" y2="${-c.size*.14}" stroke="${c.secondColor}" stroke-width="1.5" opacity="0.85"/></svg><div class="tc-core"></div></div>`
+  })
+},
+
+/* ── 207 · Ocean Wave ─────────────────────────────────────── */
+{
+  id: 207, name: "Ocean Wave",
+  tags: ["waves","ocean","water","flow","sine"],
+  controls: {
+    speed: 1.0, width: 80, height: 28, color: "#38bdf8", secondColor: "#0ea5e9",
+    amplitude: 10, thickness: 2.5, layers: 3, opacity: 0.8
+  },
+  render: (c) => ({
+    css: `
+${Array.from({length:c.layers},(_,i)=>`
+@keyframes ow-wave${i}{0%{transform:translateX(0)}100%{transform:translateX(-50%)}}`).join('')}
+.ow{position:relative;width:${c.width}px;height:${c.height}px;overflow:hidden;border-radius:${c.height*.3}px}
+.ow-track{position:absolute;top:0;left:0;width:200%;height:100%;display:flex;align-items:center}
+${Array.from({length:c.layers},(_,i)=>{
+  const yOff=i*(c.height/(c.layers+1)),spd=((1.4-i*.15)/c.speed).toFixed(2);
+  const alpha=Math.round((c.opacity-(i*.1))*255).toString(16).padStart(2,'0');
+  return `.ow-svg${i}{position:absolute;top:${yOff}px;left:0;width:200%;animation:ow-wave${i} ${spd}s linear infinite ${i%2?'reverse':''};opacity:${(c.opacity-i*.08).toFixed(2)}}`;
+}).join('\n')}`,
+    html: `<div class="ow">${Array.from({length:c.layers},(_,i)=>{
+      const col=i%2===0?c.color:c.secondColor;
+      const pts=Array.from({length:17},(_,x)=>`${x*(c.width/8)},${c.height/2+Math.sin(x*.8+i)*c.amplitude}`).join(' ');
+      return `<svg class="ow-svg${i}" height="${c.height}" width="${c.width*4}" viewBox="0 0 ${c.width*4} ${c.height}" xmlns="http://www.w3.org/2000/svg"><polyline points="${pts}" fill="none" stroke="${col}" stroke-width="${c.thickness}" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+    }).join('')}</div>`
+  })
+},
+
+/* ── 208 · Brainwave EEG ──────────────────────────────────── */
+{
+  id: 208, name: "Brainwave EEG",
+  tags: ["brainwaves","eeg","neural","signal","medical"],
+  controls: {
+    speed: 1.0, width: 120, height: 36, color: "#34d399", secondColor: "#f472b6",
+    amplitude: 14, thickness: 2.0, blipCount: 3, glowSize: 6
+  },
+  render: (c) => ({
+    css: `
+@keyframes bw-scan{0%{transform:translateX(-100%)}100%{transform:translateX(200%)}}
+@keyframes bw-line{0%{stroke-dashoffset:1000}100%{stroke-dashoffset:0}}
+@keyframes bw-blink{0%,90%,100%{opacity:0}91%,99%{opacity:1}}
+.bw{position:relative;width:${c.width}px;height:${c.height}px;overflow:hidden}
+.bw-svg{position:absolute;inset:0}
+.bw-path{stroke-dasharray:1000;animation:bw-line ${(3/c.speed).toFixed(2)}s linear infinite;fill:none;stroke:${c.color};stroke-width:${c.thickness};filter:drop-shadow(0 0 ${c.glowSize}px ${c.color})}
+.bw-path2{stroke-dasharray:1000;animation:bw-line ${(3/c.speed).toFixed(2)}s linear infinite;animation-delay:${(1.5/c.speed).toFixed(2)}s;fill:none;stroke:${c.secondColor};stroke-width:${c.thickness*.7};opacity:.6;filter:drop-shadow(0 0 ${c.glowSize*.7}px ${c.secondColor})}
+.bw-scan{position:absolute;top:0;width:2px;height:100%;background:linear-gradient(180deg,transparent,${c.color},transparent);animation:bw-scan ${(2/c.speed).toFixed(2)}s linear infinite;filter:blur(1px)}
+.bw-blip{position:absolute;width:6px;height:6px;border-radius:50%;background:${c.color};top:50%;transform:translateY(-50%);animation:bw-blink ${(0.8/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color}}
+${Array.from({length:c.blipCount},(_,i)=>`.bw-blip:nth-child(${i+3}){left:${10+i*(c.width/(c.blipCount+1))}px;animation-delay:${(i*0.27/c.speed).toFixed(2)}s}`).join('\n')}`,
+    html: (()=>{
+      const h=c.height, w=c.width, a=c.amplitude;
+      const eeg=(offset)=>Array.from({length:24},(_,i)=>{
+        const x=i*(w/12),base=h/2;
+        if(i===6+offset){return `${x},${base} ${x+3},${base-a*2} ${x+5},${base+a*2.5} ${x+7},${base-a} ${x+9},${base+a*.5} ${x+10},${base}`}
+        return `${x},${h/2+Math.sin(i*.5)*a*.25}`;
+      }).join(' ');
+      return `<div class="bw"><svg class="bw-svg" viewBox="0 0 ${w} ${h}" xmlns="http://www.w3.org/2000/svg"><polyline class="bw-path" points="${eeg(0)}"/><polyline class="bw-path2" points="${eeg(2)}"/></svg><div class="bw-scan"></div>${Array.from({length:c.blipCount},()=>`<div class="bw-blip"></div>`).join('')}</div>`;
+    })()
+  })
+},
+
+/* ── 209 · Particle Nebula ────────────────────────────────── */
+{
+  id: 209, name: "Particle Nebula",
+  tags: ["particles","nebula","space","galaxy","dots"],
+  controls: {
+    speed: 1.0, size: 72, color: "#818cf8", secondColor: "#f472b6",
+    particleCount: 16, particleSize: 3, glowSize: 8, opacity: 0.9
+  },
+  render: (c) => ({
+    css: `
+@keyframes pn-orbit{0%{transform:rotate(0deg) translateX(var(--r)) rotate(0deg)}100%{transform:rotate(360deg) translateX(var(--r)) rotate(-360deg)}}
+@keyframes pn-twinkle{0%,100%{opacity:var(--oa);transform:scale(.7)}50%{opacity:1;transform:scale(1.2)}}
+.pn{position:relative;width:${c.size}px;height:${c.size}px}
+.pn-p{position:absolute;top:50%;left:50%;border-radius:50%;background:${c.color};animation:pn-orbit var(--spd) linear infinite, pn-twinkle var(--tspd) ease-in-out infinite}
+${Array.from({length:c.particleCount},(_,i)=>{
+  const r=((i%4)+1)*(c.size/10),spd=(1+i*.12)/c.speed,tspd=(.5+i*.07)/c.speed;
+  const sz=Math.max(1,c.particleSize*(1-i*.03));
+  const col=i%3===0?c.color:i%3===1?c.secondColor:'#fff';
+  const oa=(0.4+Math.random()*.6).toFixed(2);
+  return `.pn-p:nth-child(${i+1}){--r:${r}px;--spd:${spd.toFixed(2)}s;--tspd:${tspd.toFixed(2)}s;--oa:${oa};width:${sz}px;height:${sz}px;background:${col};margin:-${sz/2}px;animation-delay:${(i*(spd/c.particleCount)).toFixed(2)}s,${(i*.1/c.speed).toFixed(2)}s;box-shadow:0 0 ${c.glowSize}px ${col};opacity:${oa}}`;
+}).join('\n')}`,
+    html: `<div class="pn">${Array.from({length:c.particleCount},()=>`<div class="pn-p"></div>`).join('')}</div>`
+  })
+},
+
+/* ── 210 · Firefly Swarm ──────────────────────────────────── */
+{
+  id: 210, name: "Firefly Swarm",
+  tags: ["fireflies","swarm","glow","organic","magic"],
+  controls: {
+    speed: 1.0, size: 80, color: "#bef264", secondColor: "#fde68a",
+    particleCount: 14, particleSize: 4, glowSize: 12, opacity: 0.85
+  },
+  render: (c) => ({
+    css: `
+${Array.from({length:c.particleCount},(_,i)=>`
+@keyframes ff-fly${i}{
+  0%{transform:translate(${(Math.sin(i*2.3)*c.size*.35).toFixed(1)}px,${(Math.cos(i*1.7)*c.size*.35).toFixed(1)}px)}
+  25%{transform:translate(${(Math.sin(i*2.3+1.6)*c.size*.4).toFixed(1)}px,${(Math.cos(i*1.7+1.2)*c.size*.4).toFixed(1)}px)}
+  50%{transform:translate(${(Math.sin(i*2.3+3.1)*c.size*.3).toFixed(1)}px,${(Math.cos(i*1.7+2.4)*c.size*.3).toFixed(1)}px)}
+  75%{transform:translate(${(Math.sin(i*2.3+4.7)*c.size*.42).toFixed(1)}px,${(Math.cos(i*1.7+3.6)*c.size*.42).toFixed(1)}px)}
+  100%{transform:translate(${(Math.sin(i*2.3)*c.size*.35).toFixed(1)}px,${(Math.cos(i*1.7)*c.size*.35).toFixed(1)}px)}
+}
+@keyframes ff-glow${i}{0%,100%{opacity:.15;box-shadow:0 0 2px ${c.color}}${20+i*3}%,${40+i*2}%{opacity:${c.opacity};box-shadow:0 0 ${c.glowSize}px ${i%2===0?c.color:c.secondColor},0 0 ${c.glowSize*2}px ${i%2===0?c.color:c.secondColor}}}
+`).join('')}
+.ff{position:relative;width:${c.size}px;height:${c.size}px}
+.ff-bug{position:absolute;top:50%;left:50%;width:${c.particleSize}px;height:${c.particleSize}px;border-radius:50%;margin:-${c.particleSize/2}px}
+${Array.from({length:c.particleCount},(_,i)=>{
+  const spd=(2+i*.3)/c.speed,gspd=(.8+i*.15)/c.speed,col=i%2===0?c.color:c.secondColor;
+  return `.ff-bug:nth-child(${i+1}){background:${col};animation:ff-fly${i} ${spd.toFixed(2)}s ease-in-out infinite,ff-glow${i} ${gspd.toFixed(2)}s ease-in-out infinite;animation-delay:${(i*.2/c.speed).toFixed(2)}s,${(i*.15/c.speed).toFixed(2)}s}`;
+}).join('\n')}`,
+    html: `<div class="ff">${Array.from({length:c.particleCount},()=>`<div class="ff-bug"></div>`).join('')}</div>`
+  })
+},
+
+/* ── 211 · Dragon Breath ──────────────────────────────────── */
+{
+  id: 211, name: "Dragon Breath",
+  tags: ["dragon","fire","breath","flame","mythic"],
+  controls: {
+    speed: 1.0, size: 72, color: "#fb923c", secondColor: "#fbbf24",
+    particleCount: 12, particleSize: 5, glowSize: 16, tailCount: 5
+  },
+  render: (c) => ({
+    css: `
+@keyframes db-flame{0%{transform:scaleY(.4) scaleX(1.2) translateY(0);opacity:.9}50%{transform:scaleY(1.1) scaleX(.85) translateY(-${c.size*.2}px);opacity:1}100%{transform:scaleY(.1) scaleX(.6) translateY(-${c.size*.45}px);opacity:0}}
+@keyframes db-ember{0%{transform:translate(0,0) rotate(0) scale(1);opacity:1}100%{transform:translate(var(--ex),var(--ey)) rotate(var(--er)) scale(0);opacity:0}}
+@keyframes db-core{0%,100%{transform:scale(.9);filter:blur(2px)}50%{transform:scale(1.15);filter:blur(1px)}}
+.db{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:flex-end;justify-content:center}
+.db-flame{position:absolute;bottom:${c.size*.08}px;width:${c.size*.28}px;border-radius:50% 50% 20% 20%;transform-origin:bottom center}
+.db-core-wrap{position:absolute;bottom:${c.size*.06}px;width:${c.size*.22}px;height:${c.size*.22}px;border-radius:50%;background:radial-gradient(circle,#fff 10%,${c.secondColor} 40%,${c.color} 75%,transparent);animation:db-core ${(0.5/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}}
+${Array.from({length:c.tailCount},(_,i)=>{
+  const h=c.size*(.35+i*.12),delay=(i*.08/c.speed).toFixed(2),spd=((0.6+i*.06)/c.speed).toFixed(2);
+  return `.db-flame:nth-child(${i+1}){height:${h}px;background:linear-gradient(0deg,${c.color},${c.secondColor},transparent);animation:db-flame ${spd}s ease-in-out infinite;animation-delay:${delay}s;opacity:${1-i*.1};filter:blur(${i*.5}px);left:${c.size*.5-c.size*.14+i*(c.size*.02)}px}`;
+}).join('\n')}
+.db-ember{position:absolute;border-radius:50%;background:${c.secondColor};bottom:${c.size*.15}px;left:50%}
+${Array.from({length:c.particleCount},(_,i)=>{
+  const angle=(Math.random()*200-100),dist=c.size*(.3+Math.random()*.4);
+  const ex=(Math.sin(angle*Math.PI/180)*dist).toFixed(1),ey=(-dist*.8).toFixed(1);
+  return `.db-ember:nth-child(${i+c.tailCount+2}){--ex:${ex}px;--ey:${ey}px;--er:${Math.round(Math.random()*360)}deg;width:${Math.max(1,c.particleSize*(Math.random()*.6+.4))}px;height:${Math.max(1,c.particleSize*(Math.random()*.6+.4))}px;margin-left:-${c.particleSize/2}px;animation:db-ember ${((0.5+Math.random()*.5)/c.speed).toFixed(2)}s ease-out infinite;animation-delay:${(i*.07/c.speed).toFixed(2)}s;box-shadow:0 0 4px ${c.color}}`;
+}).join('\n')}`,
+    html: `<div class="db">${Array.from({length:c.tailCount},()=>`<div class="db-flame"></div>`).join('')}<div class="db-core-wrap"></div>${Array.from({length:c.particleCount},()=>`<div class="db-ember"></div>`).join('')}</div>`
+  })
+},
+
+/* ── 212 · Magnetic Field ─────────────────────────────────── */
+{
+  id: 212, name: "Magnetic Field",
+  tags: ["electricity","magnetic","field","physics","orbit"],
+  controls: {
+    speed: 1.0, size: 72, color: "#22d3ee", secondColor: "#a78bfa",
+    rings: 4, thickness: 1.5, electronSize: 6, glowSize: 8
+  },
+  render: (c) => ({
+    css: `
+@keyframes mf-spin{0%{transform:rotate(var(--sa))}100%{transform:rotate(calc(var(--sa) + 360deg))}}
+@keyframes mf-pulse{0%,100%{transform:scale(.8);opacity:.6}50%{transform:scale(1);opacity:1}}
+@keyframes mf-field{0%,100%{opacity:.3}50%{opacity:.8}}
+.mf{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.mf-orbit{position:absolute;inset:0;border-radius:50%}
+.mf-electron{position:absolute;width:${c.electronSize}px;height:${c.electronSize}px;border-radius:50%;top:calc(50% - ${c.electronSize/2}px);left:-${c.electronSize/2}px;box-shadow:0 0 ${c.glowSize}px currentColor}
+.mf-track{position:absolute;inset:0;border-radius:50%;border:${c.thickness}px dashed transparent;animation:mf-field ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite}
+${Array.from({length:c.rings},(_,i)=>{
+  const inset=i*(c.size/(c.rings*2.5)),sa=i*(360/c.rings);
+  const col=i%2===0?c.color:c.secondColor;
+  const spd=((1+i*.25)/c.speed).toFixed(2);
+  return `.mf-orbit:nth-child(${i*2+1}){inset:${inset}px;--sa:${sa}deg;transform:rotate(${sa}deg) rotateY(${i*20}deg);animation:mf-spin ${spd}s linear infinite ${i%2?'reverse':''}}\n.mf-orbit:nth-child(${i*2+1}) .mf-electron{background:${col};color:${col}}\n.mf-track:nth-child(${i*2+2}){inset:${inset}px;border-top-color:${col}55;border-bottom-color:${col}55;animation-delay:${(i*.15/c.speed).toFixed(2)}s}`;
+}).join('\n')}
+.mf-core{position:absolute;width:${Math.max(6,c.size*.12)}px;height:${Math.max(6,c.size*.12)}px;border-radius:50%;background:radial-gradient(circle,#fff,${c.color});animation:mf-pulse ${(0.8/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize*1.5}px ${c.color}}`,
+    html: `<div class="mf">${Array.from({length:c.rings},(_,i)=>`<div class="mf-orbit"><div class="mf-electron"></div></div><div class="mf-track"></div>`).join('')}<div class="mf-core"></div></div>`
+  })
+},
+
+/* ── 213 · Wheel Spinner ──────────────────────────────────── */
+{
+  id: 213, name: "Wheel Spinner",
+  tags: ["wheels","gear","spin","mechanical","cog"],
+  controls: {
+    speed: 1.0, size: 72, color: "#94a3b8", secondColor: "#38bdf8",
+    rings: 3, thickness: 3.5, dotCount: 8, glowSize: 4
+  },
+  render: (c) => ({
+    css: `
+@keyframes ws-cw{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes ws-ccw{0%{transform:rotate(0)}100%{transform:rotate(-360deg)}}
+@keyframes ws-hub{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color}44}50%{box-shadow:0 0 ${c.glowSize*2}px ${c.secondColor}}}
+.ws{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.ws-ring{position:absolute;border-radius:50%;display:flex;align-items:center;justify-content:center}
+.ws-spoke{position:absolute;transform-origin:center;border-radius:2px}
+.ws-dot{position:absolute;border-radius:50%}
+.ws-hub{position:absolute;border-radius:50%;background:radial-gradient(circle,${c.secondColor},${c.color});animation:ws-hub ${(1/c.speed).toFixed(2)}s ease-in-out infinite}
+${Array.from({length:c.rings},(_,i)=>{
+  const inset=i*(c.size/(c.rings*2.3));
+  const col=i%2===0?c.color:c.secondColor;
+  const spd=((0.8+i*.3)/c.speed).toFixed(2);
+  const dir=i%2===0?'ws-cw':'ws-ccw';
+  const ds=Math.max(3,c.size*.04-i*.5);
+  const dotHtml=Array.from({length:c.dotCount-i},(_,j)=>{
+    const a=j*(360/(c.dotCount-i)),r=(c.size/2-inset-ds);
+    return `.ws-ring:nth-child(${i+1}) .ws-dot:nth-child(${j+1}){width:${ds}px;height:${ds}px;background:${col};top:calc(50% + ${(Math.sin(a*Math.PI/180)*r).toFixed(1)}px - ${ds/2}px);left:calc(50% + ${(Math.cos(a*Math.PI/180)*r).toFixed(1)}px - ${ds/2}px)}`;
+  }).join('\n');
+  return `.ws-ring:nth-child(${i+1}){inset:${inset}px;border:${c.thickness}px solid ${col}44;animation:${dir} ${spd}s linear infinite}\n${dotHtml}`;
+}).join('\n')}
+.ws-hub{width:${Math.max(8,c.size*.14)}px;height:${Math.max(8,c.size*.14)}px}`,
+    html: `<div class="ws">${Array.from({length:c.rings},(_,i)=>`<div class="ws-ring">${Array.from({length:c.dotCount-i},()=>`<div class="ws-dot"></div>`).join('')}</div>`).join('')}<div class="ws-hub"></div></div>`
+  })
+},
+
+/* ── 214 · Plasma Burst ───────────────────────────────────── */
+{
+  id: 214, name: "Plasma Burst",
+  tags: ["electricity","plasma","burst","energy","radial"],
+  controls: {
+    speed: 1.0, size: 72, color: "#e879f9", secondColor: "#818cf8",
+    particleCount: 10, particleSize: 4, glowSize: 14, tailCount: 6
+  },
+  render: (c) => ({
+    css: `
+@keyframes pb-ray{0%,100%{transform:rotate(var(--ra)) scaleX(0);opacity:0}30%,70%{transform:rotate(var(--ra)) scaleX(1);opacity:1}50%{transform:rotate(var(--ra)) scaleX(1.3);opacity:.8}}
+@keyframes pb-pulse{0%,100%{transform:scale(.7);opacity:.6}50%{transform:scale(1.2);opacity:1}}
+@keyframes pb-spark{0%{transform:rotate(var(--ra)) translateX(${c.size*.15}px) scale(1);opacity:1}100%{transform:rotate(var(--ra)) translateX(${c.size*.6}px) scale(0);opacity:0}}
+.pb{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.pb-ray{position:absolute;height:${c.size*.07}px;width:${c.size*.45}px;border-radius:2px;transform-origin:0 50%;left:50%;top:calc(50% - ${c.size*.035}px);background:linear-gradient(90deg,${c.color},transparent)}
+.pb-spark{position:absolute;width:${c.particleSize}px;height:${c.particleSize}px;border-radius:50%;top:calc(50% - ${c.particleSize/2}px);left:calc(50% - ${c.particleSize/2}px)}
+.pb-core{position:absolute;width:${Math.max(8,c.size*.18)}px;height:${Math.max(8,c.size*.18)}px;border-radius:50%;background:radial-gradient(circle,#fff 10%,${c.color} 50%,${c.secondColor}88);animation:pb-pulse ${(0.5/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}}
+${Array.from({length:c.tailCount},(_,i)=>{
+  const ra=i*(360/c.tailCount);
+  const col=i%2===0?c.color:c.secondColor;
+  const spd=((0.6+i*.05)/c.speed).toFixed(2);
+  return `.pb-ray:nth-child(${i+1}){--ra:${ra}deg;background:linear-gradient(90deg,${col},transparent);animation:pb-ray ${spd}s ease-in-out infinite;animation-delay:${(i*.05/c.speed).toFixed(2)}s;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${col})}`;
+}).join('\n')}
+${Array.from({length:c.particleCount},(_,i)=>{
+  const ra=i*(360/c.particleCount);
+  const col=i%3===0?c.color:i%3===1?c.secondColor:'#fff';
+  const spd=((0.4+i*.04)/c.speed).toFixed(2);
+  return `.pb-spark:nth-child(${i+c.tailCount+2}){--ra:${ra}deg;background:${col};animation:pb-spark ${spd}s ease-out infinite;animation-delay:${(i*.04/c.speed).toFixed(2)}s;box-shadow:0 0 4px ${col}}`;
+}).join('\n')}`,
+    html: `<div class="pb">${Array.from({length:c.tailCount},()=>`<div class="pb-ray"></div>`).join('')}${Array.from({length:c.particleCount},()=>`<div class="pb-spark"></div>`).join('')}<div class="pb-core"></div></div>`
+  })
+},
+
+/* ── 215 · Neon Helix ─────────────────────────────────────── */
+{
+  id: 215, name: "Neon Helix",
+  tags: ["helix","dna","spiral","neon","twist"],
+  controls: {
+    speed: 1.0, size: 64, color: "#4ade80", secondColor: "#f472b6",
+    dotCount: 10, dotSize: 5, glowSize: 10, thickness: 2
+  },
+  render: (c) => ({
+    css: `
+@keyframes nh-helix{0%{transform:translateY(0) translateZ(0)}100%{transform:translateY(-${c.size*1.5}px) translateZ(0)}}
+@keyframes nh-dot{0%,100%{opacity:.2;transform:scale(.5)}50%{opacity:1;transform:scale(1)}}
+.nh{position:relative;width:${c.size}px;height:${c.size}px;overflow:hidden;perspective:${c.size*2}px}
+.nh-strand{position:absolute;left:0;top:0;width:100%;height:${c.size*1.5}px;animation:nh-helix ${(2/c.speed).toFixed(2)}s linear infinite}
+.nh-dot{position:absolute;border-radius:50%}
+${Array.from({length:c.dotCount},(_,i)=>{
+  const t=i/c.dotCount,a=t*Math.PI*4;
+  const x1=c.size/2+Math.sin(a)*c.size*.34-c.dotSize/2;
+  const x2=c.size/2-Math.sin(a)*c.size*.34-c.dotSize/2;
+  const y=t*c.size*1.5;
+  const sz=Math.max(2,c.dotSize*(0.7+Math.cos(a)*.3));
+  const op=(0.5+Math.cos(a)*.5).toFixed(2);
+  return `.nh-dot:nth-child(${i*2+1}){left:${x1.toFixed(1)}px;top:${y.toFixed(1)}px;width:${sz}px;height:${sz}px;background:${c.color};opacity:${op};box-shadow:0 0 ${c.glowSize}px ${c.color};animation:nh-dot ${(1/c.speed).toFixed(2)}s ease-in-out infinite;animation-delay:${(i*.1/c.speed).toFixed(2)}s}\n.nh-dot:nth-child(${i*2+2}){left:${x2.toFixed(1)}px;top:${y.toFixed(1)}px;width:${sz}px;height:${sz}px;background:${c.secondColor};opacity:${(1-parseFloat(op)).toFixed(2)};box-shadow:0 0 ${c.glowSize}px ${c.secondColor};animation:nh-dot ${(1/c.speed).toFixed(2)}s ease-in-out infinite reverse;animation-delay:${(i*.1/c.speed).toFixed(2)}s}`;
+}).join('\n')}`,
+    html: `<div class="nh"><div class="nh-strand">${Array.from({length:c.dotCount},()=>`<div class="nh-dot"></div><div class="nh-dot"></div>`).join('')}</div></div>`
+  })
+},
+
+/* ── 216 · Voltage Arc ────────────────────────────────────── */
+{
+  id: 216, name: "Voltage Arc",
+  tags: ["electricity","arc","voltage","zap","discharge"],
+  controls: {
+    speed: 1.0, size: 64, color: "#67e8f9", secondColor: "#a5f3fc",
+    thickness: 2, glowSize: 12, particleCount: 8
+  },
+  render: (c) => ({
+    css: `
+@keyframes va-arc{0%,100%{opacity:0}${Array.from({length:8},(_,i)=>`${i*12+1}%{opacity:${(Math.random()>.5?1:0)}}`).join(';')}}
+@keyframes va-ball{0%,100%{box-shadow:0 0 ${c.glowSize*.5}px ${c.color}}50%{box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}}}
+@keyframes va-rotate{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.va{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.va-ring{position:absolute;inset:${c.size*.1}px;border-radius:50%;border:${c.thickness}px solid ${c.color}33;animation:va-rotate ${(2/c.speed).toFixed(2)}s linear infinite}
+.va-svg{position:absolute;inset:0;overflow:visible}
+.va-arc-path{stroke:${c.color};stroke-width:${c.thickness};fill:none;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.color})}
+.va-node{position:absolute;border-radius:50%;background:${c.color};animation:va-ball ${(0.4/c.speed).toFixed(2)}s ease-in-out infinite}
+${Array.from({length:c.particleCount},(_,i)=>{
+  const a=i*(360/c.particleCount)*Math.PI/180,r=c.size*.44;
+  const x=(c.size/2+Math.cos(a)*r).toFixed(1),y=(c.size/2+Math.sin(a)*r).toFixed(1);
+  const sz=Math.max(3,c.size*.06);
+  const spd=((0.2+i*.03)/c.speed).toFixed(2);
+  return `.va-node:nth-child(${i+3}){width:${sz}px;height:${sz}px;top:${parseFloat(y)-sz/2}px;left:${parseFloat(x)-sz/2}px;animation-delay:${spd}s}`;
+}).join('\n')}`,
+    html: (()=>{
+      const cx=c.size/2,cy=c.size/2,r=c.size*.38;
+      const nodes=Array.from({length:c.particleCount},(_,i)=>{
+        const a=i*(360/c.particleCount)*Math.PI/180;
+        return {x:cx+Math.cos(a)*r,y:cy+Math.sin(a)*r};
+      });
+      const arcs=Array.from({length:c.particleCount},(_,i)=>{
+        const n1=nodes[i],n2=nodes[(i+1)%c.particleCount];
+        const mx=(n1.x+n2.x)/2+(Math.random()-.5)*c.size*.3;
+        const my=(n1.y+n2.y)/2+(Math.random()-.5)*c.size*.3;
+        return `<path class="va-arc-path" style="animation:va-arc ${((0.2+i*.05)/c.speed).toFixed(2)}s step-end infinite;animation-delay:${(i*.03/c.speed).toFixed(2)}s" d="M${n1.x.toFixed(1)},${n1.y.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${n2.x.toFixed(1)},${n2.y.toFixed(1)}"/>`;
+      }).join('');
+      return `<div class="va"><div class="va-ring"></div><svg class="va-svg" viewBox="0 0 ${c.size} ${c.size}">${arcs}</svg>${Array.from({length:c.particleCount},()=>`<div class="va-node"></div>`).join('')}</div>`;
+    })()
+  })
+},
+
+/* ── 217 · Aurora Pulse ───────────────────────────────────── */
+{
+  id: 217, name: "Aurora Pulse",
+  tags: ["waves","aurora","gradient","pulse","glow"],
+  controls: {
+    speed: 1.0, width: 100, height: 40, color: "#34d399", secondColor: "#818cf8",
+    layers: 4, amplitude: 12, opacity: 0.75, glowSize: 8
+  },
+  render: (c) => ({
+    css: `
+${Array.from({length:c.layers},(_,i)=>`
+@keyframes ap-wave${i}{0%{transform:translateX(0) scaleY(1)}50%{transform:translateX(-${10+i*5}px) scaleY(${1+i*.1})}100%{transform:translateX(0) scaleY(1)}}
+`).join('')}
+.ap{position:relative;width:${c.width}px;height:${c.height}px;overflow:hidden;border-radius:${c.height/2}px;background:rgba(0,0,0,.15)}
+.ap-layer{position:absolute;inset:0;border-radius:${c.height/2}px}
+${Array.from({length:c.layers},(_,i)=>{
+  const t=i/c.layers;
+  const col=i%2===0?c.color:c.secondColor;
+  const yStart=c.height*.5-c.amplitude*(1-t);
+  const spd=((1.2+i*.3)/c.speed).toFixed(2);
+  return `.ap-layer:nth-child(${i+1}){background:linear-gradient(90deg,transparent,${col}${Math.round(c.opacity*(1-i*.15)*255).toString(16).padStart(2,'0')},transparent);transform-origin:center;animation:ap-wave${i} ${spd}s ease-in-out infinite;animation-delay:${(i*.25/c.speed).toFixed(2)}s;top:${yStart}px;height:${c.amplitude*2*(1+t)}px;filter:blur(${i*1.5}px);box-shadow:0 0 ${c.glowSize}px ${col}44}`;
+}).join('\n')}`,
+    html: `<div class="ap">${Array.from({length:c.layers},()=>`<div class="ap-layer"></div>`).join('')}</div>`
+  })
+},
+
+/* ── 218 · Quantum Dot Grid ───────────────────────────────── */
+{
+  id: 218, name: "Quantum Dot Grid",
+  tags: ["particles","grid","quantum","matrix","dots"],
+  controls: {
+    speed: 1.0, size: 72, color: "#818cf8", secondColor: "#34d399",
+    cols: 4, dotSize: 6, gap: 4, glowSize: 6, opacity: 0.9
+  },
+  render: (c) => ({
+    css: `
+@keyframes qd-blink{0%,100%{opacity:.1;transform:scale(.4)}50%{opacity:var(--qo);transform:scale(1)}}
+.qd{display:grid;gap:${c.gap}px;width:fit-content;padding:${c.gap}px}
+.qd-dot{width:${c.dotSize}px;height:${c.dotSize}px;border-radius:50%;background:var(--qc);animation:qd-blink ${(1/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px var(--qc)}
+${Array.from({length:c.cols*c.cols},(_,i)=>{
+  const col=Math.hypot(i%c.cols-c.cols/2,Math.floor(i/c.cols)-c.cols/2)<c.cols/3?c.color:c.secondColor;
+  const delay=(((i%c.cols)+(Math.floor(i/c.cols)))*.12/c.speed).toFixed(2);
+  const op=(0.5+Math.random()*.5).toFixed(2);
+  return `.qd-dot:nth-child(${i+1}){--qc:${col};--qo:${op};animation-delay:${delay}s}`;
+}).join('\n')}`,
+    html: `<div class="qd" style="grid-template-columns:repeat(${c.cols},${c.dotSize}px)">${Array.from({length:c.cols*c.cols},()=>`<div class="qd-dot"></div>`).join('')}</div>`
+  })
+},
+
+/* ── 219 · Warp Drive ─────────────────────────────────────── */
+{
+  id: 219, name: "Warp Drive",
+  tags: ["space","warp","speed","hyperdrive","streaks"],
+  controls: {
+    speed: 1.0, size: 72, color: "#e0f2fe", secondColor: "#818cf8",
+    particleCount: 16, particleSize: 2, glowSize: 6, opacity: 0.9
+  },
+  render: (c) => ({
+    css: `
+@keyframes wd-streak{0%{transform:translate(-50%,-50%) rotate(var(--wa)) scaleX(0.05);opacity:1}70%{opacity:1}100%{transform:translate(-50%,-50%) rotate(var(--wa)) scaleX(1);opacity:0}}
+@keyframes wd-core{0%,100%{transform:scale(.8)}50%{transform:scale(1.1)}}
+.wd{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.wd-streak{position:absolute;top:50%;left:50%;height:${c.particleSize}px;border-radius:${c.particleSize}px;transform-origin:0 50%;background:linear-gradient(90deg,transparent,var(--wc));filter:blur(.5px)}
+.wd-core{position:absolute;width:${Math.max(4,c.size*.1)}px;height:${Math.max(4,c.size*.1)}px;border-radius:50%;background:radial-gradient(circle,#fff,${c.color});animation:wd-core ${(0.5/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}}
+${Array.from({length:c.particleCount},(_,i)=>{
+  const angle=i*(360/c.particleCount);
+  const len=c.size*(.2+Math.random()*.3);
+  const col=i%3===0?c.color:i%3===1?c.secondColor:'#fff';
+  const spd=((0.4+Math.random()*.4)/c.speed).toFixed(2);
+  return `.wd-streak:nth-child(${i+1}){--wa:${angle}deg;--wc:${col};width:${len.toFixed(1)}px;opacity:${c.opacity};animation:wd-streak ${spd}s ease-in-out infinite;animation-delay:${(i*(parseFloat(spd)/c.particleCount)).toFixed(2)}s}`;
+}).join('\n')}`,
+    html: `<div class="wd">${Array.from({length:c.particleCount},()=>`<div class="wd-streak"></div>`).join('')}<div class="wd-core"></div></div>`
+  })
+},
+
+/* ── 220 · Sonar Ping ─────────────────────────────────────── */
+{
+  id: 220, name: "Sonar Ping",
+  tags: ["waves","sonar","radar","pulse","ring"],
+  controls: {
+    speed: 1.0, size: 72, color: "#4ade80", secondColor: "#166534",
+    ringCount: 4, thickness: 1.5, dotSize: 6, glowSize: 8
+  },
+  render: (c) => ({
+    css: `
+@keyframes sp-ping{0%{transform:scale(0);opacity:.9}100%{transform:scale(1);opacity:0}}
+@keyframes sp-rotate{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes sp-blip{0%,85%,100%{opacity:0;transform:scale(0)}86%,95%{opacity:1;transform:scale(1)}}
+.sp{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.sp-ring{position:absolute;inset:0;border-radius:50%;border:${c.thickness}px solid ${c.color};animation:sp-ping ${(1.6/c.speed).toFixed(2)}s ease-out infinite}
+.sp-scan{position:absolute;inset:0;border-radius:50%;background:conic-gradient(${c.color}33,${c.color}00 30%,transparent 70%);animation:sp-rotate ${(2/c.speed).toFixed(2)}s linear infinite}
+.sp-cross{position:absolute;inset:${c.size*.15}px;border-radius:50%;border:${c.thickness}px solid ${c.color}44}
+.sp-blip{position:absolute;width:${c.dotSize}px;height:${c.dotSize}px;border-radius:50%;background:${c.color};box-shadow:0 0 ${c.glowSize}px ${c.color};animation:sp-blip ${(2/c.speed).toFixed(2)}s ease-in-out infinite}
+.sp-center{position:absolute;width:${c.dotSize*.6}px;height:${c.dotSize*.6}px;border-radius:50%;background:#fff;box-shadow:0 0 ${c.glowSize}px ${c.color}}
+${Array.from({length:c.ringCount},(_,i)=>`.sp-ring:nth-child(${i+1}){animation-delay:${(i*(1.6/c.speed)/c.ringCount).toFixed(2)}s}`).join('\n')}
+.sp-blip{top:${(c.size*.24).toFixed(1)}px;left:${(c.size*.62).toFixed(1)}px}`,
+    html: `<div class="sp">${Array.from({length:c.ringCount},()=>`<div class="sp-ring"></div>`).join('')}<div class="sp-scan"></div><div class="sp-cross"></div><div class="sp-blip"></div><div class="sp-center"></div></div>`
+  })
+},
+
+/* ── 221 · Neural Mesh ────────────────────────────────────── */
+{
+  id: 221, name: "Neural Mesh",
+  tags: ["brainwaves","neural","network","mesh","ai"],
+  controls: {
+    speed: 1.0, size: 80, color: "#c084fc", secondColor: "#67e8f9",
+    nodeSize: 5, particleCount: 7, lineOpacity: 0.35, glowSize: 8
+  },
+  render: (c) => ({
+    css: `
+@keyframes nm-node{0%,100%{opacity:.4;r:${c.nodeSize*.5}}50%{opacity:1;r:${c.nodeSize}}}
+@keyframes nm-pulse{0%{stroke-dashoffset:200}100%{stroke-dashoffset:0}}
+@keyframes nm-signal{0%{offset-distance:0%}100%{offset-distance:100%}}
+.nm{position:relative;width:${c.size}px;height:${c.size}px}
+.nm-svg{position:absolute;inset:0;overflow:visible}
+.nm-node-el{animation:nm-node ${(1/c.speed).toFixed(2)}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize*.5}px var(--nc))}
+.nm-link{stroke-dasharray:200;stroke-dashoffset:200;animation:nm-pulse ${(1.5/c.speed).toFixed(2)}s ease-in-out infinite alternate}`,
+    html: (()=>{
+      const nodes=Array.from({length:c.particleCount},(_,i)=>{
+        const a=i*(360/c.particleCount)*Math.PI/180,r=c.size*(.3+i*.03);
+        return {
+          x:(c.size/2+Math.cos(a)*r).toFixed(1),
+          y:(c.size/2+Math.sin(a)*r).toFixed(1),
+          col:i%2===0?c.color:c.secondColor
+        };
+      });
+      const links=nodes.map((n,i)=>{
+        const n2=nodes[(i+2)%nodes.length];
+        return `<line class="nm-link" x1="${n.x}" y1="${n.y}" x2="${n2.x}" y2="${n2.y}" stroke="${n.col}" stroke-width="1" stroke-opacity="${c.lineOpacity}" style="animation-delay:${(i*.15/c.speed).toFixed(2)}s"/>`;
+      }).join('');
+      const nodeSvg=nodes.map((n,i)=>`<circle class="nm-node-el" cx="${n.x}" cy="${n.y}" r="${c.nodeSize}" fill="${n.col}" style="--nc:${n.col};animation-delay:${(i*.12/c.speed).toFixed(2)}s"/>`).join('');
+      return `<div class="nm"><svg class="nm-svg" viewBox="0 0 ${c.size} ${c.size}">${links}${nodeSvg}</svg></div>`;
+    })()
+  })
+},
+
+/* ── 222 · Pulse Ring Cascade ─────────────────────────────── */
+{
+  id: 222, name: "Pulse Ring Cascade",
+  tags: ["waves","pulse","rings","cascade","expand"],
+  controls: {
+    speed: 1.0, size: 72, color: "#f472b6", secondColor: "#fb923c",
+    ringCount: 5, thickness: 2, glowSize: 10, opacity: 0.85
+  },
+  render: (c) => ({
+    css: `
+@keyframes prc-expand{0%{transform:scale(0);opacity:${c.opacity}}100%{transform:scale(1.5);opacity:0}}
+@keyframes prc-center{0%,100%{transform:scale(.85)}50%{transform:scale(1.1)}}
+.prc{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.prc-ring{position:absolute;inset:${c.size*.1}px;border-radius:50%;border:${c.thickness}px solid;animation:prc-expand ${(1.4/c.speed).toFixed(2)}s ease-out infinite}
+.prc-dot{position:absolute;width:${Math.max(6,c.size*.12)}px;height:${Math.max(6,c.size*.12)}px;border-radius:50%;animation:prc-center ${(0.7/c.speed).toFixed(2)}s ease-in-out infinite}
+${Array.from({length:c.ringCount},(_,i)=>{
+  const col=i%2===0?c.color:c.secondColor;
+  return `.prc-ring:nth-child(${i+1}){border-color:${col};animation-delay:${(i*(1.4/c.speed)/c.ringCount).toFixed(2)}s;box-shadow:0 0 ${c.glowSize}px ${col}44}`;
+}).join('\n')}
+.prc-dot{background:radial-gradient(circle,#fff,${c.color});box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}}`,
+    html: `<div class="prc">${Array.from({length:c.ringCount},()=>`<div class="prc-ring"></div>`).join('')}<div class="prc-dot"></div></div>`
+  })
+},
+
+/* ── 223 · Binary Rain ────────────────────────────────────── */
+{
+  id: 223, name: "Binary Rain",
+  tags: ["matrix","binary","code","digital","rain"],
+  controls: {
+    speed: 1.0, width: 80, height: 56, color: "#4ade80", secondColor: "#166534",
+    cols: 5, fontSize: 12, glowSize: 6, opacity: 0.85
+  },
+  render: (c) => ({
+    css: `
+@keyframes br-fall{0%{transform:translateY(-${c.height}px);opacity:0}10%{opacity:1}80%{opacity:.7}100%{transform:translateY(${c.height}px);opacity:0}}
+@keyframes br-flicker{0%,100%{opacity:var(--bo)}${Array.from({length:4},()=>`${Math.round(Math.random()*100)}%{opacity:${(Math.random()*.5+.3).toFixed(2)}}`).join(';')}}
+.br{position:relative;width:${c.width}px;height:${c.height}px;overflow:hidden;font-family:monospace;font-size:${c.fontSize}px;display:flex;gap:${(c.width/(c.cols+1)*.1).toFixed(1)}px;padding:0 2px}
+.br-col{display:flex;flex-direction:column;gap:2px;animation:br-fall var(--spd) linear infinite;animation-delay:var(--del)}
+.br-char{color:var(--cc);animation:br-flicker var(--fspd) step-end infinite;text-shadow:0 0 ${c.glowSize}px var(--cc);line-height:${c.fontSize*1.2}px}
+${Array.from({length:c.cols},(_,i)=>{
+  const spd=((1+i*.2)/c.speed).toFixed(2),del=(-Math.random()*2/c.speed).toFixed(2);
+  const charCount=Math.floor(c.height/(c.fontSize*1.2))+1;
+  const fspd=((0.1+Math.random()*.3)/c.speed).toFixed(2);
+  return `.br-col:nth-child(${i+1}){--spd:${spd}s;--del:${del}s;flex:1}\n${Array.from({length:charCount},(_,j)=>{
+    const col=j===charCount-1?'#fff':j===charCount-2?c.color:c.secondColor;
+    const bo=(0.3+j/(charCount)*0.7).toFixed(2);
+    return `.br-col:nth-child(${i+1}) .br-char:nth-child(${j+1}){--cc:${col};--bo:${bo};--fspd:${fspd}s}`;
+  }).join('\n')}`;
+}).join('\n')}`,
+    html: `<div class="br">${Array.from({length:c.cols},(_,i)=>{
+      const charCount=Math.floor(c.height/(c.fontSize*1.2))+2;
+      return `<div class="br-col">${Array.from({length:charCount},()=>`<span class="br-char">${Math.random()>.5?'1':'0'}</span>`).join('')}</div>`;
+    }).join('')}</div>`
+  })
+},
+
+/* ── 224 · Morphing Blob ──────────────────────────────────── */
+{
+  id: 224, name: "Morphing Blob",
+  tags: ["organic","blob","morph","fluid","shape"],
+  controls: {
+    speed: 1.0, size: 70, color: "#a78bfa", secondColor: "#f472b6",
+    glowSize: 16, opacity: 0.9, thickness: 0
+  },
+  render: (c) => ({
+    css: `
+@keyframes mb-morph{
+  0%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}
+  20%{border-radius:30% 60% 70% 40%/50% 60% 30% 60%}
+  40%{border-radius:70% 30% 50% 60%/30% 70% 60% 40%}
+  60%{border-radius:40% 60% 30% 70%/60% 40% 50% 50%}
+  80%{border-radius:50% 40% 60% 30%/40% 50% 40% 70%}
+  100%{border-radius:60% 40% 30% 70%/60% 30% 70% 40%}
+}
+@keyframes mb-rotate{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes mb-inner{
+  0%{border-radius:40% 60% 70% 30%/40% 60% 40% 60%}
+  50%{border-radius:70% 30% 40% 60%/60% 40% 60% 40%}
+  100%{border-radius:40% 60% 70% 30%/40% 60% 40% 60%}
+}
+.mb{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.mb-outer{position:absolute;inset:0;background:linear-gradient(135deg,${c.color},${c.secondColor});animation:mb-morph ${(3/c.speed).toFixed(2)}s ease-in-out infinite;opacity:${c.opacity};filter:blur(2px) drop-shadow(0 0 ${c.glowSize}px ${c.color})}
+.mb-mid{position:absolute;inset:${c.size*.12}px;background:linear-gradient(-45deg,${c.secondColor},${c.color});animation:mb-inner ${(2.2/c.speed).toFixed(2)}s ease-in-out infinite;opacity:.7}
+.mb-inner-el{position:absolute;inset:${c.size*.28}px;background:linear-gradient(90deg,${c.color}cc,#fff8);animation:mb-morph ${(1.5/c.speed).toFixed(2)}s ease-in-out infinite reverse;opacity:.6}`,
+    html: `<div class="mb"><div class="mb-outer"></div><div class="mb-mid"></div><div class="mb-inner-el"></div></div>`
+  })
+},
+
+/* ── 225 · Comet Trail ────────────────────────────────────── */
+{
+  id: 225, name: "Comet Trail",
+  tags: ["space","comet","trail","orbit","streak"],
+  controls: {
+    speed: 1.0, size: 72, color: "#fde68a", secondColor: "#f472b6",
+    dotSize: 8, glowSize: 14, tailCount: 8, thickness: 2
+  },
+  render: (c) => ({
+    css: `
+@keyframes ct-orbit{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes ct-fade{0%,100%{opacity:0;transform:scale(0)}20%{opacity:1;transform:scale(1)}80%{opacity:.4;transform:scale(.6)}}
+@keyframes ct-head{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color}88}50%{box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}}}
+.ct{position:relative;width:${c.size}px;height:${c.size}px}
+.ct-orbit-ring{position:absolute;inset:${c.size*.1}px;border-radius:50%;border:${c.thickness}px solid transparent;animation:ct-orbit ${(1.4/c.speed).toFixed(2)}s linear infinite}
+.ct-head{position:absolute;width:${c.dotSize}px;height:${c.dotSize}px;border-radius:50%;background:#fff;top:calc(50% - ${c.dotSize/2}px - ${c.size*.38}px);left:calc(50% - ${c.dotSize/2}px);animation:ct-head ${(0.5/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color}}
+.ct-tail{position:absolute;border-radius:50%}
+${Array.from({length:c.tailCount},(_,i)=>{
+  const angle=-(i+1)*(24/c.tailCount);
+  const r=c.size*.38+i*2,a=angle*Math.PI/180;
+  const sz=Math.max(1,c.dotSize*(1-i/c.tailCount));
+  const x=(c.size/2+Math.sin(a)*r-sz/2).toFixed(1);
+  const y=(c.size/2-Math.cos(a)*r-sz/2).toFixed(1);
+  return `.ct-tail:nth-child(${i+2}){width:${sz}px;height:${sz}px;top:${y}px;left:${x}px;background:${c.color};opacity:${(1-i/c.tailCount).toFixed(2)};animation:ct-fade ${((0.3+i*.05)/c.speed).toFixed(2)}s ease-in-out infinite;animation-delay:${(i*.04/c.speed).toFixed(2)}s;box-shadow:0 0 ${c.glowSize*.5}px ${c.color}}`;
+}).join('\n')}`,
+    html: `<div class="ct"><div class="ct-orbit-ring"><div class="ct-head"></div>${Array.from({length:c.tailCount},()=>`<div class="ct-tail"></div>`).join('')}</div></div>`
+  })
+},
+
+/* ── 226 · Quantum Entanglement ───────────────────────────── */
+{
+  id: 226, name: "Quantum Entangle",
+  tags: ["particles","quantum","entangle","physics","atom"],
+  controls: {
+    speed: 1.0, size: 72, color: "#22d3ee", secondColor: "#f472b6",
+    electronSize: 7, rings: 2, glowSize: 10, thickness: 1.5
+  },
+  render: (c) => ({
+    css: `
+@keyframes qe-spin-cw{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes qe-spin-ccw{0%{transform:rotate(0)}100%{transform:rotate(-360deg)}}
+@keyframes qe-electron{0%,100%{box-shadow:0 0 ${c.glowSize*.5}px var(--ec)}50%{box-shadow:0 0 ${c.glowSize}px var(--ec),0 0 ${c.glowSize*1.5}px var(--ec)44}}
+@keyframes qe-connect{0%,100%{opacity:.2}50%{opacity:.7}}
+@keyframes qe-nucleus{0%,100%{transform:scale(.9)}50%{transform:scale(1.1)}}
+.qe{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.qe-orbit{position:absolute;border-radius:50%;border:${c.thickness}px solid transparent;display:flex;align-items:flex-start;justify-content:center}
+.qe-e{position:relative;width:${c.electronSize}px;height:${c.electronSize}px;border-radius:50%;top:-${c.electronSize/2}px;animation:qe-electron ${(0.6/c.speed).toFixed(2)}s ease-in-out infinite}
+.qe-nucleus{position:absolute;width:${Math.max(8,c.size*.15)}px;height:${Math.max(8,c.size*.15)}px;border-radius:50%;background:radial-gradient(circle,#fff 10%,${c.color} 50%,${c.secondColor});animation:qe-nucleus ${(0.4/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}}
+.qe-connect-line{position:absolute;inset:0;animation:qe-connect ${(0.8/c.speed).toFixed(2)}s ease-in-out infinite}
+${Array.from({length:c.rings},(_,i)=>{
+  const inset=i*(c.size/(c.rings*2.8));
+  const col=i%2===0?c.color:c.secondColor;
+  const spd=((1+i*.4)/c.speed).toFixed(2);
+  const dir=i%2===0?'qe-spin-cw':'qe-spin-ccw';
+  return `.qe-orbit:nth-child(${i*3+1}){inset:${inset}px;border-top-color:${col}88;border-bottom-color:${col}44;animation:${dir} ${spd}s linear infinite;transform:rotateX(${60+i*15}deg) rotateY(${i*40}deg)}\n.qe-orbit:nth-child(${i*3+1}) .qe-e{background:${col};--ec:${col}}\n.qe-orbit:nth-child(${i*3+2}){inset:${inset}px;border-left-color:${col}88;border-right-color:${col}44;animation:${dir} ${(parseFloat(spd)*.7).toFixed(2)}s linear infinite reverse;transform:rotateX(${-60+i*15}deg) rotateY(${90+i*40}deg)}\n.qe-orbit:nth-child(${i*3+2}) .qe-e{background:${col};--ec:${col}}`;
+}).join('\n')}`,
+    html: `<div class="qe">${Array.from({length:c.rings},()=>`<div class="qe-orbit"><div class="qe-e"></div></div><div class="qe-orbit"><div class="qe-e"></div></div>`).join('')}<div class="qe-nucleus"></div></div>`
+  })
+},
+
+/* ── 227 · Glitch Loader ──────────────────────────────────── */
+{
+  id: 227, name: "Glitch Loader",
+  tags: ["digital","glitch","error","retro","noise"],
+  controls: {
+    speed: 1.0, width: 100, height: 28, color: "#f472b6", secondColor: "#67e8f9",
+    fontSize: 15, glowSize: 8, layers: 3, opacity: 0.9
+  },
+  render: (c) => ({
+    css: `
+@keyframes gl-glitch{
+  0%,90%,100%{clip-path:none;transform:translate(0,0)}
+  91%{clip-path:inset(${Math.round(Math.random()*30)}% 0 ${Math.round(Math.random()*30)}% 0);transform:translate(-3px,0)}
+  93%{clip-path:inset(${Math.round(Math.random()*30)}% 0 ${Math.round(Math.random()*30)}% 0);transform:translate(3px,1px)}
+  95%{clip-path:inset(${Math.round(Math.random()*30)}% 0 ${Math.round(Math.random()*30)}% 0);transform:translate(-2px,-1px)}
+  97%{clip-path:none;transform:translate(1px,0)}
+}
+@keyframes gl-r{0%,88%,100%{transform:translate(0,0);opacity:0}89%{transform:translate(3px,1px);opacity:.8;color:${c.color}}93%{transform:translate(-2px,-1px);opacity:.6}96%{opacity:0}}
+@keyframes gl-b{0%,90%,100%{transform:translate(0,0);opacity:0}91%{transform:translate(-3px,0);opacity:.8;color:${c.secondColor}}95%{transform:translate(1px,1px);opacity:.5}97%{opacity:0}}
+.gl{position:relative;width:${c.width}px;height:${c.height}px;display:flex;align-items:center;justify-content:center;overflow:hidden}
+.gl-text{font-family:monospace;font-size:${c.fontSize}px;color:#fff;letter-spacing:.15em;text-transform:uppercase;position:relative;animation:gl-glitch ${(1/c.speed).toFixed(2)}s linear infinite;text-shadow:0 0 ${c.glowSize}px #fff;font-weight:700}
+.gl-r,.gl-b{position:absolute;font-family:monospace;font-size:${c.fontSize}px;letter-spacing:.15em;text-transform:uppercase;font-weight:700;user-select:none;pointer-events:none}
+.gl-r{animation:gl-r ${(1/c.speed).toFixed(2)}s linear infinite}
+.gl-b{animation:gl-b ${(1/c.speed).toFixed(2)}s linear infinite;animation-delay:.05s}`,
+    html: `<div class="gl"><span class="gl-r" aria-hidden="true">LOADING</span><span class="gl-b" aria-hidden="true">LOADING</span><span class="gl-text">LOADING</span></div>`
+  })
+},
+
+/* ── 228 · Spiral Vortex ──────────────────────────────────── */
+{
+  id: 228, name: "Spiral Vortex",
+  tags: ["spiral","vortex","spin","hypnotic","swirl"],
+  controls: {
+    speed: 1.0, size: 72, color: "#818cf8", secondColor: "#f472b6",
+    rings: 5, thickness: 2.5, dotCount: 5, glowSize: 8, opacity: 0.9
+  },
+  render: (c) => ({
+    css: `
+@keyframes sv-spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes sv-pulse{0%,100%{opacity:.5;transform:scale(.8)}50%{opacity:1;transform:scale(1.1)}}
+.sv{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.sv-layer{position:absolute;border-radius:50%;border-style:solid;border-color:transparent}
+${Array.from({length:c.rings},(_,i)=>{
+  const inset=i*(c.size/(c.rings*2.1));
+  const col=i%2===0?c.color:c.secondColor;
+  const angle=i*(360/c.rings);
+  const spd=((0.6+i*.18)/c.speed).toFixed(2);
+  return `.sv-layer:nth-child(${i+1}){inset:${inset}px;border-top-color:${col};border-right-color:${col}55;border-width:${c.thickness}px;animation:sv-spin ${spd}s linear infinite ${i%2?'reverse':''};box-shadow:0 0 ${c.glowSize*(1-i*.1)}px ${col}55}`;
+}).join('\n')}
+.sv-core{position:absolute;width:${Math.max(6,c.size*.1)}px;height:${Math.max(6,c.size*.1)}px;border-radius:50%;background:radial-gradient(circle,#fff,${c.color});animation:sv-pulse ${(0.5/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color}}`,
+    html: `<div class="sv">${Array.from({length:c.rings},()=>`<div class="sv-layer"></div>`).join('')}<div class="sv-core"></div></div>`
+  })
+},
+
+/* ── 229 · Hologram Scan ──────────────────────────────────── */
+{
+  id: 229, name: "Hologram Scan",
+  tags: ["hologram","scan","futuristic","digital","lines"],
+  controls: {
+    speed: 1.0, size: 72, color: "#67e8f9", secondColor: "#a78bfa",
+    layers: 4, thickness: 1.5, glowSize: 10, opacity: 0.8, lineOpacity: 0.25
+  },
+  render: (c) => ({
+    css: `
+@keyframes hs-scan{0%{transform:translateY(-${c.size*.5}px);opacity:0}10%{opacity:1}90%{opacity:1}100%{transform:translateY(${c.size*.5}px);opacity:0}}
+@keyframes hs-flicker{0%,100%{opacity:${c.opacity}}${Array.from({length:5},()=>`${Math.round(Math.random()*100)}%{opacity:${(Math.random()*.4+.4).toFixed(2)}}`).join(';')}}
+@keyframes hs-rotate{0%{transform:rotateY(0)}100%{transform:rotateY(360deg)}}
+.hs{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:${c.size*2}px}
+.hs-frame{position:absolute;inset:0;border:${c.thickness}px solid ${c.color}88;border-radius:4px;animation:hs-flicker ${(0.5/c.speed).toFixed(2)}s step-end infinite;box-shadow:0 0 ${c.glowSize}px ${c.color}44,inset 0 0 ${c.glowSize}px ${c.color}22}
+.hs-scan-line{position:absolute;left:0;width:100%;height:2px;background:linear-gradient(90deg,transparent,${c.color},transparent);animation:hs-scan ${(1.5/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color}}
+.hs-h-line{position:absolute;left:0;width:100%;height:${c.thickness}px;background:${c.color};opacity:${c.lineOpacity}}
+.hs-corner{position:absolute;width:${c.size*.15}px;height:${c.size*.15}px;border-color:${c.color};border-style:solid;border-width:0}
+.hs-corner:nth-child(3){top:2px;left:2px;border-top-width:${c.thickness*1.5}px;border-left-width:${c.thickness*1.5}px}
+.hs-corner:nth-child(4){top:2px;right:2px;border-top-width:${c.thickness*1.5}px;border-right-width:${c.thickness*1.5}px}
+.hs-corner:nth-child(5){bottom:2px;left:2px;border-bottom-width:${c.thickness*1.5}px;border-left-width:${c.thickness*1.5}px}
+.hs-corner:nth-child(6){bottom:2px;right:2px;border-bottom-width:${c.thickness*1.5}px;border-right-width:${c.thickness*1.5}px}
+${Array.from({length:c.layers+2},(_,i)=>`.hs-h-line:nth-child(${i+7}){top:${Math.round((i/(c.layers+1))*100)}%;opacity:${(c.lineOpacity*(1-i*.05)).toFixed(2)}}`).join('\n')}`,
+    html: `<div class="hs"><div class="hs-frame"></div><div class="hs-scan-line"></div>${Array.from({length:4},()=>`<div class="hs-corner"></div>`).join('')}${Array.from({length:c.layers+2},()=>`<div class="hs-h-line"></div>`).join('')}</div>`
+  })
+},
+
+/* ── 230 · Solar Flare ────────────────────────────────────── */
+{
+  id: 230, name: "Solar Flare",
+  tags: ["fire","solar","flare","radial","burst"],
+  controls: {
+    speed: 1.0, size: 72, color: "#fb923c", secondColor: "#fbbf24",
+    tailCount: 8, particleSize: 4, glowSize: 18, thickness: 2
+  },
+  render: (c) => ({
+    css: `
+@keyframes sf-ray{0%,100%{transform:rotate(var(--sa)) scaleX(.3);opacity:.4}50%{transform:rotate(calc(var(--sa) + var(--sw))) scaleX(1);opacity:1}}
+@keyframes sf-corona{0%,100%{transform:scale(.9);opacity:.7}50%{transform:scale(1.15);opacity:1}}
+@keyframes sf-prom{0%,100%{transform:rotate(var(--pa)) scaleY(.2);opacity:.3;transform-origin:bottom center}50%{transform:rotate(var(--pa)) scaleY(1);opacity:.9;transform-origin:bottom center}}
+.sf{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.sf-ray{position:absolute;height:${c.size*.06}px;border-radius:2px;transform-origin:left center;left:50%;top:calc(50% - ${c.size*.03}px);background:linear-gradient(90deg,${c.secondColor},transparent)}
+.sf-prom{position:absolute;width:${c.thickness*2}px;border-radius:1px 1px 0 0;bottom:50%;left:calc(50% - ${c.thickness}px);background:linear-gradient(0deg,${c.color},${c.secondColor},transparent);transform-origin:bottom center}
+.sf-corona{position:absolute;inset:${c.size*.12}px;border-radius:50%;background:radial-gradient(circle,#fff 5%,${c.secondColor} 30%,${c.color} 60%,transparent);animation:sf-corona ${(0.6/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}}
+${Array.from({length:c.tailCount},(_,i)=>{
+  const sa=i*(360/c.tailCount);
+  const sw=10+i*3;
+  const len=c.size*(.25+i*.04);
+  const spd=((0.7+i*.1)/c.speed).toFixed(2);
+  return `.sf-ray:nth-child(${i+1}){--sa:${sa}deg;--sw:${sw}deg;width:${len}px;animation:sf-ray ${spd}s ease-in-out infinite;animation-delay:${(i*.06/c.speed).toFixed(2)}s;filter:drop-shadow(0 0 ${c.glowSize*.4}px ${c.color})}`;
+}).join('\n')}
+${Array.from({length:4},(_,i)=>{
+  const pa=(i*(90)+30);
+  const h=c.size*(.12+i*.03);
+  const spd=((0.8+i*.1)/c.speed).toFixed(2);
+  return `.sf-prom:nth-last-child(${i+2}){--pa:${pa}deg;height:${h}px;animation:sf-prom ${spd}s ease-in-out infinite;animation-delay:${(i*.1/c.speed).toFixed(2)}s}`;
+}).join('\n')}`,
+    html: `<div class="sf">${Array.from({length:c.tailCount},()=>`<div class="sf-ray"></div>`).join('')}<div class="sf-corona"></div>${Array.from({length:4},()=>`<div class="sf-prom"></div>`).join('')}</div>`
+  })
+},
+
+/* ── 231 · Lissajous Curve ────────────────────────────────── */
+{
+  id: 231, name: "Lissajous Curve",
+  tags: ["waves","lissajous","oscillator","math","trace"],
+  controls: {
+    speed: 1.0, size: 72, color: "#f472b6", secondColor: "#818cf8",
+    amplitude: 28, thickness: 2, glowSize: 8, dotSize: 6, opacity: 0.9
+  },
+  render: (c) => ({
+    css: `
+@keyframes lj-trace{0%{stroke-dashoffset:800}100%{stroke-dashoffset:0}}
+@keyframes lj-dot{0%{cx:${c.size/2}px;cy:${c.size/2}px}25%{cx:${c.size/2+c.amplitude}px;cy:${c.size/2}px}50%{cx:${c.size/2}px;cy:${c.size/2+c.amplitude}px}75%{cx:${c.size/2-c.amplitude}px;cy:${c.size/2}px}100%{cx:${c.size/2}px;cy:${c.size/2}px}}
+@keyframes lj-spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+.lj{position:relative;width:${c.size}px;height:${c.size}px}
+.lj-svg{position:absolute;inset:0;overflow:visible}
+.lj-path{stroke-dasharray:800;animation:lj-trace ${(3/c.speed).toFixed(2)}s linear infinite;fill:none;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.color})}
+.lj-path2{stroke-dasharray:800;animation:lj-trace ${(3/c.speed).toFixed(2)}s linear infinite;animation-delay:${(1.5/c.speed).toFixed(2)}s;fill:none;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.secondColor})}
+.lj-dot-el{animation:lj-dot ${(2/c.speed).toFixed(2)}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize}px ${c.color})}`,
+    html: (()=>{
+      const cx=c.size/2,cy=c.size/2,a=c.amplitude;
+      const pts=Array.from({length:101},(_,i)=>{
+        const t=i/100*Math.PI*2;
+        return `${(cx+Math.sin(t*3)*a).toFixed(1)},${(cy+Math.sin(t*2)*a).toFixed(1)}`;
+      }).join(' ');
+      const pts2=Array.from({length:101},(_,i)=>{
+        const t=i/100*Math.PI*2;
+        return `${(cx+Math.sin(t*2)*a).toFixed(1)},${(cy+Math.sin(t*3+0.5)*a*.8).toFixed(1)}`;
+      }).join(' ');
+      return `<div class="lj"><svg class="lj-svg" viewBox="0 0 ${c.size} ${c.size}"><polyline class="lj-path" points="${pts}" stroke="${c.color}" stroke-width="${c.thickness}" opacity="${c.opacity}"/><polyline class="lj-path2" points="${pts2}" stroke="${c.secondColor}" stroke-width="${c.thickness*.7}" opacity="${c.opacity*.7}"/><circle class="lj-dot-el" cx="${cx}" cy="${cy}" r="${c.dotSize/2}" fill="${c.color}"/></svg></div>`;
+    })()
+  })
+},
+
+/* ── 232 · Cellular Automaton ─────────────────────────────── */
+{
+  id: 232, name: "Cellular Automaton",
+  tags: ["particles","cellular","matrix","grid","life"],
+  controls: {
+    speed: 1.0, size: 72, color: "#4ade80", secondColor: "#22d3ee",
+    cols: 5, cellSize: 10, gap: 2, glowSize: 6, opacity: 0.9
+  },
+  render: (c) => ({
+    css: `
+@keyframes ca-cell{0%,100%{opacity:.08;background:transparent;transform:scale(.6)}50%{opacity:var(--cao);background:var(--cac);transform:scale(1);box-shadow:0 0 ${c.glowSize}px var(--cac)}}
+.ca{display:grid;gap:${c.gap}px;padding:${c.gap}px;width:fit-content}
+.ca-cell{width:${c.cellSize}px;height:${c.cellSize}px;border-radius:2px;border:1px solid var(--cac);border-opacity:.2;animation:ca-cell ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite}
+${Array.from({length:c.cols*c.cols},(_,i)=>{
+  const col=(i+Math.floor(i/c.cols))%2===0?c.color:c.secondColor;
+  const delay=(((i%c.cols)+(Math.floor(i/c.cols)))*.1/c.speed).toFixed(2);
+  const op=(0.5+Math.random()*.5).toFixed(2);
+  return `.ca-cell:nth-child(${i+1}){--cac:${col};--cao:${op};animation-delay:${delay}s}`;
+}).join('\n')}`,
+    html: `<div class="ca" style="grid-template-columns:repeat(${c.cols},${c.cellSize}px)">${Array.from({length:c.cols*c.cols},()=>`<div class="ca-cell"></div>`).join('')}</div>`
+  })
+},
+
+/* ── 233 · Pendulum Wave ──────────────────────────────────── */
+{
+  id: 233, name: "Pendulum Wave",
+  tags: ["waves","pendulum","physics","oscillator","rhythm"],
+  controls: {
+    speed: 1.0, width: 120, height: 56, color: "#818cf8", secondColor: "#f472b6",
+    dotCount: 9, dotSize: 8, amplitude: 20, glowSize: 8, thickness: 1.5
+  },
+  render: (c) => ({
+    css: `
+${Array.from({length:c.dotCount},(_,i)=>`
+@keyframes pw-swing${i}{
+  0%{transform:translateY(0)}
+  50%{transform:translateY(${c.amplitude*(1-i*.05)}px)}
+  100%{transform:translateY(0)}
+}
+`).join('')}
+.pw{position:relative;width:${c.width}px;height:${c.height}px;display:flex;align-items:flex-start;justify-content:space-evenly;padding-top:${c.dotSize}px}
+.pw-pen{display:flex;flex-direction:column;align-items:center}
+.pw-string{width:${c.thickness}px;background:${c.color}44}
+.pw-bob{width:${c.dotSize}px;height:${c.dotSize}px;border-radius:50%}
+${Array.from({length:c.dotCount},(_,i)=>{
+  const col=i%2===0?c.color:c.secondColor;
+  const spd=((0.6+i*.08)/c.speed).toFixed(2);
+  const strH=c.height*.3+i*3;
+  const delay=(i*.04/c.speed).toFixed(2);
+  return `.pw-pen:nth-child(${i+1}) .pw-string{height:${strH}px;animation:pw-swing${i} ${spd}s ease-in-out infinite;animation-delay:${delay}s;transform-origin:top center}\n.pw-pen:nth-child(${i+1}) .pw-bob{background:${col};box-shadow:0 0 ${c.glowSize}px ${col};animation:pw-swing${i} ${spd}s ease-in-out infinite;animation-delay:${delay}s;transform-origin:top center}`;
+}).join('\n')}`,
+    html: `<div class="pw">${Array.from({length:c.dotCount},(_,i)=>`<div class="pw-pen"><div class="pw-string"></div><div class="pw-bob"></div></div>`).join('')}</div>`
+  })
+},
+
+/* ── 234 · Chakra Mandala ─────────────────────────────────── */
+{
+  id: 234, name: "Chakra Mandala",
+  tags: ["mandala","sacred","geometry","spin","radial"],
+  controls: {
+    speed: 1.0, size: 72, color: "#f472b6", secondColor: "#818cf8",
+    petalCount: 8, rings: 3, thickness: 1.5, glowSize: 8, opacity: 0.85
+  },
+  render: (c) => ({
+    css: `
+@keyframes cm-spin{0%{transform:rotate(0)}100%{transform:rotate(360deg)}}
+@keyframes cm-counter{0%{transform:rotate(0)}100%{transform:rotate(-360deg)}}
+@keyframes cm-pulse{0%,100%{transform:scale(.88);opacity:.7}50%{transform:scale(1.06);opacity:1}}
+@keyframes cm-petal-glow{0%,100%{opacity:.5}50%{opacity:1}}
+.cm{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.cm-ring{position:absolute;border-radius:50%;animation:cm-spin var(--cspd) linear infinite var(--cdir)}
+.cm-petal-wrap{position:absolute;inset:0;border-radius:50%;animation:cm-spin var(--cspd) linear infinite var(--cdir)}
+.cm-petal{position:absolute;border-radius:50% 50% 50% 0;transform-origin:center center;animation:cm-petal-glow ${(1/c.speed).toFixed(2)}s ease-in-out infinite}
+.cm-core{position:absolute;width:${Math.max(6,c.size*.13)}px;height:${Math.max(6,c.size*.13)}px;border-radius:50%;background:radial-gradient(circle,#fff,${c.color});animation:cm-pulse ${(0.6/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}44}
+${Array.from({length:c.rings},(_,i)=>{
+  const inset=i*(c.size/(c.rings*2.4));
+  const col=i%2===0?c.color:c.secondColor;
+  const spd=((1.2+i*.4)/c.speed).toFixed(2);
+  const dir=i%2===0?'normal':'reverse';
+  const r=c.size*.5-inset-4;
+  const pSz=Math.max(4,r*.35);
+  const petals=Array.from({length:c.petalCount},(_,j)=>{
+    const a=j*(360/c.petalCount);
+    const px=(c.size*.5+Math.cos((a-45)*Math.PI/180)*r*.65).toFixed(1);
+    const py=(c.size*.5+Math.sin((a-45)*Math.PI/180)*r*.65).toFixed(1);
+    return `.cm-ring:nth-child(${i+1}) .cm-petal:nth-child(${j+1}){width:${pSz}px;height:${pSz}px;top:${parseFloat(py)-pSz/2}px;left:${parseFloat(px)-pSz/2}px;background:${col};opacity:${c.opacity};transform:rotate(${a}deg);animation-delay:${(j*.08/c.speed).toFixed(2)}s;box-shadow:0 0 ${c.glowSize*.5}px ${col}}`;
+  }).join('\n');
+  return `.cm-ring:nth-child(${i+1}){inset:${inset}px;border:${c.thickness}px solid ${col}55;--cspd:${spd}s;--cdir:${dir}}\n${petals}`;
+}).join('\n')}`,
+    html: `<div class="cm">${Array.from({length:c.rings},(_,i)=>`<div class="cm-ring">${Array.from({length:c.petalCount},()=>`<div class="cm-petal"></div>`).join('')}</div>`).join('')}<div class="cm-core"></div></div>`
+  })
+},
 ];
 
+/* ─────────────── CONSTANTS ─────────────── */
+const PAGE_SIZE = 12;
 const DOWNLOAD_LANGS = [
   {id:"html",label:"HTML"},
   {id:"css",label:"CSS Only"},
@@ -2018,23 +4701,22 @@ const DOWNLOAD_LANGS = [
   {id:"vue",label:"Vue SFC"},
   {id:"svelte",label:"Svelte"},
 ];
-
 const BG_MODES = [
   {id:"dark",label:"Dark"},
   {id:"light",label:"Light"},
   {id:"blur",label:"Blur"},
 ];
 
+/* ─────────────── CODE GENERATION ─────────────── */
 function generateCode(loader, controls, lang) {
   const {css, html} = loader.render(controls);
-  if (lang==="html") return `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width, initial-scale=1">\n<title>${loader.name} Loader</title>\n<style>\n  * { box-sizing: border-box; margin: 0; padding: 0; }\n  body { display: flex; align-items: center; justify-content: center; min-height: 100vh; background: #0a0f1e; }\n${css.split('\n').map(l=>'  '+l).join('\n')}\n</style>\n</head>\n<body>\n  ${html}\n</body>\n</html>`;
-  if (lang==="css") return `/* ${loader.name} — LoaderVault */\n\n/* CSS Animations */\n${css}\n\n/* HTML Structure:\n${html}\n*/`;
-  if (lang==="react") return `/* ${loader.name} — React Component */\nimport React from 'react';\n\nconst css = \`\n${css}\n\`;\n\nexport default function ${loader.name.replace(/\s+/g,'')}() {\n  return (\n    <>\n      <style>{css}</style>\n      <div dangerouslySetInnerHTML={{__html:\`${html.replace(/`/g,"\\`")}\`}} />\n    </>\n  );\n}`;
-  if (lang==="vue") return `<!-- ${loader.name} — Vue Component -->\n<template>\n  <div v-html="html" />\n</template>\n\n<script setup>\nconst html = \`${html.replace(/`/g,"\\`")}\`;\n</script>\n\n<style scoped>\n${css}\n</style>`;
-  if (lang==="svelte") return `<!-- ${loader.name} — Svelte Component -->\n<style>\n${css}\n</style>\n\n{@html \`${html.replace(/`/g,"\\`")}\`}`;
+  if (lang==="html") return `<!DOCTYPE html>\n<html lang="en">\n<head>\n<meta charset="UTF-8">\n<title>${loader.name} Loader</title>\n<style>\n* { box-sizing:border-box; margin:0; padding:0; }\nbody { display:flex; align-items:center; justify-content:center; min-height:100vh; background:#0a0f1e; }\n${css.split('\n').map(l=>'  '+l).join('\n')}\n</style>\n</head>\n<body>\n  ${html}\n</body>\n</html>`;
+  if (lang==="css") return `/* ${loader.name} — LoaderVault */\n\n${css}\n\n/* HTML:\n${html}\n*/`;
+  if (lang==="react") return `/* ${loader.name} — React */\nimport React from 'react';\nconst css = \`\n${css}\n\`;\nexport default function ${loader.name.replace(/\s+/g,'')}() {\n  return (<><style>{css}</style><div dangerouslySetInnerHTML={{__html:\`${html.replace(/`/g,"\\`")}\`}}/></>);\n}`;
+  if (lang==="vue") return `<!-- ${loader.name} -->\n<template><div v-html="html"/></template>\n<script setup>\nconst html=\`${html.replace(/`/g,"\\`")}\`;\n</script>\n<style scoped>\n${css}\n</style>`;
+  if (lang==="svelte") return `<!-- ${loader.name} -->\n<style>\n${css}\n</style>\n{@html \`${html.replace(/`/g,"\\`")}\`}`;
   return "";
 }
-
 function downloadCode(loader, controls, lang) {
   const code = generateCode(loader, controls, lang);
   const ext = lang==="react"?"jsx":lang==="vue"?"vue":lang==="svelte"?"svelte":lang==="css"?"css":"html";
@@ -2045,13 +4727,13 @@ function downloadCode(loader, controls, lang) {
   a.click();
 }
 
-/* ── Smooth Slider Component ── */
+/* ─────────────── SLIDER ─────────────── */
 function Slider({label, value, min, max, step, onChange}) {
   const pct = ((value-min)/(max-min)*100).toFixed(1);
   const fmt = step<0.1 ? value.toFixed(2) : step<1 ? value.toFixed(1) : Math.round(value);
   return (
-    <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"10px"}}>
-      <span style={{fontSize:"11px",fontWeight:600,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--muted)",minWidth:88,flexShrink:0}}>{label}</span>
+    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+      <span style={{fontSize:11,fontWeight:600,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--muted)",minWidth:88,flexShrink:0}}>{label}</span>
       <div style={{flex:1,position:"relative",height:20,display:"flex",alignItems:"center"}}>
         <div style={{position:"absolute",inset:"6px 0",background:"var(--slider-track)",borderRadius:99,overflow:"hidden"}}>
           <div style={{height:"100%",width:`${pct}%`,background:"var(--accent)",borderRadius:99,transition:"width .05s"}}/>
@@ -2060,95 +4742,78 @@ function Slider({label, value, min, max, step, onChange}) {
           onChange={e=>onChange(parseFloat(e.target.value))}
           style={{position:"absolute",inset:0,width:"100%",opacity:0,cursor:"pointer",height:"100%"}}/>
       </div>
-      <span style={{fontSize:"12px",fontFamily:"monospace",color:"var(--text-secondary)",minWidth:36,textAlign:"right"}}>{fmt}</span>
+      <span style={{fontSize:12,fontFamily:"monospace",color:"var(--text-secondary)",minWidth:36,textAlign:"right"}}>{fmt}</span>
     </div>
   );
 }
 
-/* ── Color Picker ── */
+/* ─────────────── COLOR PICK ─────────────── */
 function ColorPick({label, value, onChange}) {
   return (
-    <div style={{display:"flex",alignItems:"center",gap:"10px",marginBottom:"10px"}}>
-      <span style={{fontSize:"11px",fontWeight:600,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--muted)",minWidth:88,flexShrink:0}}>{label}</span>
+    <div style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
+      <span style={{fontSize:11,fontWeight:600,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--muted)",minWidth:88,flexShrink:0}}>{label}</span>
       <div style={{display:"flex",alignItems:"center",gap:8,flex:1}}>
         <div style={{position:"relative",width:30,height:24,borderRadius:6,overflow:"hidden",border:"1px solid rgba(255,255,255,.12)",flexShrink:0}}>
           <div style={{position:"absolute",inset:0,background:value}}/>
           <input type="color" value={value} onChange={e=>onChange(e.target.value)}
             style={{position:"absolute",inset:"-4px",width:"calc(100% + 8px)",height:"calc(100% + 8px)",opacity:0,cursor:"pointer"}}/>
         </div>
-        <span style={{fontSize:"11px",fontFamily:"monospace",color:"var(--text-secondary)"}}>{value.toUpperCase()}</span>
+        <span style={{fontSize:11,fontFamily:"monospace",color:"var(--text-secondary)"}}>{value.toUpperCase()}</span>
       </div>
     </div>
   );
 }
 
-/* ── Controls Panel ── */
+/* ─────────────── CONTROLS PANEL ─────────────── */
+const CTRL_CFG = {
+  speed:{min:0.1,max:4,step:0.05}, size:{min:24,max:120,step:0.5},
+  width:{min:40,max:200,step:1}, height:{min:8,max:60,step:0.5},
+  thickness:{min:0.5,max:12,step:0.1}, amplitude:{min:2,max:30,step:0.5},
+  bounceHeight:{min:10,max:100,step:0.5}, squish:{min:0.3,max:0.9,step:0.01},
+  barWidth:{min:2,max:20,step:0.5}, maxHeight:{min:16,max:80,step:0.5},
+  dotSize:{min:4,max:24,step:0.5}, fillLevel:{min:5,max:95,step:0.5},
+  gap:{min:2,max:24,step:0.5}, fontSize:{min:10,max:36,step:0.5},
+  radius:{min:10,max:70,step:0.5}, nodeSize:{min:2,max:14,step:0.25},
+  lineOpacity:{min:0.05,max:1,step:0.01}, glowSize:{min:0,max:30,step:0.5},
+  particleSize:{min:1,max:8,step:0.25}, contrast:{min:0.1,max:1,step:0.01},
+  opacity:{min:0.1,max:1,step:0.01}, rings:{min:2,max:8,step:1},
+  electronSize:{min:3,max:16,step:0.5}, blipCount:{min:1,max:8,step:1},
+  particleCount:{min:4,max:20,step:1}, petalCount:{min:3,max:12,step:1},
+  dotCount:{min:4,max:14,step:1}, tailCount:{min:3,max:12,step:1},
+  barCount:{min:3,max:12,step:1}, ringCount:{min:2,max:8,step:1},
+  cols:{min:2,max:6,step:1}, layers:{min:1,max:5,step:1},
+  cellSize:{min:6,max:28,step:0.5},
+};
+
 function Controls({loader, controls, setControls}) {
   const def = loader.controls;
-  const reset = () => setControls({...def});
   return (
     <div>
       {Object.entries(def).map(([k,dv])=>{
         const v = controls[k];
         const label = k.replace(/([A-Z])/g,' $1').trim();
-        if (typeof dv === "string" && (k.includes("olor") || k.includes("colour"))) {
+        if (typeof dv==="string" && (k.includes("olor")||k.includes("colour")))
           return <ColorPick key={k} label={label} value={v} onChange={nv=>setControls(p=>({...p,[k]:nv}))}/>;
-        }
-        if (typeof dv === "number") {
-          const cfg = {
-            speed:{min:0.1,max:4,step:0.05},
-            size:{min:24,max:120,step:0.5},
-            width:{min:40,max:200,step:1},
-            height:{min:8,max:60,step:0.5},
-            thickness:{min:0.5,max:12,step:0.1},
-            amplitude:{min:2,max:30,step:0.5},
-            bounceHeight:{min:10,max:100,step:0.5},
-            squish:{min:0.3,max:0.9,step:0.01},
-            barWidth:{min:2,max:20,step:0.5},
-            maxHeight:{min:16,max:80,step:0.5},
-            dotSize:{min:4,max:24,step:0.5},
-            fillLevel:{min:5,max:95,step:0.5},
-            gap:{min:2,max:24,step:0.5},
-            fontSize:{min:10,max:36,step:0.5},
-            radius:{min:10,max:70,step:0.5},
-            nodeSize:{min:2,max:14,step:0.25},
-            lineOpacity:{min:0.05,max:1,step:0.01},
-            glowSize:{min:0,max:30,step:0.5},
-            particleSize:{min:1,max:8,step:0.25},
-            contrast:{min:0.1,max:1,step:0.01},
-            opacity:{min:0.1,max:1,step:0.01},
-            rings:{min:2,max:8,step:1},
-            electronSize:{min:3,max:16,step:0.5},
-            blipCount:{min:1,max:8,step:1},
-            particleCount:{min:4,max:20,step:1},
-            petalCount:{min:3,max:12,step:1},
-            dotCount:{min:4,max:14,step:1},
-            tailCount:{min:3,max:12,step:1},
-            barCount:{min:3,max:12,step:1},
-            ringCount:{min:2,max:8,step:1},
-            cols:{min:2,max:6,step:1},
-            layers:{min:1,max:5,step:1},
-            cellSize:{min:6,max:28,step:0.5},
-          }[k] || {min:1,max:100,step:0.5};
+        if (typeof dv==="number") {
+          const cfg = CTRL_CFG[k] || {min:1,max:100,step:0.5};
           return <Slider key={k} label={label} value={v} min={cfg.min} max={cfg.max} step={cfg.step} onChange={nv=>setControls(p=>({...p,[k]:nv}))}/>;
         }
-        if (typeof dv === "string" && k==="text") {
+        if (typeof dv==="string" && k==="text")
           return (
             <div key={k} style={{display:"flex",alignItems:"center",gap:10,marginBottom:10}}>
-              <span style={{fontSize:"11px",fontWeight:600,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--muted)",minWidth:88,flexShrink:0}}>Text</span>
+              <span style={{fontSize:11,fontWeight:600,letterSpacing:"0.07em",textTransform:"uppercase",color:"var(--muted)",minWidth:88,flexShrink:0}}>Text</span>
               <input type="text" value={v} maxLength={24} onChange={e=>setControls(p=>({...p,[k]:e.target.value}))}
                 style={{flex:1,background:"var(--input-bg)",border:"1px solid var(--border)",borderRadius:8,padding:"5px 10px",fontSize:13,color:"var(--text)",fontFamily:"inherit",outline:"none"}}/>
             </div>
           );
-        }
         return null;
       })}
-      <button onClick={reset} style={{width:"100%",marginTop:4,padding:"7px",borderRadius:8,border:"1px dashed var(--border)",background:"transparent",color:"var(--muted)",fontSize:12,cursor:"pointer",fontFamily:"inherit",transition:"all .2s"}}>↺ Reset to Default</button>
+      <button onClick={()=>setControls({...def})} style={{width:"100%",marginTop:4,padding:7,borderRadius:8,border:"1px dashed var(--border)",background:"transparent",color:"var(--muted)",fontSize:12,cursor:"pointer",fontFamily:"inherit",transition:"all .2s"}}>↺ Reset to Default</button>
     </div>
   );
 }
 
-/* ── Loader Card Preview ── */
+/* ─────────────── CARD LOADER ─────────────── */
 function CardLoader({loader}) {
   const {css,html} = loader.render(loader.controls);
   const uid = `cl${loader.id}`;
@@ -2159,7 +4824,7 @@ function CardLoader({loader}) {
   </>;
 }
 
-/* ── Modal Loader Preview (live controls) ── */
+/* ─────────────── MODAL LOADER ─────────────── */
 function ModalLoader({loader, controls}) {
   const {css,html} = loader.render(controls);
   const uid = `ml${loader.id}`;
@@ -2168,6 +4833,136 @@ function ModalLoader({loader, controls}) {
     <style dangerouslySetInnerHTML={{__html:scoped}}/>
     <div className={uid} dangerouslySetInnerHTML={{__html:html}}/>
   </>;
+}
+
+/* ─────────────── LAZY CARD (IntersectionObserver) ─────────────── */
+function LazyCard({loader, idx, onClick}) {
+  const ref = useRef(null);
+  const [visible, setVisible] = useState(false);
+
+  useEffect(()=>{
+    const el = ref.current;
+    if (!el) return;
+    const obs = new IntersectionObserver(
+      ([entry])=>{ if(entry.isIntersecting){ setVisible(true); obs.disconnect(); } },
+      {rootMargin:"120px", threshold:0.01}
+    );
+    obs.observe(el);
+    return ()=>obs.disconnect();
+  },[]);
+
+  const delay = `${Math.min(idx%PAGE_SIZE, 8)*0.04}s`;
+
+  return (
+    <div
+      ref={ref}
+      className="card"
+      style={{animationDelay: delay}}
+      onClick={()=>onClick(loader)}
+    >
+      <div className="card-preview">
+        {visible ? <CardLoader loader={loader}/> : <div style={{width:56,height:56,borderRadius:"50%",border:"2px solid var(--border)",opacity:.3}}/>}
+      </div>
+      <div className="card-body">
+        <div className="card-name">{loader.name}</div>
+        <div className="card-tags">{loader.tags.slice(0,3).map(t=><span key={t} className="card-tag">{t}</span>)}</div>
+      </div>
+    </div>
+  );
+}
+
+/* ─────────────── THEME TOGGLE ─────────────── */
+// function ThemeToggle({theme, setTheme}) {
+//   const dark = theme==="dark";
+//   return (
+//     <button
+//       aria-label={dark?"Switch to light mode":"Switch to dark mode"}
+//       onClick={()=>setTheme(dark?"light":"dark")}
+//       style={{
+//         width:52, height:28, borderRadius:14,
+//         border:"1px solid var(--border)",
+//         background: dark?"rgba(99,102,241,.25)":"rgba(250,204,21,.18)",
+//         cursor:"pointer", position:"relative",
+//         transition:"background .3s,border-color .3s",
+//         flexShrink:0, display:"flex", alignItems:"center", padding:"0 4px"
+//       }}
+//     >
+//       <div style={{
+//         position:"absolute", left: dark?24:4,
+//         width:20, height:20, borderRadius:"50%",
+//         background: dark?"#818cf8":"#fbbf24",
+//         transition:"left .28s cubic-bezier(.34,1.56,.64,1)",
+//         display:"flex", alignItems:"center", justifyContent:"center",
+//         fontSize:12, boxShadow: dark?"0 0 8px #818cf855":"0 0 8px #fbbf2488"
+//       }}>
+//         {dark?"🌙":"☀️"}
+//       </div>
+//     </button>
+//   );
+// }
+
+/* ─────────────── THEME TOGGLE ─────────────── */
+function ThemeToggle({ theme, setTheme }) {
+  const dark = theme === "dark";
+
+  return (
+    <button
+      aria-label={dark ? "Switch to light mode" : "Switch to dark mode"}
+      onClick={() => setTheme(dark ? "light" : "dark")}
+      className="theme-toggle"
+      style={{
+        width: 52,
+        height: 28,
+        borderRadius: 14,
+        border: "1px solid var(--border)",
+        background: dark ? "rgba(99,102,241,.25)" : "rgba(250,204,21,.18)",
+        cursor: "pointer",
+
+        /* floating on desktop */
+        position: "fixed",
+        top: 16,
+        right: 16,
+        zIndex: 9999,
+
+        display: "flex",
+        alignItems: "center",
+        padding: "0 4px",
+        transition: "background .3s,border-color .3s, transform .2s ease",
+      }}
+    >
+      <div
+        style={{
+          position: "absolute",
+          left: dark ? 24 : 4,
+          width: 20,
+          height: 20,
+          borderRadius: "50%",
+          background: dark ? "#818cf8" : "#fbbf24",
+          transition: "left .28s cubic-bezier(.34,1.56,.64,1)",
+          display: "flex",
+          alignItems: "center",
+          justifyContent: "center",
+          fontSize: 12,
+          boxShadow: dark
+            ? "0 0 8px #818cf855"
+            : "0 0 8px #fbbf2488",
+        }}
+      >
+        {dark ? "🌙" : "☀️"}
+      </div>
+
+      {/* mobile fix */}
+      <style>{`
+        @media (max-width: 768px) {
+          .theme-toggle {
+            top: 10px;
+            right: 10px;
+            transform: scale(0.9);
+          }
+        }
+      `}</style>
+    </button>
+  );
 }
 
 /* ═══════════════════════════ APP ═══════════════════════════ */
@@ -2183,26 +4978,50 @@ export default function App() {
   const [bgImage] = useState("https://images.unsplash.com/photo-1519681393784-d120267933ba?w=800&q=60");
   const [copied, setCopied] = useState(false);
   const [headerVisible, setHeaderVisible] = useState(false);
-  const overlayRef = useRef();
-  const [searchedTags, setSearchedTags] = useState([]);
   const [showAllTags, setShowAllTags] = useState(false);
 
-  const dark = theme === "dark";
+  /* ── Infinite scroll state ── */
+  const [visibleCount, setVisibleCount] = useState(PAGE_SIZE);
+  const sentinelRef = useRef(null);
+
+  const dark = theme==="dark";
+  const overlayRef = useRef();
 
   useEffect(()=>{setTimeout(()=>setHeaderVisible(true),100);},[]);
   useEffect(()=>{
-    const fn = e => e.key==="Escape" && setSelected(null);
+    const fn = e=>e.key==="Escape"&&setSelected(null);
     window.addEventListener("keydown",fn);
     return ()=>window.removeEventListener("keydown",fn);
   },[]);
 
   const allTags = useMemo(()=>[...new Set(LOADERS.flatMap(l=>l.tags))],[]);
-  const filtered = useMemo(()=>LOADERS.filter(l=>{
-    const q=search.toLowerCase();
-    return (!q||l.name.toLowerCase().includes(q)||l.tags.some(t=>t.includes(q))) && (!activeTag||l.tags.includes(activeTag));
-  }),[search,activeTag]);
+  const filtered = useMemo(()=>{
+    setVisibleCount(PAGE_SIZE); // reset when filter changes
+    return LOADERS.filter(l=>{
+      const q=search.toLowerCase();
+      return (!q||l.name.toLowerCase().includes(q)||l.tags.some(t=>t.includes(q)))
+        && (!activeTag||l.tags.includes(activeTag));
+    });
+  },[search,activeTag]);
 
-  const openLoader = l => { setSelected(l); setControls({...l.controls}); setLang("html"); setBgMode("dark"); };
+  const visible = useMemo(()=>filtered.slice(0,visibleCount),[filtered,visibleCount]);
+  const hasMore = visibleCount < filtered.length;
+
+  /* ── IntersectionObserver sentinel for infinite scroll ── */
+  useEffect(()=>{
+    const el = sentinelRef.current;
+    if (!el || !hasMore) return;
+    const obs = new IntersectionObserver(
+      ([entry])=>{ if(entry.isIntersecting) setVisibleCount(n=>n+PAGE_SIZE); },
+      {rootMargin:"200px", threshold:0.01}
+    );
+    obs.observe(el);
+    return ()=>obs.disconnect();
+  },[hasMore, visibleCount]);
+
+  const openLoader = useCallback(l=>{
+    setSelected(l); setControls({...l.controls}); setLang("html"); setBgMode("dark");
+  },[]);
 
   const handleCopy = ()=>{
     if(!selected) return;
@@ -2211,13 +5030,10 @@ export default function App() {
     setCopied(true); setTimeout(()=>setCopied(false),2000);
   };
 
-  const previewStyle = bgMode==="dark" ? {background:"#06091a"}
-    : bgMode==="light" ? {background:"#f0f4ff"}
-    : {
-        backgroundImage:`url(${bgImage})`,
-        backgroundSize:"cover",backgroundPosition:"center",
-        position:"relative"
-      };
+  /* ── Filter tag handler that also resets scroll ── */
+  const handleTagClick = useCallback((tag)=>{
+    setActiveTag(a=>a===tag?null:tag);
+  },[]);
 
   const CSS_VARS = `
     :root {
@@ -2247,177 +5063,33 @@ export default function App() {
   return (
     <>
       <style>{CSS_VARS}{`
-      @import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Ballet:opsz@16..72&display=swap');
-      @import url('https://fonts.googleapis.com/css2?family=Cormorant+Unicase:wght@500;600;700&family=EB+Garamond:ital,wght@0,400;0,500;1,400&display=swap');
-        @import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:ital,wght@0,300;0,400;0,600;1,300;1,400;1,600&family=Cinzel:wght@400;600;700&family=DM+Sans:opsz,wght@9..40,300;9..40,400;9..40,500;9..40,600&family=JetBrains+Mono:wght@400;600&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=UnifrakturCook:wght@700&family=Ballet:opsz@16..72&display=swap');
+        @import url('https://fonts.googleapis.com/css2?family=JetBrains+Mono:wght@400;600&display=swap');
         *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
         html{scroll-behavior:smooth}
-        body{font-family:'UnifrakturCook',cursive;background:var(--bg);color:var(--text);min-height:100vh;transition:background .4s,color .4s;overflow-x:hidden}
+        body{font-family:'UnifrakturCook',cursive;background:var(--bg);color:var(--text);min-height:100vh;transition:background .35s,color .35s;overflow-x:hidden}
         ::-webkit-scrollbar{width:5px}
         ::-webkit-scrollbar-track{background:transparent}
         ::-webkit-scrollbar-thumb{background:var(--border);border-radius:3px}
-
-        /* Range input override */
         input[type=range]{-webkit-appearance:none;appearance:none;background:transparent;width:100%;cursor:pointer}
         input[type=range]::-webkit-slider-thumb{-webkit-appearance:none;width:14px;height:14px;border-radius:50%;background:var(--accent);border:2px solid #fff;box-shadow:0 0 0 2px var(--accent);transition:transform .15s}
         input[type=range]::-webkit-slider-thumb:hover{transform:scale(1.25)}
-
-        /* Layout */
         .app{max-width:1380px;margin:0 auto;padding:0 24px 80px}
 
-        /* Header */
-        .hdr{padding:32px 0 0;display:flex;align-items:flex-start;justify-content:space-between;gap:20px;flex-wrap:wrap}
-        .hdr-left{opacity:0;transform:translateY(-24px);transition:opacity .9s cubic-bezier(.22,1,.36,1),transform .9s cubic-bezier(.22,1,.36,1)}
-        .hdr-left.visible{opacity:1;transform:none}
-.hdr{
-  padding:42px 0 10px;
-  display:flex;
-  justify-content:center;
-  align-items:center;
-  text-align:center;
-}
+        /* ── Header ── */
+        .hdr{padding:42px 0 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
+        .hdr-center{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;opacity:0;transform:translateY(20px) scale(.96);transition:opacity 1.2s ease,transform 1.2s cubic-bezier(.22,1,.36,1)}
+        .hdr-center.visible{opacity:1;transform:none}
+        .hdr-actions{display:flex;align-items:center;gap:10px;padding-top:8px}
 
-.hdr-left{
-  opacity:0;
-  transform:translateY(20px) scale(.96);
-  transition:
-    opacity 1.2s ease,
-    transform 1.2s cubic-bezier(.22,1,.36,1);
-}
+        .site-name{font-family:'UnifrakturCook',cursive;font-size:clamp(42px,7vw,82px);font-weight:700;line-height:1;letter-spacing:.05em;background:linear-gradient(120deg,#eef2ff 0%,#d8b4fe 30%,#f9a8d4 60%,#a5b4fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 10px rgba(255,255,255,.08)) drop-shadow(0 0 24px rgba(168,85,247,.18));animation:chalkReveal 2.4s ease forwards,chalkFloat 6s ease-in-out infinite}
+        .site-sub{font-family:'Ballet',cursive;font-size:clamp(18px,3vw,30px);margin-top:12px;color:#d8c4ff;opacity:.88;letter-spacing:.03em;text-shadow:0 0 12px rgba(216,180,254,.18);animation:fadeGlow 4s ease-in-out infinite}
 
-.hdr-left.visible{
-  opacity:1;
-  transform:none;
-}
+        @keyframes chalkFloat{0%,100%{transform:translateY(0)}50%{transform:translateY(-5px)}}
+        @keyframes chalkReveal{0%{opacity:0;filter:blur(8px);letter-spacing:.25em}100%{opacity:1;filter:drop-shadow(0 0 10px rgba(255,255,255,.08)) drop-shadow(0 0 24px rgba(168,85,247,.18));letter-spacing:.05em}}
+        @keyframes fadeGlow{0%,100%{opacity:.75;text-shadow:0 0 10px rgba(216,180,254,.12)}50%{opacity:1;text-shadow:0 0 18px rgba(216,180,254,.22),0 0 32px rgba(168,85,247,.12)}}
 
-.site-name{
-  font-family:'UnifrakturCook',cursive;
-  font-size:clamp(42px,7vw,82px);
-  font-weight:700;
-  line-height:1;
-  letter-spacing:.05em;
-
-  background:
-    linear-gradient(
-      120deg,
-      #eef2ff 0%,
-      #d8b4fe 30%,
-      #f9a8d4 60%,
-      #a5b4fc 100%
-    );
-
-  -webkit-background-clip:text;
-  -webkit-text-fill-color:transparent;
-  background-clip:text;
-
-  filter:
-    drop-shadow(0 0 10px rgba(255,255,255,.08))
-    drop-shadow(0 0 24px rgba(168,85,247,.18));
-
-  position:relative;
-
-  animation:
-    chalkReveal 2.4s ease forwards,
-    chalkFloat 6s ease-in-out infinite;
-}
-
-/* Chalk texture overlay */
-.site-name::after{
-  content:"LoaderVault";
-  position:absolute;
-  inset:0;
-
-  font-family:'UnifrakturCook',cursive;
-  color:rgba(255,255,255,.08);
-
-  mix-blend-mode:overlay;
-
-  filter:blur(.4px);
-
-  animation:chalkDust 4s linear infinite;
-
-  pointer-events:none;
-}
-
-.site-sub{
-  font-family:'Ballet',cursive;
-  font-size:clamp(20px,3vw,34px);
-  margin-top:14px;
-
-  color:#d8c4ff;
-
-  opacity:.88;
-  letter-spacing:.03em;
-
-  text-shadow:
-    0 0 12px rgba(216,180,254,.18);
-
-  animation:
-    fadeGlow 4s ease-in-out infinite;
-}
-
-/* Floating movement */
-@keyframes chalkFloat{
-  0%,100%{
-    transform:translateY(0px);
-  }
-  50%{
-    transform:translateY(-5px);
-  }
-}
-
-/* Chalk reveal effect */
-@keyframes chalkReveal{
-  0%{
-    opacity:0;
-    filter:blur(8px);
-    letter-spacing:.25em;
-  }
-
-  100%{
-    opacity:1;
-    filter:
-      drop-shadow(0 0 10px rgba(255,255,255,.08))
-      drop-shadow(0 0 24px rgba(168,85,247,.18));
-    letter-spacing:.05em;
-  }
-}
-
-/* Dust shimmer */
-@keyframes chalkDust{
-  0%{
-    opacity:.05;
-    transform:translateX(0px);
-  }
-  50%{
-    opacity:.12;
-    transform:translateX(1px);
-  }
-  100%{
-    opacity:.05;
-    transform:translateX(0px);
-  }
-}
-
-@keyframes fadeGlow{
-  0%,100%{
-    opacity:.75;
-    text-shadow:0 0 10px rgba(216,180,254,.12);
-  }
-
-  50%{
-    opacity:1;
-    text-shadow:
-      0 0 18px rgba(216,180,254,.22),
-      0 0 32px rgba(168,85,247,.12);
-  }
-}
-        .hdr-right{display:flex;align-items:center;gap:10px;opacity:0;transform:translateY(-16px);transition:opacity .8s .2s cubic-bezier(.22,1,.36,1),transform .8s .2s cubic-bezier(.22,1,.36,1)}
-        .hdr-right.visible{opacity:1;transform:none}
-        .pill-btn{font-family:'UnifrakturCook',cursive;font-size:12px;font-weight:500;padding:8px 18px;border-radius:100px;border:1px solid var(--border);background:var(--card);color:var(--text-secondary);cursor:pointer;transition:all .25s;letter-spacing:.02em;white-space:nowrap}
-        .pill-btn:hover{border-color:var(--border-h);color:var(--text);box-shadow:0 0 0 3px var(--glow)}
-
-        /* Search */
+        /* ── Search ── */
         .search-area{margin:32px 0 0;position:relative}
         .search-wrap{position:relative}
         .search-icon{position:absolute;left:20px;top:50%;transform:translateY(-50%);color:var(--muted);font-size:16px;pointer-events:none}
@@ -2426,30 +5098,30 @@ export default function App() {
         .search-in:focus{border-color:var(--border-h);box-shadow:0 0 0 4px var(--glow),0 8px 40px rgba(99,102,241,.08)}
         .search-count{position:absolute;right:18px;top:50%;transform:translateY(-50%);font-size:11px;color:var(--muted);font-family:'JetBrains Mono',monospace;pointer-events:none}
 
-        /* Tags */
-        .tags-row{display:flex;gap:7px;margin:14px 0 0;flex-wrap:wrap;align-items:center}
+        /* ── Tags ── */
+        .tags-wrap{margin-top:14px}
+        .tags-row{display:flex;gap:7px;flex-wrap:wrap;align-items:center}
         .tag-pill{padding:4px 12px;border-radius:100px;font-size:11px;font-weight:500;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-family:'UnifrakturCook',cursive;letter-spacing:.03em}
         .tag-pill:hover,.tag-pill.on{background:var(--tag-bg);color:var(--tag-text);border-color:rgba(99,102,241,.4)}
         .tag-pill.on{font-weight:600}
+        .tag-expand{padding:4px 12px;border-radius:100px;font-size:11px;font-weight:600;border:1px dashed var(--border-h);background:transparent;color:var(--accent2);cursor:pointer;transition:all .22s;font-family:'UnifrakturCook',cursive;letter-spacing:.03em}
+        .tag-expand:hover{background:var(--tag-bg);border-color:var(--accent2);transform:translateY(-1px)}
 
-        /* Divider */
+        /* ── Divider / stats ── */
         .divider{height:1px;background:var(--border);margin:22px 0 0}
-
-        /* Stats */
         .stats-row{display:flex;gap:28px;margin:16px 0 20px;flex-wrap:wrap}
         .stat{font-size:12px;color:var(--muted);font-family:'JetBrains Mono',monospace}
         .stat b{color:var(--text);font-weight:600}
 
-        /* Grid */
+        /* ── Grid ── */
         .grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(210px,1fr));gap:18px}
         @media(max-width:600px){.grid{grid-template-columns:repeat(2,1fr);gap:12px}}
         @media(max-width:380px){.grid{grid-template-columns:1fr 1fr;gap:10px}}
 
-        /* Card */
-        .card{background:var(--card);border:1px solid var(--border);border-radius:22px;cursor:pointer;overflow:hidden;transition:transform .4s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .4s;animation:card-in .5s ease both}
+        /* ── Card ── */
+        .card{background:var(--card);border:1px solid var(--border);border-radius:22px;cursor:pointer;overflow:hidden;transition:transform .4s cubic-bezier(.34,1.56,.64,1),border-color .3s,box-shadow .4s;animation:card-in .45s ease both}
         .card:hover{transform:translateY(-7px) scale(1.025);border-color:var(--border-h);box-shadow:0 20px 60px rgba(99,102,241,.18),0 4px 20px rgba(0,0,0,.15)}
         @keyframes card-in{from{opacity:0;transform:translateY(22px) scale(.95)}to{opacity:1;transform:none}}
-        .card-nth-1{animation-delay:.02s}.card-nth-2{animation-delay:.05s}.card-nth-3{animation-delay:.08s}.card-nth-4{animation-delay:.11s}.card-nth-5{animation-delay:.14s}.card-nth-6{animation-delay:.17s}.card-nth-7{animation-delay:.2s}.card-nth-n{animation-delay:.23s}
         .card-preview{height:160px;display:flex;align-items:center;justify-content:center;background:var(--preview-bg);position:relative;overflow:hidden;transition:background .3s}
         .card-preview::after{content:'';position:absolute;inset:0;background:radial-gradient(circle at center,var(--glow) 0%,transparent 72%);opacity:0;transition:opacity .35s}
         .card:hover .card-preview::after{opacity:1}
@@ -2458,15 +5130,21 @@ export default function App() {
         .card-tags{display:flex;gap:5px;flex-wrap:wrap}
         .card-tag{font-size:10px;padding:2px 8px;border-radius:100px;background:var(--tag-bg);color:var(--tag-text);font-weight:500;letter-spacing:.03em}
 
-        /* Empty */
+        /* ── Sentinel / load more indicator ── */
+        .sentinel{padding:32px;text-align:center;color:var(--muted);font-size:13px;font-family:'JetBrains Mono',monospace;grid-column:1/-1}
+        .sentinel-dots{display:inline-flex;gap:6px;margin-bottom:8px}
+        .sentinel-dot{width:6px;height:6px;border-radius:50%;background:var(--accent);animation:sdot .9s ease-in-out infinite}
+        .sentinel-dot:nth-child(2){animation-delay:.15s}
+        .sentinel-dot:nth-child(3){animation-delay:.3s}
+        @keyframes sdot{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+
+        /* ── Empty ── */
         .empty{text-align:center;padding:80px 20px;color:var(--muted);grid-column:1/-1}
         .empty-icon{font-size:40px;margin-bottom:14px;opacity:.25}
 
-        /* Overlay */
+        /* ── Overlay / Modal ── */
         .overlay{position:fixed;inset:0;z-index:1000;background:var(--overlay);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);display:flex;align-items:center;justify-content:center;padding:16px;animation:ov-in .2s ease}
         @keyframes ov-in{from{opacity:0}to{opacity:1}}
-
-        /* Modal */
         .modal{background:var(--modal-bg);border:1px solid var(--border);border-radius:28px;width:100%;max-width:920px;max-height:90vh;overflow-y:auto;animation:m-in .38s cubic-bezier(.34,1.56,.64,1);position:relative}
         @keyframes m-in{from{opacity:0;transform:scale(.88) translateY(32px)}to{opacity:1;transform:none}}
         .m-hdr{display:flex;align-items:flex-start;justify-content:space-between;padding:26px 28px 0;gap:12px;flex-wrap:wrap}
@@ -2477,29 +5155,29 @@ export default function App() {
         .m-body{display:grid;grid-template-columns:1fr 1fr;gap:22px;padding:22px 28px 28px}
         @media(max-width:640px){.m-body{grid-template-columns:1fr}.modal{border-radius:20px}.m-hdr{padding:18px 18px 0}.m-body{padding:16px 18px 22px}}
 
-        /* Preview panel */
-        .preview-panel{border-radius:18px;min-height:200px;display:flex;align-items:center;justify-content:center;transition:all .4s;overflow:hidden;position:relative}
+        /* ── Preview panel ── */
+        .preview-panel{border-radius:18px;min-height:200px;display:flex;align-items:center;justify-content:center;overflow:hidden;position:relative}
         .preview-inner{transform:scale(1.4)}
         .blur-overlay{position:absolute;inset:0;backdrop-filter:blur(var(--blur-amt,0px));-webkit-backdrop-filter:blur(var(--blur-amt,0px));z-index:0;pointer-events:none}
         .preview-content{position:relative;z-index:1}
 
-        /* BG controls */
+        /* ── BG controls ── */
         .bg-ctrl{margin-top:10px;display:flex;flex-direction:column;gap:8px}
         .bg-tabs{display:flex;gap:6px}
         .bg-tab{flex:1;padding:6px;border-radius:9px;font-size:11px;font-weight:500;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-family:'UnifrakturCook',cursive;letter-spacing:.03em}
         .bg-tab.on{background:var(--tag-bg);color:var(--tag-text);border-color:rgba(99,102,241,.4);font-weight:600}
 
-        /* Controls section */
+        /* ── Controls section ── */
         .ctrl-section{background:var(--input-bg);border:1px solid var(--border);border-radius:16px;padding:16px 18px}
         .ctrl-section+.ctrl-section{margin-top:12px}
         .ctrl-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:.1em;color:var(--muted);margin-bottom:13px;font-family:'UnifrakturCook',cursive}
 
-        /* Lang tabs */
+        /* ── Lang tabs ── */
         .lang-tabs{display:flex;gap:5px;flex-wrap:wrap}
         .lang-tab{padding:5px 11px;border-radius:8px;font-size:11px;font-weight:600;border:1px solid var(--border);background:transparent;color:var(--muted);cursor:pointer;transition:all .2s;font-family:'UnifrakturCook',cursive;letter-spacing:.03em}
         .lang-tab.on{background:var(--accent);color:#fff;border-color:var(--accent)}
 
-        /* Action row */
+        /* ── Action row ── */
         .action-row{display:flex;gap:9px;margin-top:12px;flex-wrap:wrap}
         .btn-dl{flex:1;min-width:80px;padding:11px 14px;border-radius:13px;font-size:13px;font-weight:600;font-family:'UnifrakturCook',cursive;cursor:pointer;transition:all .25s;display:flex;align-items:center;justify-content:center;gap:6px;letter-spacing:.02em}
         .btn-dl-primary{background:linear-gradient(135deg,var(--accent),var(--accent2));color:#fff;border:none}
@@ -2507,114 +5185,53 @@ export default function App() {
         .btn-dl-sec{background:var(--input-bg);border:1px solid var(--border);color:var(--text-secondary)}
         .btn-dl-sec:hover{border-color:var(--border-h);color:var(--text)}
 
-        .tags-wrap{
-  margin-top:14px;
-}
-
-.tag-expand{
-  padding:4px 12px;
-  border-radius:100px;
-  font-size:11px;
-  font-weight:600;
-  border:1px dashed var(--border-h);
-  background:transparent;
-  color:var(--accent2);
-  cursor:pointer;
-  transition:all .22s ease;
-  font-family:'UnifrakturCook',cursive;
-  letter-spacing:.03em;
-}
-
-.tag-expand:hover{
-  background:var(--tag-bg);
-  border-color:var(--accent2);
-  transform:translateY(-1px);
-}
-
-.mini-footer{
-  position:fixed;
-  bottom:0;
-  left:0;
-
-  width:100%;
-
-  padding:6px 12px;
-
-  display:flex;
-  align-items:center;
-  justify-content:center;
-
-  font-size:10px;
-  letter-spacing:.12em;
-  font-family:'JetBrains Mono',monospace;
-
-  color:rgba(255,255,255,.45);
-
-  background:rgba(10,12,25,.55);
-  border-top:1px solid rgba(255,255,255,.06);
-
-  backdrop-filter:blur(12px);
-  -webkit-backdrop-filter:blur(12px);
-
-  z-index:9999;
-
-  pointer-events:none;
-}
-
-        /* Footer */
+        /* ── Footer ── */
         .footer{text-align:center;padding:40px 0 20px;border-top:1px solid var(--border);margin-top:70px}
         .footer-name{font-family:'UnifrakturCook',cursive;font-size:16px;font-weight:600;background:linear-gradient(90deg,#a5b4fc,#f472b6);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;letter-spacing:.08em}
         .footer-sub{font-family:'UnifrakturCook',cursive;font-style:italic;font-size:14px;color:var(--muted);margin-top:6px}
+        .mini-footer{position:fixed;bottom:0;left:0;width:100%;padding:6px 12px;display:flex;align-items:center;justify-content:center;font-size:10px;letter-spacing:.12em;font-family:'JetBrains Mono',monospace;color:rgba(255,255,255,.45);background:rgba(10,12,25,.55);border-top:1px solid rgba(255,255,255,.06);backdrop-filter:blur(12px);z-index:9999;pointer-events:none}
       `}</style>
 
       <div className="app">
-        {/* Header */}
-        <header className="hdr">
-  <div className={`hdr-left centered${headerVisible ? " visible" : ""}`}>
-    <div className="site-name">LoaderVault</div>
-    <div className="site-sub">
-      A curated collection of fine CSS animations
-    </div>
-  </div>
-</header>
 
-        {/* Search */}
+        {/* ── Header ── */}
+        <header className="hdr">
+          {/* Spacer to balance the right actions */}
+          <div style={{width:52, flexShrink:0}}/>
+
+          <div className={`hdr-center${headerVisible?" visible":""}`}>
+            <div className="site-name">LoaderVault</div>
+            <div className="site-sub">A curated collection of fine CSS animations</div>
+          </div>
+
+          {/* Right-side actions */}
+          <div className="hdr-actions">
+            <ThemeToggle theme={theme} setTheme={setTheme}/>
+          </div>
+        </header>
+
+        {/* ── Search ── */}
         <div className="search-area">
           <div className="search-wrap">
             <span className="search-icon">⌕</span>
-            <input className="search-in" type="text" placeholder="Search loaders by name or tag — try 'orbit', 'wave', '3d'…"
+            <input className="search-in" type="text"
+              placeholder="Search by name or tag — try 'orbit', 'wave', '3d'…"
               value={search} onChange={e=>setSearch(e.target.value)}/>
-            <span className="search-count">{filtered.length}/{LOADERS.length}</span>
+            <span className="search-count">{visible.length}/{filtered.length}</span>
           </div>
           <div className="tags-wrap">
-  <div className="tags-row">
-    <button
-      className={`tag-pill${!activeTag ? " on" : ""}`}
-      onClick={() => setActiveTag(null)}
-    >
-      All
-    </button>
-
-    {(showAllTags ? allTags : allTags.slice(0, 8)).map((t) => (
-      <button
-        key={t}
-        className={`tag-pill${activeTag === t ? " on" : ""}`}
-        onClick={() => setActiveTag(activeTag === t ? null : t)}
-      >
-        {t}
-      </button>
-    ))}
-
-    {allTags.length > 8 && (
-      <button
-        className="tag-expand"
-        onClick={() => setShowAllTags(v => !v)}
-      >
-        {showAllTags ? "Show Less ▲" : `Show All ${allTags.length} ▾`}
-      </button>
-    )}
-  </div>
-</div>
+            <div className="tags-row">
+              <button className={`tag-pill${!activeTag?" on":""}`} onClick={()=>setActiveTag(null)}>All</button>
+              {(showAllTags ? allTags : allTags.slice(0,8)).map(t=>(
+                <button key={t} className={`tag-pill${activeTag===t?" on":""}`} onClick={()=>handleTagClick(t)}>{t}</button>
+              ))}
+              {allTags.length>8 && (
+                <button className="tag-expand" onClick={()=>setShowAllTags(v=>!v)}>
+                  {showAllTags?`Show Less ▲`:`Show All ${allTags.length} ▾`}
+                </button>
+              )}
+            </div>
+          </div>
         </div>
 
         <div className="divider"/>
@@ -2625,34 +5242,33 @@ export default function App() {
           <span className="stat"><b>{allTags.length}</b> categories</span>
         </div>
 
-        {/* Grid */}
+        {/* ── Grid ── */}
         <div className="grid">
           {filtered.length===0 ? (
             <div className="empty"><div className="empty-icon">◌</div><div>No loaders found</div></div>
-          ) : filtered.map((loader,idx)=>(
-            <div key={loader.id} className={`card card-nth-${Math.min(idx+1,7)||"n"}`} onClick={()=>openLoader(loader)}>
-              <div className="card-preview">
-                <CardLoader loader={loader}/>
-              </div>
-              <div className="card-body">
-                <div className="card-name">{loader.name}</div>
-                <div className="card-tags">{loader.tags.slice(0,3).map(t=><span key={t} className="card-tag">{t}</span>)}</div>
-              </div>
-            </div>
+          ) : visible.map((loader,idx)=>(
+            <LazyCard key={loader.id} loader={loader} idx={idx} onClick={openLoader}/>
           ))}
+
+          {/* Sentinel element — scroll to load more */}
+          {hasMore && (
+            <div ref={sentinelRef} className="sentinel">
+              <div className="sentinel-dots">
+                <div className="sentinel-dot"/><div className="sentinel-dot"/><div className="sentinel-dot"/>
+              </div>
+              <div>Loading more loaders…</div>
+            </div>
+          )}
         </div>
 
         <footer className="footer">
           <div className="footer-name">Akhil Antony Joseph</div>
           <div className="footer-sub">LoaderVault · Open CSS Animation Showcase</div>
         </footer>
-
-        <div className="mini-footer">
-  Built by Joseph, Akhil
-</div>
+        <div className="mini-footer">Built by Joseph, Akhil</div>
       </div>
 
-      {/* Modal */}
+      {/* ── Modal ── */}
       {selected && (
         <div className="overlay" ref={overlayRef} onClick={e=>e.target===overlayRef.current&&setSelected(null)}>
           <div className="modal" onClick={e=>e.stopPropagation()}>
@@ -2668,9 +5284,8 @@ export default function App() {
             </div>
 
             <div className="m-body">
-              {/* Left column */}
+              {/* Left — preview */}
               <div>
-                {/* Preview */}
                 <div className="preview-panel"
                   style={bgMode==="blur"
                     ? {backgroundImage:`url(${bgImage})`,backgroundSize:"cover",backgroundPosition:"center"}
@@ -2681,8 +5296,6 @@ export default function App() {
                     <ModalLoader loader={selected} controls={controls}/>
                   </div>
                 </div>
-
-                {/* BG controls */}
                 <div className="bg-ctrl">
                   <div className="bg-tabs">
                     {BG_MODES.map(b=>(
@@ -2697,15 +5310,12 @@ export default function App() {
                 </div>
               </div>
 
-              {/* Right column */}
+              {/* Right — controls */}
               <div style={{display:"flex",flexDirection:"column",gap:10}}>
-                {/* Customize */}
                 <div className="ctrl-section">
                   <div className="ctrl-label">Customize</div>
                   <Controls loader={selected} controls={controls} setControls={setControls}/>
                 </div>
-
-                {/* Export */}
                 <div className="ctrl-section">
                   <div className="ctrl-label">Export Format</div>
                   <div className="lang-tabs">
@@ -2714,7 +5324,6 @@ export default function App() {
                     ))}
                   </div>
                 </div>
-
                 <div className="action-row">
                   <button className="btn-dl btn-dl-primary" onClick={()=>downloadCode(selected,controls,lang)}>
                     ↓ Download {DOWNLOAD_LANGS.find(l=>l.id===lang)?.label}
