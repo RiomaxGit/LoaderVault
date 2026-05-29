@@ -19,32 +19,7 @@ const LOADERS = [
       html:`<div class="oh"><div class="oh-r oh-r1"></div><div class="oh-r oh-r2"></div><div class="oh-r oh-r3"></div><div class="oh-core"></div></div>`
     })
   },
-  /* 40 */ {
-  id: 40, name: "Neural Pulse", tags: ["AI", "network", "nodes", "synaptic"],
-  controls: { speed: 1.0, size: 72, color: "#818cf8", secondColor: "#34d399", thirdColor: "#f472b6", thickness: 1.5 },
-  render: (c) => ({
-    css: `@keyframes np-pulse{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.4);opacity:1}}
-@keyframes np-blink{0%,100%{opacity:.1}50%{opacity:.9}}
-${[[36,12],[12,40],[60,40],[24,65],[48,65]].map((p,i)=>`.np-n${i}{animation:np-pulse ${(1.2/c.speed+i*.18).toFixed(2)}s ease-in-out infinite;transform-origin:${p[0]}px ${p[1]}px}`).join('')}
-${[[0,1],[0,2],[1,3],[2,4],[1,2],[0,3],[0,4]].map((_,i)=>`.np-l${i}{animation:np-blink ${(1.5/c.speed+i*.12).toFixed(2)}s ease-in-out ${(i*.08).toFixed(2)}s infinite}`).join('')}`,
-    html: `<svg width="${c.size}" height="${c.size}" viewBox="0 0 72 72">
-<line class="np-l0" x1="36" y1="12" x2="12" y2="40" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
-<line class="np-l1" x1="36" y1="12" x2="60" y2="40" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
-<line class="np-l2" x1="12" y1="40" x2="24" y2="65" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
-<line class="np-l3" x1="60" y1="40" x2="48" y2="65" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
-<line class="np-l4" x1="12" y1="40" x2="60" y2="40" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
-<line class="np-l5" x1="36" y1="12" x2="24" y2="65" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
-<line class="np-l6" x1="36" y1="12" x2="48" y2="65" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
-<circle class="np-n0" cx="36" cy="12" r="5" fill="${c.color}" opacity=".9"/>
-<circle class="np-n1" cx="12" cy="40" r="5" fill="${c.color}" opacity=".9"/>
-<circle class="np-n2" cx="60" cy="40" r="5" fill="${c.color}" opacity=".9"/>
-<circle class="np-n3" cx="24" cy="65" r="5" fill="${c.secondColor}" opacity=".9"/>
-<circle class="np-n4" cx="48" cy="65" r="5" fill="${c.secondColor}" opacity=".9"/>
-</svg>`
-  })
-},
-
-/* 41 */ {
+  /* 41 */ {
   id: 41, name: "Quantum Collapse", tags: ["physics", "quantum", "wave", "probability"],
   controls: { speed: 1.0, size: 72, color: "#a78bfa", secondColor: "#38bdf8", thickness: 1.5 },
   render: (c) => ({
@@ -1469,6 +1444,2338 @@ ${Array.from({length:bars},(_,i)=>{
     };
   }
 },
+  /* 317 */ {
+  id: 317, name: "Ferrofluid Reactor", tags: ["ferrofluid", "magnetic", "liquid", "spikes", "metal"],
+  controls: { speed: 1.0, size: 80, color: "#94a3b8", secondColor: "#818cf8", glowSize: 10, particleCount: 10, amplitude: 14 },
+  render: (c) => ({
+    css: `
+@keyframes ffr-spike-${c.size}{0%,100%{transform:rotate(var(--sa)) scaleY(.18)}40%{transform:rotate(calc(var(--sa)+var(--sway))) scaleY(1)}70%{transform:rotate(var(--sa)) scaleY(.6)}}
+@keyframes ffr-pool-${c.size}{0%,100%{border-radius:48% 52% 55% 45%/45% 48% 52% 55%}25%{border-radius:56% 44% 42% 58%/58% 42% 54% 46%}50%{border-radius:44% 56% 58% 42%/52% 56% 44% 48%}75%{border-radius:58% 42% 46% 54%/42% 58% 46% 54%}}
+@keyframes ffr-magpulse-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color}44,0 0 ${c.glowSize*2}px ${c.secondColor}22}50%{box-shadow:0 0 ${c.glowSize*2}px ${c.color},0 0 ${c.glowSize*4}px ${c.secondColor}66}}
+@keyframes ffr-droplet-${c.size}{0%{transform:translate(0,0) scale(1);opacity:.9}40%{transform:translate(var(--dx),var(--dy)) scale(1.3);opacity:1}80%{transform:translate(calc(var(--dx)*.3),calc(var(--dy)*.3)) scale(.7);opacity:.5}100%{transform:translate(0,0) scale(0);opacity:0}}
+@keyframes ffr-erupt-${c.size}{0%,80%,100%{transform:translateY(0) scaleY(1);opacity:0}30%{opacity:1;transform:translateY(-${(c.size*.35).toFixed(1)}px) scaleY(2.5)}60%{opacity:.4;transform:translateY(-${(c.size*.5).toFixed(1)}px) scaleY(.4)}}
+.ffr-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.ffr-pool-${c.size}{position:absolute;width:${(c.size*.52).toFixed(1)}px;height:${(c.size*.52).toFixed(1)}px;background:radial-gradient(circle at 40% 40%,${c.color}dd,#0a0a12);animation:ffr-pool-${c.size} ${(2.2/c.speed).toFixed(2)}s ease-in-out infinite,ffr-magpulse-${c.size} ${(1.6/c.speed).toFixed(2)}s ease-in-out infinite}
+.ffr-spike-${c.size}{position:absolute;width:${Math.max(2,c.size*.025)}px;background:linear-gradient(to top,${c.color},${c.secondColor}88,transparent);border-radius:2px 2px 0 0;bottom:50%;left:50%;transform-origin:bottom center;margin-left:${(-Math.max(1,c.size*.012)).toFixed(1)}px}
+.ffr-droplet-${c.size}{position:absolute;border-radius:50%;background:${c.color};top:50%;left:50%}
+.ffr-erupt-${c.size}{position:absolute;width:${Math.max(1,c.size*.018)}px;background:linear-gradient(to top,${c.color}cc,${c.secondColor}44,transparent);border-radius:2px;bottom:50%;left:50%;margin-left:${(-Math.max(1,c.size*.009)).toFixed(1)}px;transform-origin:bottom center}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(4, Math.min(20, c.particleCount));
+      const amp = Math.max(2, Math.min(30, c.amplitude));
+ 
+      const spikes = Array.from({length: n}, (_, i) => {
+        const baseAngle = (i / n) * 360;
+        const sway = ((i % 3) - 1) * 22;
+        const h = (amp * (0.6 + (i%3)*0.3)).toFixed(1);
+        const dur = ((0.8 + (i%4)*0.35)/c.speed).toFixed(2);
+        const del = (i*0.12/c.speed).toFixed(2);
+        const pushR = (s*0.22).toFixed(1);
+        return `<div class="ffr-spike-${s}" style="--sa:${baseAngle}deg;--sway:${sway}deg;height:${h}px;box-shadow:0 0 ${c.glowSize*.5}px ${c.secondColor};transform:rotate(${baseAngle}deg) translateY(-${pushR}px) scaleY(.18);animation:ffr-spike-${s} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      const erupts = Array.from({length: 3}, (_, i) => {
+        const a = i * 120;
+        const dur = ((2.5+i*0.4)/c.speed).toFixed(2);
+        const del = (i*0.8/c.speed).toFixed(2);
+        const h = (s*0.45).toFixed(1);
+        return `<div class="ffr-erupt-${s}" style="height:${h}px;transform:rotate(${a}deg);animation:ffr-erupt-${s} ${dur}s ${del}s ease-out infinite;filter:drop-shadow(0 0 ${c.glowSize*.6}px ${c.secondColor})"></div>`;
+      }).join('');
+ 
+      const droplets = Array.from({length: 5}, (_, i) => {
+        const angle = i * 72 * Math.PI/180;
+        const r = s*0.28;
+        const dx = (Math.cos(angle)*r*.6).toFixed(1);
+        const dy = (Math.sin(angle)*r*.6).toFixed(1);
+        const sz = Math.max(2, s*0.04);
+        const dur = ((1.2+i*0.3)/c.speed).toFixed(2);
+        const del = (i*0.24/c.speed).toFixed(2);
+        return `<div class="ffr-droplet-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;--dx:${dx}px;--dy:${dy}px;margin-left:${(-sz/2).toFixed(1)}px;margin-top:${(-sz/2).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.4}px ${c.color};animation:ffr-droplet-${s} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      return `<div class="ffr-wrap-${s}">${erupts}${spikes}<div class="ffr-pool-${s}"></div>${droplets}</div>`;
+    })()
+  })
+},
+ 
+/* 318 */ {
+  id: 318, name: "Infinity River", tags: ["flow", "water", "infinite", "stream", "fluid"],
+  controls: { speed: 1.0, size: 80, color: "#38bdf8", secondColor: "#34d399", glowSize: 8, thickness: 2.5, amplitude: 10 },
+  render: (c) => ({
+    css: `
+@keyframes ir-flow-${c.size}{0%{stroke-dashoffset:600}100%{stroke-dashoffset:0}}
+@keyframes ir-flow-rev-${c.size}{0%{stroke-dashoffset:0}100%{stroke-dashoffset:600}}
+@keyframes ir-ripple-${c.size}{0%,100%{opacity:.2;r:1.5}50%{opacity:.9;r:3}}
+@keyframes ir-accel-${c.size}{0%{stroke-dashoffset:600}30%{stroke-dashoffset:200}60%{stroke-dashoffset:50}100%{stroke-dashoffset:0}}
+@keyframes ir-glow-${c.size}{0%,100%{filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.color})}50%{filter:drop-shadow(0 0 ${c.glowSize*1.5}px ${c.color})}}
+.ir-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:ir-glow-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite}
+.ir-svg-${c.size}{position:absolute;inset:0;overflow:visible}
+.ir-stream-${c.size}{fill:none;stroke-linecap:round;stroke-dasharray:600;animation:ir-flow-${c.size} ${(2/c.speed).toFixed(2)}s linear infinite}
+.ir-stream-rev-${c.size}{fill:none;stroke-linecap:round;stroke-dasharray:600;animation:ir-flow-rev-${c.size} ${(2/c.speed).toFixed(2)}s linear infinite}
+.ir-accel-${c.size}{fill:none;stroke-linecap:round;stroke-dasharray:600;animation:ir-accel-${c.size} ${(1.4/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const cx = s/2, cy = s/2;
+      const amp = Math.max(2, Math.min(30, c.amplitude));
+      const w = s*0.42, h = s*0.22;
+ 
+      // Infinity (lemniscate) path approximated with cubic beziers
+      const infPath = `M${(cx-w).toFixed(1)},${cy} C${(cx-w).toFixed(1)},${(cy-h*2).toFixed(1)} ${cx.toFixed(1)},${(cy-h).toFixed(1)} ${cx.toFixed(1)},${cy} C${cx.toFixed(1)},${(cy+h).toFixed(1)} ${(cx+w).toFixed(1)},${(cy+h*2).toFixed(1)} ${(cx+w).toFixed(1)},${cy} C${(cx+w).toFixed(1)},${(cy-h*2).toFixed(1)} ${cx.toFixed(1)},${(cy-h).toFixed(1)} ${cx.toFixed(1)},${cy} C${cx.toFixed(1)},${(cy+h).toFixed(1)} ${(cx-w).toFixed(1)},${(cy+h*2).toFixed(1)} ${(cx-w).toFixed(1)},${cy}`;
+ 
+      // Secondary wavy stream on top
+      const waveY = cy - amp*0.4;
+      const wavePath = `M${(cx-w*.9).toFixed(1)},${waveY.toFixed(1)} C${(cx-w*.4).toFixed(1)},${(waveY-amp).toFixed(1)} ${(cx+w*.4).toFixed(1)},${(waveY+amp).toFixed(1)} ${(cx+w*.9).toFixed(1)},${waveY.toFixed(1)}`;
+ 
+      const streams = [
+        {path:infPath, sw:c.thickness, col:c.color, op:0.9, cls:`ir-stream-${s}`, dur:(2/c.speed).toFixed(2), del:'0'},
+        {path:infPath, sw:c.thickness*0.5, col:c.secondColor, op:0.55, cls:`ir-stream-rev-${s}`, dur:(2.8/c.speed).toFixed(2), del:(0.4/c.speed).toFixed(2)},
+        {path:wavePath, sw:c.thickness*0.7, col:c.color, op:0.5, cls:`ir-accel-${s}`, dur:(1.4/c.speed).toFixed(2), del:(0.2/c.speed).toFixed(2)},
+        {path:wavePath.replace(`${waveY.toFixed(1)}`, `${(cy+amp*0.4).toFixed(1)}`), sw:c.thickness*0.5, col:c.secondColor, op:0.4, cls:`ir-stream-${s}`, dur:(1.8/c.speed).toFixed(2), del:(0.6/c.speed).toFixed(2)},
+      ].map(({path,sw,col,op,cls,dur,del})=>
+        `<path d="${path}" class="${cls}" stroke="${col}" stroke-width="${sw}" stroke-opacity="${op}" style="animation-duration:${dur}s;animation-delay:${del}s" />`
+      ).join('');
+ 
+      // Ripple dots at key intersections
+      const ripples = [
+        {x:cx,y:cy}, {x:cx-w,y:cy}, {x:cx+w,y:cy}
+      ].map(({x,y},i)=>{
+        const dur = ((1+i*0.3)/c.speed).toFixed(2);
+        const del = (i*0.4/c.speed).toFixed(2);
+        return `<circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="2" fill="${i%2===0?c.color:c.secondColor}" style="animation:ir-ripple-${s} ${dur}s ${del}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.color})" />`;
+      }).join('');
+ 
+      return `<div class="ir-wrap-${s}"><svg class="ir-svg-${s}" viewBox="0 0 ${s} ${s}">${streams}${ripples}</svg></div>`;
+    })()
+  })
+},
+ 
+/* 319 */ {
+  id: 319, name: "Fluid Brain", tags: ["neural", "fluid", "liquid", "pathways", "organic"],
+  controls: { speed: 1.0, size: 80, color: "#f472b6", secondColor: "#a78bfa", glowSize: 8, particleCount: 8, thickness: 2.0 },
+  render: (c) => ({
+    css: `
+@keyframes fb2-flow-${c.size}{0%{stroke-dashoffset:400;opacity:0}15%{opacity:1}85%{opacity:.7}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes fb2-path-${c.size}{0%,100%{opacity:.3;stroke-width:${c.thickness*.5}}50%{opacity:1;stroke-width:${c.thickness*1.4}}}
+@keyframes fb2-node-${c.size}{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.2);opacity:1}}
+@keyframes fb2-branch-${c.size}{0%{transform:scaleX(0);transform-origin:left;opacity:0}60%{transform:scaleX(1);opacity:1}100%{transform:scaleX(0);transform-origin:right;opacity:0}}
+@keyframes fb2-pulse-${c.size}{0%,100%{filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.color}44)}50%{filter:drop-shadow(0 0 ${c.glowSize*1.5}px ${c.color})}}
+.fb2-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:fb2-pulse-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite}
+.fb2-svg-${c.size}{position:absolute;inset:0;overflow:visible}
+.fb2-pathway-${c.size}{fill:none;stroke-linecap:round;stroke-dasharray:400;animation:fb2-flow-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite}
+.fb2-vein-${c.size}{fill:none;stroke-linecap:round;animation:fb2-path-${c.size} ${(1.8/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(4, Math.min(20, c.particleCount));
+      const cx = s/2, cy = s/2;
+      const seed = (i,k=1) => ((Math.sin(i*127.1+k*311.7)*43758.5453)%1+1)%1;
+ 
+      // Organic node positions in a brain-like arrangement
+      const nodes = Array.from({length: n}, (_,i) => {
+        const angle = (i/n)*Math.PI*2 + seed(i)*0.5;
+        const r = s*(0.18 + seed(i,2)*0.28);
+        return { x: cx+Math.cos(angle)*r, y: cy+Math.sin(angle)*r };
+      });
+      nodes.push({x:cx, y:cy}); // hub
+ 
+      // Veins (static background pathways)
+      const veins = nodes.slice(0,-1).map((nd,i) => {
+        const t = nodes[(i+2)%n];
+        const mx = (nd.x+t.x)/2 + (seed(i,4)-.5)*s*.2;
+        const my = (nd.y+t.y)/2 + (seed(i,5)-.5)*s*.2;
+        const col = i%2===0?c.color:c.secondColor;
+        const del = (i*0.1/c.speed).toFixed(2);
+        return `<path class="fb2-vein-${s}" d="M${nd.x.toFixed(1)},${nd.y.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${t.x.toFixed(1)},${t.y.toFixed(1)}" stroke="${col}" stroke-width="${c.thickness*.5}" stroke-opacity="0.25" style="animation-delay:${del}s" />`;
+      }).join('');
+ 
+      // Fluid flows along pathways
+      const flows = Array.from({length: Math.min(n, 8)}, (_,i) => {
+        const from = nodes[i];
+        const to = nodes[n]; // all flow to center
+        const mx = (from.x+to.x)/2 + (seed(i+10)-.5)*s*.25;
+        const my = (from.y+to.y)/2 + (seed(i+11)-.5)*s*.25;
+        const col = i%2===0?c.color:c.secondColor;
+        const dur = ((1.5+seed(i+20)*1.2)/c.speed).toFixed(2);
+        const del = (i*0.22/c.speed).toFixed(2);
+        return `<path class="fb2-pathway-${s}" d="M${from.x.toFixed(1)},${from.y.toFixed(1)} Q${mx.toFixed(1)},${my.toFixed(1)} ${to.x.toFixed(1)},${to.y.toFixed(1)}" stroke="${col}" stroke-width="${c.thickness}" style="animation-duration:${dur}s;animation-delay:${del}s;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${col})" />`;
+      }).join('');
+ 
+      const dots = nodes.map((nd,i) => {
+        const isHub = i===n;
+        const r = isHub ? s*.06 : s*.03;
+        const col = isHub?c.color:(i%2===0?c.color:c.secondColor);
+        const del = (i*.1/c.speed).toFixed(2);
+        return `<circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${r.toFixed(1)}" fill="${col}" style="animation:fb2-node-${s} ${((isHub?.9:1.5)/c.speed).toFixed(2)}s ${del}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize*.6}px ${col})" />`;
+      }).join('');
+ 
+      return `<div class="fb2-wrap-${s}"><svg class="fb2-svg-${s}" viewBox="0 0 ${s} ${s}">${veins}${flows}${dots}</svg></div>`;
+    })()
+  })
+},
+ 
+/* 320 */ {
+  id: 320, name: "Vortex Chamber", tags: ["vortex", "whirlpool", "spiral", "particles", "weather"],
+  controls: { speed: 1.0, size: 80, color: "#38bdf8", secondColor: "#818cf8", glowSize: 10, particleCount: 14, rings: 4 },
+  render: (c) => ({
+    css: `
+@keyframes vc-spin-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes vc-spin-rev-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+@keyframes vc-suck-${c.size}{0%{transform:rotate(var(--va)) translateX(var(--vr));opacity:.9}100%{transform:rotate(calc(var(--va)+720deg)) translateX(0);opacity:0}}
+@keyframes vc-secondary-${c.size}{0%{transform:rotate(0deg) translateX(var(--sr)) rotate(0deg)}100%{transform:rotate(360deg) translateX(var(--sr)) rotate(-360deg)}}
+@keyframes vc-eye-${c.size}{0%,100%{transform:scale(.85);opacity:.6}50%{transform:scale(1.1);opacity:1}}
+.vc-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:${c.size*2}px}
+.vc-arm-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.vc-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%}
+.vc-particle-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0}
+.vc-secondary-vortex-${c.size}{position:absolute;top:50%;left:50%;transform-origin:0 0}
+.vc-eye-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle,${c.color}cc,#0a0a1a);animation:vc-eye-${c.size} ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const numRings = Math.max(2,Math.min(8,c.rings));
+      const nParticles = Math.max(4,Math.min(20,c.particleCount));
+ 
+      const rings = Array.from({length:numRings},(_,i)=>{
+        const sz = s*(0.2+i*(0.72/numRings));
+        const off = -sz/2;
+        const dur = ((0.8+i*.5)/c.speed).toFixed(2);
+        const anim = i%2===0?`vc-spin-${s}`:`vc-spin-rev-${s}`;
+        const col = i%2===0?c.color:c.secondColor;
+        const alpha = Math.round((0.7-i*.1)*255).toString(16).padStart(2,'0');
+        // spiral arms on ring
+        const arms = Array.from({length:3},(_,ai)=>{
+          const a = ai*120;
+          return `<div style="position:absolute;width:${s*.018}px;height:${sz*.35}px;background:linear-gradient(to top,${col}88,transparent);border-radius:2px;bottom:50%;left:50%;margin-left:${-(s*.009)}px;transform:rotate(${a}deg);transform-origin:bottom center"></div>`;
+        }).join('');
+        return `<div class="vc-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border-width:${1.5}px;border-color:${col}${alpha};animation:${anim} ${dur}s linear infinite">${arms}</div>`;
+      }).join('');
+ 
+      const particles = Array.from({length:nParticles},(_,i)=>{
+        const a = (i/nParticles)*360;
+        const r = s*(0.15+(i%5)*.07);
+        const dur = ((0.6+(i%4)*.25)/c.speed).toFixed(2);
+        const del = (i*.14/c.speed).toFixed(2);
+        const col = i%2===0?c.color:c.secondColor;
+        const psz = Math.max(1.5,s*.025);
+        return `<div class="vc-particle-${s}" style="--va:${a}deg;--vr:${r.toFixed(1)}px;width:${psz}px;height:${psz}px;background:${col};box-shadow:0 0 ${c.glowSize*.4}px ${col};transform:rotate(${a}deg) translateX(${r.toFixed(1)}px);animation:vc-suck-${s} ${dur}s ${del}s ease-in infinite;margin-left:${(-psz/2).toFixed(1)}px;margin-top:${(-psz/2).toFixed(1)}px"></div>`;
+      }).join('');
+ 
+      // 3 secondary vortices orbiting
+      const secondaries = Array.from({length:3},(_,i)=>{
+        const sr = s*.3;
+        const a = i*120;
+        const vsz = s*.1;
+        const dur = ((2.5)/c.speed).toFixed(2);
+        const del = (i*.8/c.speed).toFixed(2);
+        return `<div class="vc-secondary-vortex-${s}" style="--sr:${sr}px;width:${vsz}px;height:${vsz}px;margin-left:${(-vsz/2).toFixed(1)}px;margin-top:${(-vsz/2).toFixed(1)}px;transform:rotate(${a}deg) translateX(${sr}px) rotate(-${a}deg);animation:vc-secondary-${s} ${dur}s ${del}s linear infinite"><div style="width:100%;height:100%;border-radius:50%;border:1.5px solid ${c.secondColor}88;background:${c.secondColor}22;box-shadow:0 0 ${c.glowSize*.5}px ${c.secondColor}"></div></div>`;
+      }).join('');
+ 
+      const eyeSz = s*.14;
+      return `<div class="vc-wrap-${s}">${rings}${particles}${secondaries}<div class="vc-eye-${s}" style="width:${eyeSz}px;height:${eyeSz}px;box-shadow:0 0 ${c.glowSize}px ${c.color}44"></div></div>`;
+    })()
+  })
+},
+ 
+/* 321 */ {
+  id: 321, name: "Mercury Engine", tags: ["mercury", "pipes", "liquid", "pressure", "mechanism"],
+  controls: { speed: 1.0, size: 80, color: "#94a3b8", secondColor: "#22d3ee", glowSize: 8, thickness: 3.0 },
+  render: (c) => ({
+    css: `
+@keyframes me-flow-${c.size}{0%{stroke-dashoffset:500}100%{stroke-dashoffset:0}}
+@keyframes me-flow-rev-${c.size}{0%{stroke-dashoffset:0}100%{stroke-dashoffset:500}}
+@keyframes me-chamber-${c.size}{0%,100%{transform:scaleY(.15)}50%{transform:scaleY(1)}}
+@keyframes me-pressure-${c.size}{0%{stroke-dashoffset:200;opacity:0}30%{opacity:1}100%{stroke-dashoffset:0;opacity:.7}}
+@keyframes me-valve-${c.size}{0%,100%{transform:rotate(0deg) scaleX(1)}50%{transform:rotate(90deg) scaleX(.3)}}
+@keyframes me-glow-pulse-${c.size}{0%,100%{filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.color}44)}50%{filter:drop-shadow(0 0 ${c.glowSize*1.5}px ${c.secondColor})}}
+.me-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:me-glow-pulse-${c.size} ${(1.8/c.speed).toFixed(2)}s ease-in-out infinite}
+.me-svg-${c.size}{position:absolute;inset:0}
+.me-pipe-${c.size}{fill:none;stroke-linecap:round;stroke-dasharray:500;animation:me-flow-${c.size} ${(1.6/c.speed).toFixed(2)}s linear infinite}
+.me-pipe-rev-${c.size}{fill:none;stroke-linecap:round;stroke-dasharray:500;animation:me-flow-rev-${c.size} ${(2/c.speed).toFixed(2)}s linear infinite}
+.me-pressure-${c.size}{fill:none;stroke-linecap:round;stroke-dasharray:200;animation:me-pressure-${c.size} ${(0.8/c.speed).toFixed(2)}s ease-out infinite}
+.me-chamber-bg-${c.size}{position:absolute;border-radius:3px;background:${c.color}22;border:1px solid ${c.color}44;overflow:hidden;transform-origin:bottom}
+.me-chamber-fill-${c.size}{position:absolute;bottom:0;left:0;right:0;background:linear-gradient(to top,${c.color},${c.secondColor}88);animation:me-chamber-${c.size} ${(1/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const hw = c.thickness;
+      // Pipe circuit: outer rectangle + inner cross connections
+      const m = s*.12;
+      const pipes = [
+        // outer loop
+        {d:`M${m},${m} L${s-m},${m} L${s-m},${s-m} L${m},${s-m} Z`, col:c.color, cls:`me-pipe-${s}`, sw:hw, dur:(2/c.speed).toFixed(2), del:'0'},
+        // inner cross
+        {d:`M${s/2},${m} L${s/2},${s-m}`, col:c.secondColor, cls:`me-pipe-rev-${s}`, sw:hw*.7, dur:(1.4/c.speed).toFixed(2), del:(0.5/c.speed).toFixed(2)},
+        {d:`M${m},${s/2} L${s-m},${s/2}`, col:c.secondColor, cls:`me-pipe-rev-${s}`, sw:hw*.7, dur:(1.4/c.speed).toFixed(2), del:(0.2/c.speed).toFixed(2)},
+        // pressure bursts
+        {d:`M${s/2},${m} L${s/2},${s*.35}`, col:c.color, cls:`me-pressure-${s}`, sw:hw*1.5, dur:(0.8/c.speed).toFixed(2), del:'0'},
+      ].map(({d,col,cls,sw,dur,del})=>
+        `<path d="${d}" class="${cls}" stroke="${col}" stroke-width="${sw}" style="animation-duration:${dur}s;animation-delay:${del}s" />`
+      ).join('');
+ 
+      // Pipe structure (static outlines)
+      const pipeOutlines = `
+        <rect x="${m-.5}" y="${m-.5}" width="${s-2*m+1}" height="${s-2*m+1}" fill="none" stroke="${c.color}33" stroke-width="${hw*2.5}" rx="3"/>
+        <line x1="${s/2}" y1="${m}" x2="${s/2}" y2="${s-m}" stroke="${c.color}22" stroke-width="${hw*2}"/>
+        <line x1="${m}" y1="${s/2}" x2="${s-m}" y2="${s/2}" stroke="${c.color}22" stroke-width="${hw*2}"/>
+      `;
+ 
+      // Chambers at intersections
+      const chamberPositions = [{x:m,y:m},{x:s-m,y:m},{x:s-m,y:s-m},{x:m,y:s-m},{x:s/2,y:s/2}];
+      const chamberSz = s*.1;
+      const chambers = chamberPositions.map(({x,y},i)=>{
+        const del = (i*.2/c.speed).toFixed(2);
+        const dur = ((0.8+i*.15)/c.speed).toFixed(2);
+        return `<div class="me-chamber-bg-${s}" style="width:${chamberSz}px;height:${chamberSz}px;left:${(x-chamberSz/2).toFixed(1)}px;top:${(y-chamberSz/2).toFixed(1)}px"><div class="me-chamber-fill-${s}" style="animation-delay:${del}s;animation-duration:${dur}s"></div></div>`;
+      }).join('');
+ 
+      return `<div class="me-wrap-${s}">${chambers}<svg class="me-svg-${s}" viewBox="0 0 ${s} ${s}">${pipeOutlines}${pipes}</svg></div>`;
+    })()
+  })
+},
+ 
+/* ── ENGINE-BASED LOADERS ───────────────────────────────────── */
+ 
+/* 322 */ {
+  id: 322, name: "Infinity Turbine", tags: ["turbine", "blades", "jet", "engine", "reactor"],
+  controls: { speed: 1.0, size: 80, color: "#f59e0b", secondColor: "#38bdf8", glowSize: 8, rings: 4, thickness: 1.5 },
+  render: (c) => ({
+    css: `
+@keyframes it-blade-cw-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes it-blade-ccw-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+@keyframes it-core-pulse-${c.size}{0%,100%{transform:scale(.85);opacity:.7;box-shadow:0 0 ${c.glowSize}px ${c.color}}50%{transform:scale(1.1);opacity:1;box-shadow:0 0 ${c.glowSize*3}px ${c.color},0 0 ${c.glowSize*5}px ${c.secondColor}44}}
+@keyframes it-exhaust-${c.size}{0%{transform:scaleY(0) translateY(0);opacity:.8}100%{transform:scaleY(1) translateY(-${(c.size*.4).toFixed(1)}px);opacity:0}}
+.it-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.it-stage-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.it-blade-ring-${c.size}{position:absolute;display:flex;align-items:center;justify-content:center}
+.it-blade-${c.size}{position:absolute;border-radius:1px 4px 1px 1px;transform-origin:center center}
+.it-core-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle at 38% 38%,white,${c.color},${c.secondColor}44);animation:it-core-pulse-${c.size} ${(1/c.speed).toFixed(2)}s ease-in-out infinite}
+.it-exhaust-${c.size}{position:absolute;width:${Math.max(1,c.size*.014)}px;background:linear-gradient(to top,${c.color}cc,transparent);border-radius:1px;bottom:50%;transform-origin:bottom;animation:it-exhaust-${c.size} ${(0.5/c.speed).toFixed(2)}s ease-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const numStages = Math.max(2,Math.min(8,c.rings));
+ 
+      const stages = Array.from({length:numStages},(_,si)=>{
+        const stageR = s*(0.18+si*(0.72/numStages));
+        const bladeCount = 6 + si*2;
+        const anim = si%2===0?`it-blade-cw-${s}`:`it-blade-ccw-${s}`;
+        const dur = ((0.6+si*.3)/c.speed).toFixed(2);
+        const col = si%2===0?c.color:c.secondColor;
+        const bladeH = stageR*.42;
+        const bladeW = Math.max(2, s*.02+si*.5);
+ 
+        const blades = Array.from({length:bladeCount},(_,bi)=>{
+          const angle = (bi/bladeCount)*360;
+          // push blade outward from center
+          const pushR = stageR*.55;
+          return `<div class="it-blade-${s}" style="width:${bladeW.toFixed(1)}px;height:${bladeH.toFixed(1)}px;background:linear-gradient(to top,${col},${col}88);transform:rotate(${angle}deg) translateY(-${pushR.toFixed(1)}px) skewX(-12deg);box-shadow:0 0 ${c.glowSize*.3}px ${col}44"></div>`;
+        }).join('');
+ 
+        return `<div class="it-blade-ring-${s}" style="width:${stageR.toFixed(1)}px;height:${stageR.toFixed(1)}px;animation:${anim} ${dur}s linear infinite">${blades}</div>`;
+      }).join('');
+ 
+      // Ring separators
+      const ringLines = Array.from({length:numStages},(_,si)=>{
+        const r = s*(0.18+si*(0.72/numStages));
+        const col = si%2===0?c.color:c.secondColor;
+        return `<div style="position:absolute;width:${r.toFixed(1)}px;height:${r.toFixed(1)}px;border-radius:50%;border:${c.thickness*.5}px solid ${col}33"></div>`;
+      }).join('');
+ 
+      const coreS = s*.14;
+      const exhausts = Array.from({length:6},(_,i)=>{
+        const a = i*60;
+        const h = (s*.25+Math.random()*s*.15).toFixed(1);
+        const del = (i*.08/c.speed).toFixed(2);
+        return `<div class="it-exhaust-${s}" style="height:${h}px;transform:rotate(${a}deg);animation-delay:${del}s"></div>`;
+      }).join('');
+ 
+      return `<div class="it-wrap-${s}">${ringLines}${stages}${exhausts}<div class="it-core-${s}" style="width:${coreS}px;height:${coreS}px;box-shadow:0 0 ${c.glowSize}px ${c.color}"></div></div>`;
+    })()
+  })
+},
+ 
+/* 323 */ {
+  id: 323, name: "Fusion Reactor", tags: ["plasma", "fusion", "magnetic", "energy", "reactor"],
+  controls: { speed: 1.0, size: 80, color: "#f97316", secondColor: "#818cf8", glowSize: 12, rings: 4, thickness: 1.5 },
+  render: (c) => ({
+    css: `
+@keyframes fr-plasma-${c.size}{0%{transform:rotateX(72deg) rotate(0deg)}100%{transform:rotateX(72deg) rotate(360deg)}}
+@keyframes fr-plasma-rev-${c.size}{0%{transform:rotateX(60deg) rotate(0deg)}100%{transform:rotateX(60deg) rotate(-360deg)}}
+@keyframes fr-overload-${c.size}{0%,70%,100%{transform:scale(1);opacity:.7}82%{transform:scale(1.4);opacity:1;filter:brightness(2)}90%{transform:scale(.9);opacity:.8}}
+@keyframes fr-arc-${c.size}{0%,75%,100%{opacity:0;stroke-dashoffset:120}40%{opacity:1;stroke-dashoffset:0}}
+@keyframes fr-cooling-${c.size}{0%{height:0;opacity:.8}100%{height:${(c.size*.3).toFixed(1)}px;opacity:0}}
+@keyframes fr-core-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}44}50%{box-shadow:0 0 ${c.glowSize*3}px ${c.color},0 0 ${c.glowSize*5}px ${c.secondColor}88}}
+.fr-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:${c.size*3}px}
+.fr-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%}
+.fr-arc-svg-${c.size}{position:absolute;inset:0;pointer-events:none}
+.fr-arc-${c.size}{fill:none;stroke-dasharray:120;animation:fr-arc-${c.size} ${(1.4/c.speed).toFixed(2)}s ease-in-out infinite}
+.fr-core-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,white,${c.color},${c.secondColor}44);animation:fr-overload-${c.size} ${(2.5/c.speed).toFixed(2)}s ease-in-out infinite,fr-core-${c.size} ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite}
+.fr-cooling-fin-${c.size}{position:absolute;width:${Math.max(1,c.size*.018)}px;background:linear-gradient(to top,${c.secondColor}88,transparent);bottom:50%;transform-origin:bottom;border-radius:2px}`,
+    html: (()=>{
+      const s = c.size;
+      const numRings = Math.max(2,Math.min(8,c.rings));
+ 
+      const rings = Array.from({length:numRings},(_,ri)=>{
+        const sz = s*(0.25+ri*(0.65/numRings));
+        const off = -sz/2;
+        const tilt = [72,55,65,45,70,50,60,40][ri%8];
+        const anim = ri%2===0?`fr-plasma-${s}`:`fr-plasma-rev-${s}`;
+        const dur = ((1+ri*.4)/c.speed).toFixed(2);
+        const col = ri%2===0?c.color:c.secondColor;
+        const bw = Math.max(.8,c.thickness*(1.4-ri*.1));
+        const alpha = Math.round((0.8-(ri*.1))*255).toString(16).padStart(2,'0');
+        // plasma blob on ring
+        const blob = `<div style="position:absolute;width:${Math.max(3,s*.045)}px;height:${Math.max(3,s*.045)}px;background:${col};border-radius:50%;top:-${Math.max(1.5,s*.022)}px;left:50%;margin-left:-${Math.max(1.5,s*.022)}px;box-shadow:0 0 ${c.glowSize*.8}px ${col}"></div>`;
+        return `<div class="fr-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border-width:${bw}px;border-color:${col}${alpha};transform:rotateX(${tilt}deg) rotate(0deg);animation:${anim} ${dur}s linear infinite;box-shadow:0 0 ${c.glowSize*.6}px ${col}55">${blob}</div>`;
+      }).join('');
+ 
+      // Energy arcs
+      const arcs = Array.from({length:4},(_,i)=>{
+        const r = s*(0.25+i*.08);
+        const cx=s/2,cy=s/2;
+        const startAngle = i*90;
+        const x1=(cx+Math.cos(startAngle*Math.PI/180)*r).toFixed(1);
+        const y1=(cy+Math.sin(startAngle*Math.PI/180)*r).toFixed(1);
+        const x2=(cx+Math.cos((startAngle+80)*Math.PI/180)*r).toFixed(1);
+        const y2=(cy+Math.sin((startAngle+80)*Math.PI/180)*r).toFixed(1);
+        const col=i%2===0?c.color:c.secondColor;
+        const del=(i*.35/c.speed).toFixed(2);
+        return `<path class="fr-arc-${s}" d="M${x1},${y1} A${r},${r} 0 0,1 ${x2},${y2}" stroke="${col}" stroke-width="${c.thickness*1.5}" style="animation-delay:${del}s;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${col})" />`;
+      }).join('');
+ 
+      // Cooling fins
+      const fins = Array.from({length:8},(_,i)=>{
+        const a = i*45;
+        const h = (s*.28).toFixed(1);
+        const del = (i*.12/c.speed).toFixed(2);
+        return `<div class="fr-cooling-fin-${s}" style="height:${h}px;transform:rotate(${a}deg);animation:fr-cooling-${s} ${(0.6+i*.05)/c.speed}s ${del}s ease-out infinite"></div>`;
+      }).join('');
+ 
+      const coreS = s*.15;
+      return `<div class="fr-wrap-${s}">${rings}<svg class="fr-arc-svg-${s}" viewBox="0 0 ${s} ${s}">${arcs}</svg>${fins}<div class="fr-core-${s}" style="width:${coreS}px;height:${coreS}px"></div></div>`;
+    })()
+  })
+},
+ 
+/* 324 */ {
+  id: 324, name: "Dyson Engine", tags: ["dyson", "concentric", "megastructure", "rings", "space"],
+  controls: { speed: 1.0, size: 80, color: "#fbbf24", secondColor: "#f472b6", glowSize: 10, rings: 6, thickness: 1.2 },
+  render: (c) => ({
+    css: `
+@keyframes de-ring-a-${c.size}{0%{transform:rotateX(var(--rx)) rotateY(var(--ry)) rotate(0deg)}100%{transform:rotateX(var(--rx)) rotateY(var(--ry)) rotate(360deg)}}
+@keyframes de-ring-b-${c.size}{0%{transform:rotateX(var(--rx)) rotateY(var(--ry)) rotate(0deg)}100%{transform:rotateX(var(--rx)) rotateY(var(--ry)) rotate(-360deg)}}
+@keyframes de-realign-${c.size}{0%,100%{transform:rotateX(var(--rx)) rotateY(var(--ry)) rotate(var(--rz))}50%{transform:rotateX(calc(var(--rx)+20deg)) rotateY(calc(var(--ry)+15deg)) rotate(calc(var(--rz)+45deg))}}
+@keyframes de-star-${c.size}{0%,100%{transform:scale(.85);box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}33}50%{transform:scale(1.1);box-shadow:0 0 ${c.glowSize*3}px ${c.color},0 0 ${c.glowSize*6}px ${c.secondColor}77}}
+@keyframes de-segment-${c.size}{0%,100%{opacity:.5}50%{opacity:1}}
+.de-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:${c.size*4}px;transform-style:preserve-3d}
+.de-ring-${c.size}{position:absolute;border-radius:50%;left:50%;top:50%;transform-style:preserve-3d}
+.de-star-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,white,${c.color},${c.secondColor}44);animation:de-star-${c.size} ${(1.5/c.speed).toFixed(2)}s ease-in-out infinite}
+.de-segment-dot-${c.size}{position:absolute;border-radius:50%;top:-2px;left:50%}`,
+    html: (()=>{
+      const s = c.size;
+      const numRings = Math.max(2,Math.min(8,c.rings));
+      const tilts = [[70,20],[45,60],[80,10],[30,75],[55,35],[65,50],[25,80],[40,15]];
+ 
+      const rings = Array.from({length:numRings},(_,ri)=>{
+        const sz = s*(0.22+ri*(0.7/numRings));
+        const off = -sz/2;
+        const [rx,ry] = tilts[ri%tilts.length];
+        const rz = ri*23;
+        const anim = ri%2===0?`de-ring-a-${s}`:`de-ring-b-${s}`;
+        const dur = ((1.2+ri*.6)/c.speed).toFixed(2);
+        const col = ri%2===0?c.color:c.secondColor;
+        const alpha = Math.round((0.75-ri*.06)*255).toString(16).padStart(2,'0');
+        const bw = Math.max(.8,c.thickness*(1.2-ri*.06));
+        const segCount = 4+ri*2;
+        const segments = Array.from({length:segCount},(_,si)=>{
+          const sa = (si/segCount)*360;
+          const sCol = si%3===0?c.color:col;
+          return `<div class="de-segment-dot-${s}" style="width:${Math.max(2,s*.03)}px;height:${Math.max(2,s*.03)}px;background:${sCol};margin-left:${(-Math.max(1,s*.015)).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.4}px ${sCol};transform:rotate(${sa}deg) translateY(-${(sz/2-1).toFixed(1)}px);animation:de-segment-${s} ${(1+si*.1)/c.speed}s ${(si*.08/c.speed).toFixed(2)}s ease-in-out infinite"></div>`;
+        }).join('');
+        return `<div class="de-ring-${s}" style="--rx:${rx}deg;--ry:${ry}deg;--rz:${rz}deg;width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border:${bw}px solid ${col}${alpha};box-shadow:0 0 ${c.glowSize*.4}px ${col}44;animation:${anim} ${dur}s linear infinite">${segments}</div>`;
+      }).join('');
+ 
+      const starS = s*.12;
+      return `<div class="de-wrap-${s}">${rings}<div class="de-star-${s}" style="width:${starS}px;height:${starS}px"></div></div>`;
+    })()
+  })
+},
+ 
+/* 325 */ {
+  id: 325, name: "Quantum Piston Array", tags: ["pistons", "mechanical", "wave", "array", "hypnotic"],
+  controls: { speed: 1.0, size: 80, color: "#22d3ee", secondColor: "#f97316", glowSize: 6, particleCount: 9, amplitude: 16 },
+  render: (c) => ({
+    css: `
+@keyframes qpa-piston-${c.size}{0%,100%{transform:translateY(0)}50%{transform:translateY(calc(-1 * var(--ph)))}}
+@keyframes qpa-glow-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize*.4}px ${c.color}44}50%{box-shadow:0 0 ${c.glowSize*1.2}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}44}}
+@keyframes qpa-rod-${c.size}{0%,100%{transform:scaleY(1)}50%{transform:scaleY(.35)}}
+.qpa-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.qpa-grid-${c.size}{position:absolute;display:grid;gap:${Math.max(2,c.size*.04)}px;align-items:end}
+.qpa-col-${c.size}{display:flex;flex-direction:column;align-items:center;gap:0}
+.qpa-head-${c.size}{border-radius:2px 2px 0 0;animation:qpa-piston-${c.size} var(--pd) var(--pde) ease-in-out infinite,qpa-glow-${c.size} var(--pd) var(--pde) ease-in-out infinite}
+.qpa-rod-${c.size}{width:30%;border-radius:0;transform-origin:top;animation:qpa-rod-${c.size} var(--pd) var(--pde) ease-in-out infinite}
+.qpa-base-${c.size}{border-radius:0 0 2px 2px;background:${c.color}33}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(2, Math.min(9, c.particleCount));
+      const amp = Math.max(2, Math.min(30, c.amplitude));
+      const gap = Math.max(2, s*.04);
+      const pistonW = Math.max(4, (s - (n+1)*gap) / n);
+      const pistonH = Math.max(4, pistonW*.8);
+      const rodH = Math.max(3, amp*.9);
+      const baseH = Math.max(2, pistonH*.4);
+ 
+      const cols = Array.from({length:n},(_,ci)=>{
+        // Wave delay: columns create a travelling wave
+        const waveDelay = (ci/(n-1||1)) * (1/c.speed);
+        const dur = (1.2/c.speed).toFixed(2);
+        const del = waveDelay.toFixed(2);
+        const col = ci%(Math.ceil(n/2))===0?c.secondColor:c.color;
+        return `<div class="qpa-col-${s}">
+          <div class="qpa-head-${s}" style="width:${pistonW.toFixed(1)}px;height:${pistonH.toFixed(1)}px;--ph:${amp}px;--pd:${dur}s;--pde:${del}s;background:${col};border:1px solid ${col}cc"></div>
+          <div class="qpa-rod-${s}" style="width:${(pistonW*.3).toFixed(1)}px;height:${rodH.toFixed(1)}px;background:${col}88;--pd:${dur}s;--pde:${del}s"></div>
+          <div class="qpa-base-${s}" style="width:${pistonW.toFixed(1)}px;height:${baseH.toFixed(1)}px;border:1px solid ${col}44"></div>
+        </div>`;
+      }).join('');
+ 
+      return `<div class="qpa-wrap-${s}"><div class="qpa-grid-${s}" style="grid-template-columns:repeat(${n},1fr)">${cols}</div></div>`;
+    })()
+  })
+},
+ 
+/* 326 */ {
+  id: 326, name: "Clockwork Galaxy", tags: ["clockwork", "steampunk", "galaxy", "gears", "space"],
+  controls: { speed: 1.0, size: 80, color: "#f59e0b", secondColor: "#a78bfa", glowSize: 8, rings: 4, thickness: 1.5 },
+  render: (c) => ({
+    css: `
+@keyframes cg-cw-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes cg-ccw-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+@keyframes cg-planet-spin-${c.size}{0%{transform:rotate(var(--pa)) translateX(var(--pr)) rotate(calc(-1 * var(--pa)))}100%{transform:rotate(calc(var(--pa)+360deg)) translateX(var(--pr)) rotate(calc(-1 * (var(--pa)+360deg)))}}
+@keyframes cg-star-pulse-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color}}50%{box-shadow:0 0 ${c.glowSize*3}px ${c.color},0 0 ${c.glowSize*5}px ${c.secondColor}55}}
+.cg-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.cg-gear-ring-${c.size}{position:absolute;display:flex;align-items:center;justify-content:center}
+.cg-gear-body-${c.size}{position:absolute;border-radius:50%;border-style:solid}
+.cg-tooth-${c.size}{position:absolute;border-radius:1px;transform-origin:bottom center}
+.cg-planet-orbit-${c.size}{position:absolute;top:50%;left:50%;transform-origin:0 0}
+.cg-planet-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%}
+.cg-star-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,white,${c.color});animation:cg-star-pulse-${c.size} ${(1.5/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const numGears = Math.max(2,Math.min(8,c.rings));
+ 
+      const gears = Array.from({length:numGears},(_,gi)=>{
+        const gSz = s*(0.85-gi*(0.65/numGears));
+        const toothCount = 8+gi*4;
+        const toothH = Math.max(2,gSz*.06);
+        const toothW = Math.max(1.5,c.thickness*.8);
+        const anim = gi%2===0?`cg-cw-${s}`:`cg-ccw-${s}`;
+        const durBase = [3,2.1,1.5,1.1,0.85,0.65,0.5,0.4][gi%8];
+        const dur = (durBase/c.speed).toFixed(2);
+        const col = gi%2===0?c.color:c.secondColor;
+        const off = -gSz/2;
+ 
+        const teeth = Array.from({length:toothCount},(_,ti)=>{
+          const a = (ti/toothCount)*360;
+          return `<div class="cg-tooth-${s}" style="width:${toothW}px;height:${toothH}px;background:${col}cc;bottom:50%;left:50%;margin-left:${(-toothW/2).toFixed(1)}px;transform:rotate(${a}deg) translateY(-${(gSz/2-toothH*.4).toFixed(1)}px)"></div>`;
+        }).join('');
+ 
+        return `<div class="cg-gear-ring-${s}" style="width:${gSz.toFixed(1)}px;height:${gSz.toFixed(1)}px;animation:${anim} ${dur}s linear infinite">
+          <div class="cg-gear-body-${s}" style="width:${gSz.toFixed(1)}px;height:${gSz.toFixed(1)}px;border:${c.thickness}px solid ${col}${Math.round((0.3+gi*.1)*255).toString(16).padStart(2,'0')};background:${col}${Math.round(gi*.05*255).toString(16).padStart(2,'0').slice(-2)}"></div>
+          ${teeth}
+        </div>`;
+      }).join('');
+ 
+      // Orbiting planet-cogs
+      const planets = Array.from({length:4},(_,pi)=>{
+        const pr = s*(0.28+pi*.06);
+        const pa = pi*90;
+        const psz = Math.max(4,s*.07);
+        const dur = ((2.5+pi*.4)/c.speed).toFixed(2);
+        const col = pi%2===0?c.color:c.secondColor;
+        return `<div class="cg-planet-orbit-${s}" style="--pa:${pa}deg;--pr:${pr}px;transform:rotate(${pa}deg) translateX(${pr}px) rotate(-${pa}deg);animation:cg-planet-spin-${s} ${dur}s linear infinite">
+          <div style="position:absolute;width:${psz}px;height:${psz}px;margin-left:${(-psz/2).toFixed(1)}px;margin-top:${(-psz/2).toFixed(1)}px;border-radius:50%;background:${col};border:${c.thickness*.7}px solid ${col}dd;box-shadow:0 0 ${c.glowSize*.5}px ${col}"></div>
+        </div>`;
+      }).join('');
+ 
+      const starS = s*.12;
+      return `<div class="cg-wrap-${s}">${gears}${planets}<div class="cg-star-${s}" style="width:${starS}px;height:${starS}px"></div></div>`;
+    })()
+  })
+},
+ 
+/* ── MAGNETIC LOADERS ───────────────────────────────────────── */
+ 
+/* 327 */ {
+  id: 327, name: "Magnetic Storm", tags: ["magnetic", "particles", "snap", "attract", "kinetic"],
+  controls: { speed: 1.0, size: 80, color: "#94a3b8", secondColor: "#818cf8", glowSize: 8, particleCount: 14, amplitude: 18 },
+  render: (c) => ({
+    css: `
+@keyframes ms-float-${c.size}{0%{transform:translate(var(--fx),var(--fy))}25%{transform:translate(calc(var(--fx)*-.5),calc(var(--fy)*1.3))}50%{transform:translate(var(--tx),var(--ty))}75%{transform:translate(calc(var(--tx)*.6),calc(var(--ty)*-.4))}100%{transform:translate(var(--fx),var(--fy))}}
+@keyframes ms-snap-${c.size}{0%,100%{transform:translate(var(--fx),var(--fy)) scale(1)}45%{transform:translate(0,0) scale(1.5);opacity:1}55%{transform:translate(0,0) scale(.8)}65%{transform:translate(var(--tx),var(--ty)) scale(1.3)}}
+@keyframes ms-pole-${c.size}{0%{transform:translate(-${(c.size*.2).toFixed(1)}px,0)}50%{transform:translate(${(c.size*.2).toFixed(1)}px,0)}100%{transform:translate(-${(c.size*.2).toFixed(1)}px,0)}}
+@keyframes ms-explode-${c.size}{0%,70%,100%{transform:translate(var(--ex),var(--ey)) scale(0);opacity:0}40%{transform:translate(0,0) scale(1);opacity:1}60%{transform:translate(calc(var(--ex)*1.5),calc(var(--ey)*1.5)) scale(.5);opacity:.4}}
+@keyframes ms-field-${c.size}{0%,100%{opacity:.15}50%{opacity:.4}}
+.ms-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.ms-particle-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%}
+.ms-field-line-${c.size}{position:absolute;border-radius:50%;border-style:dashed;animation:ms-field-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(4,Math.min(20,c.particleCount));
+      const amp = Math.max(2,Math.min(30,c.amplitude));
+      const seed = (i,k=1)=>((Math.sin(i*127.1+k*311.7)*43758.5453)%1+1)%1;
+ 
+      const particles = Array.from({length:n},(_,i)=>{
+        const fx = ((seed(i)-.5)*amp).toFixed(1);
+        const fy = ((seed(i,2)-.5)*amp).toFixed(1);
+        const tx = ((seed(i,3)-.5)*amp*.6).toFixed(1);
+        const ty = ((seed(i,4)-.5)*amp*.6).toFixed(1);
+        const ex = ((seed(i,5)-.5)*s*.4).toFixed(1);
+        const ey = ((seed(i,6)-.5)*s*.4).toFixed(1);
+        const sz = Math.max(2,s*(0.028+seed(i,7)*.02));
+        const col = i%2===0?c.color:c.secondColor;
+        const isSnapper = i%5===0;
+        const anim = isSnapper?`ms-snap-${s}`:(i%7===0?`ms-explode-${s}`:`ms-float-${s}`);
+        const dur = ((1.2+seed(i,8)*1.5)/c.speed).toFixed(2);
+        const del = (seed(i,9)*1.5/c.speed).toFixed(2);
+        return `<div class="ms-particle-${s}" style="--fx:${fx}px;--fy:${fy}px;--tx:${tx}px;--ty:${ty}px;--ex:${ex}px;--ey:${ey}px;width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${(-sz/2).toFixed(1)}px;margin-top:${(-sz/2).toFixed(1)}px;background:${col};box-shadow:0 0 ${c.glowSize*.5}px ${col};transform:translate(${fx}px,${fy}px);animation:${anim} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      const fieldLines = Array.from({length:3},(_,i)=>{
+        const fsz = s*(0.3+i*.2);
+        return `<div class="ms-field-line-${s}" style="width:${fsz}px;height:${fsz}px;left:50%;top:50%;margin-left:${(-fsz/2).toFixed(1)}px;margin-top:${(-fsz/2).toFixed(1)}px;border:1px dashed ${c.secondColor}55;animation-delay:${(i*.4/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+ 
+      return `<div class="ms-wrap-${s}">${fieldLines}${particles}</div>`;
+    })()
+  })
+},
+ 
+/* 328 */ {
+  id: 328, name: "Magnetized Rings", tags: ["rings", "repel", "attract", "magnetic", "physics"],
+  controls: { speed: 1.0, size: 80, color: "#38bdf8", secondColor: "#f472b6", glowSize: 8, rings: 5, thickness: 2.0 },
+  render: (c) => ({
+    css: `
+@keyframes mr-repel-${c.size}{0%{transform:rotate(var(--ra)) translateX(var(--rd)) rotate(0deg) scale(1)}25%{transform:rotate(calc(var(--ra)+45deg)) translateX(calc(var(--rd)*1.4)) rotate(-45deg) scale(1.1)}50%{transform:rotate(calc(var(--ra)+90deg)) translateX(var(--rd)) rotate(-90deg) scale(.9)}75%{transform:rotate(calc(var(--ra)+135deg)) translateX(calc(var(--rd)*1.3)) rotate(-135deg) scale(1.05)}100%{transform:rotate(calc(var(--ra)+180deg)) translateX(var(--rd)) rotate(-180deg) scale(1)}}
+@keyframes mr-attract-${c.size}{0%{transform:rotate(var(--ra)) translateX(var(--rd))}50%{transform:rotate(calc(var(--ra)+180deg)) translateX(calc(var(--rd)*.2))}100%{transform:rotate(calc(var(--ra)+360deg)) translateX(var(--rd))}}
+@keyframes mr-lock-${c.size}{0%,60%,100%{transform:translateX(0) scaleX(1)}70%{transform:translateX(-2px) scaleX(1.05);filter:brightness(1.5)}80%{transform:translateX(1px) scaleX(.95)}}
+@keyframes mr-bend-${c.size}{0%,100%{border-radius:50%}50%{border-radius:45% 55% 52% 48%/48% 52% 55% 45%}}
+.mr-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.mr-ring-container-${c.size}{position:absolute;top:50%;left:50%;transform-origin:0 0}
+.mr-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(2,Math.min(8,c.rings));
+ 
+      const rings = Array.from({length:n},(_,ri)=>{
+        const sz = s*(0.18+ri*(0.7/n));
+        const off = -sz/2;
+        const ra = ri*37;
+        const rd = s*(0.04+ri*.02);
+        const isAttract = ri%3===0;
+        const anim = isAttract?`mr-attract-${s}`:`mr-repel-${s}`;
+        const dur = ((1.5+ri*.4)/c.speed).toFixed(2);
+        const col = ri%2===0?c.color:c.secondColor;
+        const alpha = Math.round((0.8-ri*.07)*255).toString(16).padStart(2,'0');
+        const bw = Math.max(1,c.thickness*(1.2-ri*.08));
+        return `<div style="position:absolute;top:50%;left:50%;--ra:${ra}deg;--rd:${rd}px;transform:rotate(${ra}deg) translateX(${rd}px);animation:${anim} ${dur}s ${(ri*.3/c.speed).toFixed(2)}s ease-in-out infinite"><div class="mr-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border-width:${bw}px;border-color:${col}${alpha};box-shadow:0 0 ${c.glowSize*.6}px ${col}55;animation:mr-bend-${s} ${dur}s ${(ri*.2/c.speed).toFixed(2)}s ease-in-out infinite"></div></div>`;
+      }).join('');
+ 
+      const core = `<div style="position:absolute;width:${(s*.08).toFixed(1)}px;height:${(s*.08).toFixed(1)}px;border-radius:50%;background:radial-gradient(circle,${c.color},${c.secondColor}44);box-shadow:0 0 ${c.glowSize}px ${c.color};animation:mr-lock-${s} ${(2/c.speed).toFixed(2)}s ease-in-out infinite"></div>`;
+ 
+      return `<div class="mr-wrap-${s}">${rings}${core}</div>`;
+    })()
+  })
+},
+ 
+/* 329 */ {
+  id: 329, name: "Electromagnetic Heart", tags: ["heart", "magnetic", "orbit", "pulse", "breathing"],
+  controls: { speed: 1.0, size: 80, color: "#f472b6", secondColor: "#fbbf24", glowSize: 12, particleCount: 10, rings: 3 },
+  render: (c) => ({
+    css: `
+@keyframes eh-beat-${c.size}{0%,100%{transform:scale(.88)}15%{transform:scale(1.08)}30%{transform:scale(.95)}45%{transform:scale(1.04)}60%{transform:scale(.97)}}
+@keyframes eh-orbit-out-${c.size}{0%{transform:rotate(var(--oa)) translateX(var(--or));opacity:.9}50%{transform:rotate(calc(var(--oa)+180deg)) translateX(calc(var(--or)*1.5));opacity:.4}100%{transform:rotate(calc(var(--oa)+360deg)) translateX(var(--or));opacity:.9}}
+@keyframes eh-pull-in-${c.size}{0%,30%{transform:rotate(var(--oa)) translateX(var(--or))}60%{transform:rotate(calc(var(--oa)+180deg)) translateX(${(c.size*.04).toFixed(1)}px)}100%{transform:rotate(calc(var(--oa)+360deg)) translateX(var(--or))}}
+@keyframes eh-ring-pulse-${c.size}{0%,100%{transform:scale(1);opacity:.5}15%{transform:scale(1.12);opacity:.9}60%{transform:scale(1);opacity:.4}}
+@keyframes eh-field-${c.size}{0%{transform:scale(.5);opacity:.6}100%{transform:scale(1.6);opacity:0}}
+.eh-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.eh-core-${c.size}{position:absolute;border-radius:50%;animation:eh-beat-${c.size} ${(1/c.speed).toFixed(2)}s ease-in-out infinite}
+.eh-orbit-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%;animation:eh-ring-pulse-${c.size} ${(1/c.speed).toFixed(2)}s ease-in-out infinite}
+.eh-fragment-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0}
+.eh-field-ring-${c.size}{position:absolute;border-radius:50%;border:1px solid;animation:eh-field-${c.size} ${(1/c.speed).toFixed(2)}s ease-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(4,Math.min(20,c.particleCount));
+      const numRings = Math.max(2,Math.min(8,c.rings));
+ 
+      const orbitRings = Array.from({length:numRings},(_,ri)=>{
+        const sz = s*(0.3+ri*(0.55/numRings));
+        const off = -sz/2;
+        const col = ri%2===0?c.color:c.secondColor;
+        const del = (ri*.15/c.speed).toFixed(2);
+        return `<div class="eh-orbit-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border-width:${c.thickness||1.5}px;border-color:${col}66;box-shadow:0 0 ${c.glowSize*.4}px ${col}44;animation-delay:${del}s"></div>`;
+      }).join('');
+ 
+      const fragments = Array.from({length:n},(_,i)=>{
+        const oa = (i/n)*360;
+        const or = s*(0.18+(i%3)*.08);
+        const fsz = Math.max(2,s*.03);
+        const isPull = i%4===0;
+        const anim = isPull?`eh-pull-in-${s}`:`eh-orbit-out-${s}`;
+        const dur = ((0.8+i%3*.3)/c.speed).toFixed(2);
+        const del = (i*.1/c.speed).toFixed(2);
+        const col = i%2===0?c.color:c.secondColor;
+        return `<div class="eh-fragment-${s}" style="--oa:${oa}deg;--or:${or}px;width:${fsz}px;height:${fsz}px;background:${col};margin-left:${(-fsz/2).toFixed(1)}px;margin-top:${(-fsz/2).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.4}px ${col};transform:rotate(${oa}deg) translateX(${or}px);animation:${anim} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      const fieldRings = Array.from({length:3},(_,i)=>{
+        const fsz = s*(0.25+i*.1);
+        const col = i%2===0?c.color:c.secondColor;
+        return `<div class="eh-field-ring-${s}" style="width:${fsz}px;height:${fsz}px;left:50%;top:50%;margin-left:${(-fsz/2).toFixed(1)}px;margin-top:${(-fsz/2).toFixed(1)}px;border-color:${col}66;animation-delay:${(i*.33/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+ 
+      const coreS = s*.2;
+      return `<div class="eh-wrap-${s}">${fieldRings}${orbitRings}${fragments}<div class="eh-core-${s}" style="width:${coreS}px;height:${coreS}px;background:radial-gradient(circle at 38% 38%,white,${c.color},${c.secondColor}44);box-shadow:0 0 ${c.glowSize*2}px ${c.color}"></div></div>`;
+    })()
+  })
+},
+ 
+/* 330 */ {
+  id: 330, name: "Magnetic Sand Table", tags: ["sand", "sacred geometry", "particles", "mandala", "patterns"],
+  controls: { speed: 1.0, size: 80, color: "#fbbf24", secondColor: "#f472b6", glowSize: 6, particleCount: 16, rings: 4 },
+  render: (c) => ({
+    css: `
+@keyframes mst-grain-${c.size}{0%{transform:rotate(var(--ga)) translateX(var(--gr)) rotate(calc(-1*var(--ga)));opacity:.6}50%{transform:rotate(calc(var(--ga)+var(--gd))) translateX(calc(var(--gr)*var(--gs)));opacity:1}100%{transform:rotate(calc(var(--ga)+var(--gd)*2)) translateX(var(--gr)) rotate(calc(-1*(var(--ga)+var(--gd)*2)));opacity:.6}}
+@keyframes mst-ring-draw-${c.size}{0%{stroke-dashoffset:var(--perim)}100%{stroke-dashoffset:0}}
+@keyframes mst-rotate-slow-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes mst-rotate-rev-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+.mst-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.mst-svg-${c.size}{position:absolute;inset:0}
+.mst-grain-layer-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.mst-grain-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0}`,
+    html: (()=>{
+      const s = c.size;
+      const cx = s/2;
+      const n = Math.max(4,Math.min(20,c.particleCount));
+      const numRings = Math.max(2,Math.min(8,c.rings));
+ 
+      // SVG sacred geometry rings
+      const svgRings = Array.from({length:numRings},(_,ri)=>{
+        const r = s*(0.12+ri*(0.36/numRings));
+        const perim = (2*Math.PI*r).toFixed(0);
+        const col = ri%2===0?c.color:c.secondColor;
+        const dur = ((4+ri*1.5)/c.speed).toFixed(2);
+        const del = (ri*.8/c.speed).toFixed(2);
+        const anim = ri%2===0?`mst-rotate-slow-${s}`:`mst-rotate-rev-${s}`;
+        const rotDur = ((8+ri*3)/c.speed).toFixed(2);
+        const segCount = 6+ri*2;
+        const segDash = (2*Math.PI*r/segCount*.7).toFixed(1);
+        const segGap = (2*Math.PI*r/segCount*.3).toFixed(1);
+        return `<circle cx="${cx}" cy="${cx}" r="${r.toFixed(1)}" fill="none" stroke="${col}" stroke-width="${c.thickness||1}" stroke-dasharray="${segDash},${segGap}" stroke-opacity="0.5" style="--perim:${perim};animation:${anim} ${rotDur}s linear infinite;transform-origin:${cx}px ${cx}px;filter:drop-shadow(0 0 ${c.glowSize*.3}px ${col})" />`;
+      }).join('');
+ 
+      // Grain particles arranged in sacred geometry patterns
+      const grains = Array.from({length:n*numRings},(_,i)=>{
+        const ri = Math.floor(i/n);
+        const gi = i%n;
+        const gr = s*(0.1+ri*(0.35/numRings));
+        const ga = ((gi/n)*360 + ri*15).toFixed(1);
+        const gd = (360/n).toFixed(1);
+        const scale = (0.8+Math.sin(i*.7)*.3).toFixed(2);
+        const sz = Math.max(1.5, s*.022);
+        const col = (ri+gi)%2===0?c.color:c.secondColor;
+        const dur = ((2+ri*.5+gi*.1)/c.speed).toFixed(2);
+        const del = ((ri*.4+gi*.15)/c.speed).toFixed(2);
+        return `<div class="mst-grain-${s}" style="--ga:${ga}deg;--gr:${gr.toFixed(1)}px;--gd:${gd}deg;--gs:${scale};width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${(-sz/2).toFixed(1)}px;margin-top:${(-sz/2).toFixed(1)}px;background:${col};box-shadow:0 0 ${c.glowSize*.3}px ${col};transform:rotate(${ga}deg) translateX(${gr.toFixed(1)}px) rotate(-${ga}deg);animation:mst-grain-${s} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      return `<div class="mst-wrap-${s}"><svg class="mst-svg-${s}" viewBox="0 0 ${s} ${s}">${svgRings}</svg><div class="mst-grain-layer-${s}">${grains}</div></div>`;
+    })()
+  })
+},
+ 
+/* 331 */ {
+  id: 331, name: "Particle Accelerator", tags: ["accelerator", "CERN", "particles", "collision", "science"],
+  controls: { speed: 1.0, size: 80, color: "#22d3ee", secondColor: "#f97316", glowSize: 10, rings: 3, particleCount: 6 },
+  render: (c) => ({
+    css: `
+@keyframes pa-race-${c.size}{0%{offset-distance:0%}100%{offset-distance:100%}}
+@keyframes pa-burst-${c.size}{0%,70%,100%{transform:scale(0);opacity:0}40%{transform:scale(1);opacity:1}60%{transform:scale(1.5);opacity:.4}}
+@keyframes pa-ring-glow-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize*.5}px ${c.color}44}50%{box-shadow:0 0 ${c.glowSize*1.5}px ${c.color},0 0 ${c.glowSize*3}px ${c.secondColor}55}}
+@keyframes pa-spin-track-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes pa-spin-rev-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+.pa-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.pa-track-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%}
+.pa-particle-dot-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0}
+.pa-burst-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%}
+.pa-beam-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0}`,
+    html: (()=>{
+      const s = c.size;
+      const numTracks = Math.max(2,Math.min(8,c.rings));
+      const nPart = Math.max(2,Math.min(10,c.particleCount));
+ 
+      const tracks = Array.from({length:numTracks},(_,ti)=>{
+        const sz = s*(0.25+ti*(0.65/numTracks));
+        const off = -sz/2;
+        const col = ti%2===0?c.color:c.secondColor;
+        const alpha = Math.round((0.6+ti*.05)*255).toString(16).padStart(2,'0');
+        return `<div class="pa-track-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border:${c.thickness||1.5}px solid ${col}${alpha};animation:pa-ring-glow-${s} ${(2+ti*.5)/c.speed}s ${(ti*.3/c.speed).toFixed(2)}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      // Racing particles on each track
+      const racers = Array.from({length:numTracks*2},(_,i)=>{
+        const ti = Math.floor(i/2);
+        const isOpposite = i%2===1;
+        const r = s*(0.125+ti*(0.325/numTracks));
+        const startAngle = isOpposite?180:0;
+        const dur = ((0.6+ti*.25)/c.speed).toFixed(2);
+        const del = (i*.15/c.speed).toFixed(2);
+        const col = ti%2===0?c.color:c.secondColor;
+        const psz = Math.max(2,s*.03);
+        return `<div class="pa-particle-dot-${s}" style="width:${psz}px;height:${psz}px;background:${col};box-shadow:0 0 ${c.glowSize*.6}px ${col},0 0 ${c.glowSize*1.5}px ${col}44;margin-left:${(-psz/2).toFixed(1)}px;margin-top:${(-psz/2).toFixed(1)}px;transform:rotate(${startAngle}deg) translateX(${r.toFixed(1)}px);animation:pa-spin-${isOpposite?`rev-${s}`:`track-${s}`} ${dur}s ${del}s linear infinite"></div>`;
+      }).join('');
+ 
+      // Collision bursts at cardinal points
+      const bursts = Array.from({length:nPart},(_,i)=>{
+        const a = (i/nPart)*360;
+        const r = s*(0.12+i%3*.1);
+        const bx = (Math.cos(a*Math.PI/180)*r).toFixed(1);
+        const by = (Math.sin(a*Math.PI/180)*r).toFixed(1);
+        const bsz = Math.max(4,s*.08);
+        const col = i%2===0?c.color:c.secondColor;
+        const dur = ((0.6+i*.12)/c.speed).toFixed(2);
+        const del = (i*.2/c.speed).toFixed(2);
+        return `<div class="pa-burst-${s}" style="width:${bsz}px;height:${bsz}px;background:radial-gradient(circle,white,${col},transparent);margin-left:${(-bsz/2+parseFloat(bx)).toFixed(1)}px;margin-top:${(-bsz/2+parseFloat(by)).toFixed(1)}px;animation:pa-burst-${s} ${dur}s ${del}s ease-out infinite"></div>`;
+      }).join('');
+ 
+      const coreS = s*.1;
+      const core = `<div style="position:absolute;width:${coreS}px;height:${coreS}px;background:radial-gradient(circle,white,${c.secondColor},${c.color}44);border-radius:50%;box-shadow:0 0 ${c.glowSize}px ${c.secondColor}"></div>`;
+ 
+      return `<div class="pa-wrap-${s}">${tracks}${racers}${bursts}${core}</div>`;
+    })()
+  })
+},
+ 
+/* ── MUSIC-BASED LOADERS ────────────────────────────────────── */
+ 
+/* 332 */ {
+  id: 332, name: "Visual Symphony", tags: ["orchestra", "music", "sync", "crescendo", "visual"],
+  controls: { speed: 1.0, size: 80, color: "#a78bfa", secondColor: "#fbbf24", glowSize: 10, particleCount: 12, amplitude: 18 },
+  render: (c) => ({
+    css: `
+@keyframes vs-strings-${c.size}{0%,100%{transform:scaleY(.2) translateY(50%)}25%{transform:scaleY(.8) translateY(0)}50%{transform:scaleY(1.2) translateY(-10%)}75%{transform:scaleY(.5) translateY(25%)}}
+@keyframes vs-brass-${c.size}{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.15);opacity:1}}
+@keyframes vs-crescendo-${c.size}{0%,80%,100%{transform:scale(1);opacity:.7;box-shadow:0 0 ${c.glowSize}px ${c.color}44}85%{transform:scale(1.5);opacity:1;box-shadow:0 0 ${c.glowSize*4}px ${c.color},0 0 ${c.glowSize*7}px ${c.secondColor}88}}
+@keyframes vs-wave-out-${c.size}{0%{transform:scale(.3);opacity:.9}100%{transform:scale(2);opacity:0}}
+@keyframes vs-baton-${c.size}{0%{transform:rotate(-30deg)}50%{transform:rotate(30deg)}100%{transform:rotate(-30deg)}}
+.vs-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:flex-end;justify-content:center;padding-bottom:${(c.size*.08).toFixed(1)}px}
+.vs-bar-${c.size}{border-radius:2px 2px 0 0;transform-origin:bottom;animation:vs-strings-${c.size} var(--vd) var(--vde) ease-in-out infinite}
+.vs-brass-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;animation:vs-brass-${c.size} var(--brd) var(--brde) ease-in-out infinite}
+.vs-crescendo-core-${c.size}{position:absolute;border-radius:50%;animation:vs-crescendo-${c.size} ${(3/c.speed).toFixed(2)}s ease-in-out infinite}
+.vs-wave-${c.size}{position:absolute;border-radius:50%;border:1px solid;animation:vs-wave-out-${c.size} ${(1.5/c.speed).toFixed(2)}s ease-out infinite}
+.vs-baton-${c.size}{position:absolute;width:${Math.max(1,c.size*.015)}px;border-radius:2px;background:${c.color};transform-origin:bottom center;animation:vs-baton-${c.size} ${(0.5/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(4,Math.min(20,c.particleCount));
+      const amp = Math.max(2,Math.min(30,c.amplitude));
+      const barW = Math.max(2,((s*.85)-n*2)/n);
+      const baseH = s*.1;
+ 
+      // String section bars
+      const bars = Array.from({length:n},(_,i)=>{
+        const phase = (i/n)*Math.PI*2;
+        const maxH = (baseH + amp*(0.5+Math.abs(Math.sin(phase)))).toFixed(1);
+        const dur = ((0.7+Math.sin(i*.8)*.4)/c.speed).toFixed(2);
+        const del = (i*0.07/c.speed).toFixed(2);
+        const col = i%3===0?c.secondColor:(i%2===0?c.color:`${c.color}bb`);
+        return `<div class="vs-bar-${s}" style="--vd:${dur}s;--vde:${del}s;width:${barW.toFixed(1)}px;height:${maxH}px;background:linear-gradient(to top,${col},${col}44);margin:0 1px;box-shadow:0 0 ${c.glowSize*.3}px ${col}44"></div>`;
+      }).join('');
+ 
+      // Brass rings (concentric circles)
+      const brassRings = Array.from({length:3},(_,i)=>{
+        const sz = s*(0.35+i*.2);
+        const off = -(s*(0.35+i*.2)/2);
+        const col = i%2===0?c.color:c.secondColor;
+        const dur = ((1.5+i*.5)/c.speed).toFixed(2);
+        const del = (i*.4/c.speed).toFixed(2);
+        return `<div class="vs-brass-ring-${s}" style="--brd:${dur}s;--brde:${del}s;width:${sz}px;height:${sz}px;left:50%;top:50%;margin-left:${off}px;margin-top:${off}px;border:${c.thickness||1.5}px solid ${col}66;box-shadow:0 0 ${c.glowSize*.4}px ${col}44"></div>`;
+      }).join('');
+ 
+      // Crescendo waves
+      const waves = Array.from({length:3},(_,i)=>{
+        const wsz = s*(0.2+i*.1);
+        const col = i%2===0?c.color:c.secondColor;
+        return `<div class="vs-wave-${s}" style="width:${wsz}px;height:${wsz}px;left:50%;top:40%;margin-left:${(-wsz/2).toFixed(1)}px;margin-top:${(-wsz/2).toFixed(1)}px;border-color:${col}77;animation-delay:${(i*.5/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+ 
+      const coreS = s*.12;
+      const bH = s*.25;
+      return `<div class="vs-wrap-${s}">${waves}${brassRings}<div class="vs-crescendo-core-${s}" style="top:38%;width:${coreS}px;height:${coreS}px;background:radial-gradient(circle,white,${c.color},${c.secondColor}44)"></div><div class="vs-baton-${s}" style="top:${(s*.25).toFixed(1)}px;left:50%;margin-left:${(-Math.max(1,s*.0075)).toFixed(1)}px;height:${bH.toFixed(1)}px"></div><div style="display:flex;align-items:flex-end;gap:2px">${bars}</div></div>`;
+    })()
+  })
+},
+ 
+/* 333 */ {
+  id: 333, name: "Vinyl Nebula", tags: ["vinyl", "record", "retro", "music", "galaxy"],
+  controls: { speed: 1.0, size: 80, color: "#a78bfa", secondColor: "#f472b6", glowSize: 10, rings: 5, particleCount: 12 },
+  render: (c) => ({
+    css: `
+@keyframes vn-spin-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes vn-particle-${c.size}{0%{transform:rotate(var(--va)) translateX(var(--vr));opacity:.8}60%{opacity:.4;transform:rotate(calc(var(--va)+var(--vs)*60deg)) translateX(calc(var(--vr)*1.8))}100%{opacity:0;transform:rotate(calc(var(--va)+var(--vs)*120deg)) translateX(calc(var(--vr)*2.5))}}
+@keyframes vn-groove-glow-${c.size}{0%,100%{opacity:.3}50%{opacity:.8}}
+@keyframes vn-galaxy-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color}44}50%{box-shadow:0 0 ${c.glowSize*3}px ${c.color},0 0 ${c.glowSize*5}px ${c.secondColor}66}}
+.vn-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:vn-galaxy-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite}
+.vn-record-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle,#1a1a2e 0%,#0d0d1a 100%);animation:vn-spin-${c.size} ${(2/c.speed).toFixed(2)}s linear infinite}
+.vn-groove-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%}
+.vn-label-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle at 40% 40%,${c.color},${c.secondColor}88,${c.color}44);left:50%;top:50%}
+.vn-particle-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0}`,
+    html: (()=>{
+      const s = c.size;
+      const numGrooves = Math.max(2,Math.min(8,c.rings));
+      const nPart = Math.max(4,Math.min(20,c.particleCount));
+ 
+      const recordSz = s*.9;
+      const grooves = Array.from({length:numGrooves},(_,gi)=>{
+        const gsz = s*(0.22+gi*(0.6/numGrooves));
+        const off = -gsz/2;
+        const col = gi%2===0?c.color:c.secondColor;
+        const del = (gi*.1/c.speed).toFixed(2);
+        return `<div class="vn-groove-${s}" style="width:${gsz.toFixed(1)}px;height:${gsz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border:1px solid ${col}${Math.round((0.15+gi*.05)*255).toString(16).padStart(2,'0')};animation:vn-groove-glow-${s} ${(2+gi*.3)/c.speed}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      const labelSz = s*.28;
+      const label = `<div class="vn-label-${s}" style="width:${labelSz}px;height:${labelSz}px;margin-left:${(-labelSz/2).toFixed(1)}px;margin-top:${(-labelSz/2).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.6}px ${c.color}88"></div>`;
+ 
+      // Emitted particles from grooves
+      const particles = Array.from({length:nPart},(_,i)=>{
+        const va = (i/nPart)*360;
+        const vr = s*(0.22+(i%3)*.1);
+        const vs = i%2===0?1:-1;
+        const psz = Math.max(1.5,s*.025);
+        const col = i%2===0?c.color:c.secondColor;
+        const dur = ((1+i%4*.3)/c.speed).toFixed(2);
+        const del = (i*.18/c.speed).toFixed(2);
+        return `<div class="vn-particle-${s}" style="--va:${va}deg;--vr:${vr.toFixed(1)}px;--vs:${vs};width:${psz}px;height:${psz}px;margin-left:${(-psz/2).toFixed(1)}px;margin-top:${(-psz/2).toFixed(1)}px;background:${col};box-shadow:0 0 ${c.glowSize*.4}px ${col};transform:rotate(${va}deg) translateX(${vr.toFixed(1)}px);animation:vn-particle-${s} ${dur}s ${del}s ease-out infinite"></div>`;
+      }).join('');
+ 
+      const centerS = s*.05;
+      return `<div class="vn-wrap-${s}"><div class="vn-record-${s}" style="width:${recordSz}px;height:${recordSz}px">${grooves}${label}</div>${particles}<div style="position:absolute;width:${centerS}px;height:${centerS}px;background:#ccc;border-radius:50%"></div></div>`;
+    })()
+  })
+},
+ 
+/* 334 */ {
+  id: 334, name: "Resonance Machine", tags: ["cymatic", "resonance", "sound", "geometry", "vibration"],
+  controls: { speed: 1.0, size: 80, color: "#22d3ee", secondColor: "#f59e0b", glowSize: 8, rings: 4, amplitude: 12 },
+  render: (c) => ({
+    css: `
+@keyframes rm-vibrate-${c.size}{0%,100%{transform:scaleX(1) scaleY(1)}25%{transform:scaleX(var(--rvx)) scaleY(var(--rvy))}50%{transform:scaleX(1) scaleY(1)}75%{transform:scaleX(calc(2-var(--rvx))) scaleY(calc(2-var(--rvy)))}}
+@keyframes rm-cymatic-rot-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes rm-cymatic-rev-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+@keyframes rm-node-${c.size}{0%,100%{transform:scale(.5);opacity:.3}50%{transform:scale(1.2);opacity:1}}
+@keyframes rm-plate-${c.size}{0%,100%{filter:drop-shadow(0 0 ${c.glowSize*.4}px ${c.color}44)}50%{filter:drop-shadow(0 0 ${c.glowSize*1.5}px ${c.color})}}
+.rm-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:rm-plate-${c.size} ${(1.5/c.speed).toFixed(2)}s ease-in-out infinite}
+.rm-svg-${c.size}{position:absolute;inset:0}
+.rm-ring-layer-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.rm-cymatic-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid}
+.rm-node-dot-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0}`,
+    html: (()=>{
+      const s = c.size;
+      const cx = s/2;
+      const numRings = Math.max(2,Math.min(8,c.rings));
+      const amp = Math.max(2,Math.min(30,c.amplitude));
+ 
+      // SVG standing wave patterns
+      const waves = Array.from({length:numRings},(_,ri)=>{
+        const r = s*(0.1+ri*(0.38/numRings));
+        const freq = 2+ri*2;
+        // Approximate cymatic pattern with polygon points
+        const pts = Array.from({length:freq*4},(_,pi)=>{
+          const angle = (pi/(freq*4))*Math.PI*2;
+          const wave = 1+Math.sin(freq*angle)*(amp*0.012);
+          const px = cx+Math.cos(angle)*r*wave;
+          const py = cx+Math.sin(angle)*r*wave;
+          return `${px.toFixed(1)},${py.toFixed(1)}`;
+        }).join(' ');
+        const col = ri%2===0?c.color:c.secondColor;
+        const anim = ri%2===0?`rm-cymatic-rot-${s}`:`rm-cymatic-rev-${s}`;
+        const dur = ((3+ri*.8)/c.speed).toFixed(2);
+        return `<polygon points="${pts}" fill="none" stroke="${col}" stroke-width="${c.thickness||1.2}" stroke-opacity="${0.5+ri*.07}" style="animation:${anim} ${dur}s linear infinite;transform-origin:${cx}px ${cx}px;filter:drop-shadow(0 0 ${c.glowSize*.3}px ${col})" />`;
+      }).join('');
+ 
+      // Vibration nodes at antinodes
+      const nodes = Array.from({length:numRings*4},(_,i)=>{
+        const ri = Math.floor(i/4);
+        const ni = i%4;
+        const r = s*(0.1+ri*(0.38/numRings));
+        const a = (ni/4)*360;
+        const nsz = Math.max(2,s*.025);
+        const col = ri%2===0?c.color:c.secondColor;
+        const dur = ((0.5+ri*.2)/c.speed).toFixed(2);
+        const del = (i*.08/c.speed).toFixed(2);
+        const nx = (cx+Math.cos(a*Math.PI/180)*r-nsz/2).toFixed(1);
+        const ny = (cx+Math.sin(a*Math.PI/180)*r-nsz/2).toFixed(1);
+        return `<div style="position:absolute;width:${nsz}px;height:${nsz}px;background:${col};border-radius:50%;left:${nx}px;top:${ny}px;box-shadow:0 0 ${c.glowSize*.4}px ${col};animation:rm-node-${s} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      // Central vibrating element
+      const plateSz = s*.2;
+      const rvx = (1+amp*0.04).toFixed(2);
+      const rvy = (1-amp*0.03).toFixed(2);
+      const plate = `<div style="position:absolute;width:${plateSz}px;height:${plateSz}px;--rvx:${rvx};--rvy:${rvy};border:${c.thickness||1}px solid ${c.color}88;background:${c.color}0a;animation:rm-vibrate-${s} ${(0.4/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize}px ${c.color}44"></div>`;
+ 
+      return `<div class="rm-wrap-${s}"><svg class="rm-svg-${s}" viewBox="0 0 ${s} ${s}">${waves}</svg>${nodes}${plate}</div>`;
+    })()
+  })
+},
+ 
+/* 335 */ {
+  id: 335, name: "Harmonic Engine", tags: ["oscillator", "harmonic", "lissajous", "musical", "elegant"],
+  controls: { speed: 1.0, size: 80, color: "#4ade80", secondColor: "#f472b6", glowSize: 8, rings: 3, thickness: 1.5 },
+  render: (c) => ({
+    css: `
+@keyframes he-lissajous-x-${c.size}{0%{transform:translateX(0)}25%{transform:translateX(var(--ax))}50%{transform:translateX(0)}75%{transform:translateX(calc(-1*var(--ax)))}100%{transform:translateX(0)}}
+@keyframes he-lissajous-y-${c.size}{0%{transform:translateY(0)}25%{transform:translateY(var(--ay))}50%{transform:translateY(0)}75%{transform:translateY(calc(-1*var(--ay)))}100%{transform:translateY(0)}}
+@keyframes he-trace-${c.size}{0%{stroke-dashoffset:600;opacity:0}15%{opacity:1}100%{stroke-dashoffset:0;opacity:.6}}
+@keyframes he-node-pulse-${c.size}{0%,100%{transform:scale(.6);opacity:.3}50%{transform:scale(1.2);opacity:1}}
+@keyframes he-glow-breath-${c.size}{0%,100%{filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.color}44)}50%{filter:drop-shadow(0 0 ${c.glowSize*1.5}px ${c.color})}}
+.he-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:he-glow-breath-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite}
+.he-svg-${c.size}{position:absolute;inset:0}
+.he-oscillator-${c.size}{position:absolute;top:50%;left:50%}
+.he-x-arm-${c.size}{position:absolute;transform-origin:left center;height:${Math.max(1,c.size*.018)}px;border-radius:2px;top:50%;left:50%;margin-top:${(-Math.max(.5,c.size*.009)).toFixed(1)}px}
+.he-y-arm-${c.size}{position:absolute;transform-origin:center top;width:${Math.max(1,c.size*.018)}px;border-radius:2px;top:50%;left:50%;margin-left:${(-Math.max(.5,c.size*.009)).toFixed(1)}px}`,
+    html: (()=>{
+      const s = c.size;
+      const cx = s/2;
+      const numOsc = Math.max(2,Math.min(8,c.rings));
+      const ratios = [[1,1],[2,1],[3,2],[4,3],[5,4],[3,1],[5,3],[7,4]];
+ 
+      // SVG Lissajous traces
+      const traces = Array.from({length:numOsc},(_,oi)=>{
+        const [rx,ry] = ratios[oi%ratios.length];
+        const a = s*(0.32-oi*.04);
+        const pts = Array.from({length:200},(_,pi)=>{
+          const t = (pi/200)*Math.PI*2;
+          const x = cx+a*Math.sin(rx*t + Math.PI/4);
+          const y = cx+a*Math.sin(ry*t);
+          return `${x.toFixed(1)},${y.toFixed(1)}`;
+        });
+        const col = oi%2===0?c.color:c.secondColor;
+        const dur = ((3+oi*.5)/c.speed).toFixed(2);
+        const del = (oi*.4/c.speed).toFixed(2);
+        return `<polyline points="${pts.join(' ')}" fill="none" stroke="${col}" stroke-width="${c.thickness*.7}" stroke-opacity="${0.4+oi*.05}" stroke-dasharray="600" style="animation:he-trace-${s} ${dur}s ${del}s linear infinite;filter:drop-shadow(0 0 ${c.glowSize*.3}px ${col})" />`;
+      }).join('');
+ 
+      // Oscillator arms
+      const arms = Array.from({length:numOsc},(_,oi)=>{
+        const [rx,ry] = ratios[oi%ratios.length];
+        const ax = s*(0.3-oi*.03);
+        const ay = s*(0.3-oi*.03);
+        const col = oi%2===0?c.color:c.secondColor;
+        const durX = (rx/c.speed).toFixed(2);
+        const durY = (ry/c.speed).toFixed(2);
+        const del = (oi*.3/c.speed).toFixed(2);
+        return `<div style="position:absolute;top:50%;left:50%;animation:he-lissajous-x-${s} ${durX}s ${del}s ease-in-out infinite;--ax:${ax}px"><div style="animation:he-lissajous-y-${s} ${durY}s ${del}s ease-in-out infinite;--ay:${ay}px"><div style="position:absolute;width:${Math.max(3,s*.04)}px;height:${Math.max(3,s*.04)}px;background:${col};border-radius:50%;margin-left:${(-Math.max(1.5,s*.02)).toFixed(1)}px;margin-top:${(-Math.max(1.5,s*.02)).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.6}px ${col};animation:he-node-pulse-${s} ${durX}s ${del}s ease-in-out infinite"></div></div></div>`;
+      }).join('');
+ 
+      return `<div class="he-wrap-${s}"><svg class="he-svg-${s}" viewBox="0 0 ${s} ${s}">${traces}</svg>${arms}</div>`;
+    })()
+  })
+},
+ 
+/* 336 */ {
+  id: 336, name: "Bass Reactor", tags: ["bass", "shockwave", "pulse", "dark", "energy"],
+  controls: { speed: 1.0, size: 80, color: "#f97316", secondColor: "#a78bfa", glowSize: 14, rings: 4, amplitude: 20 },
+  render: (c) => ({
+    css: `
+@keyframes br-beat-${c.size}{0%,100%{transform:scale(.82)}8%{transform:scale(1.15)}16%{transform:scale(.92)}24%{transform:scale(1.06)}100%{transform:scale(.82)}}
+@keyframes br-shock-${c.size}{0%{transform:scale(.3);opacity:.9}100%{transform:scale(2.2);opacity:0}}
+@keyframes br-deform-${c.size}{0%,100%{border-radius:50%;transform:scale(1) rotate(0deg)}12%{border-radius:45% 55% 58% 42%/52% 48% 55% 45%;transform:scale(1.08) rotate(3deg)}25%{border-radius:50%;transform:scale(.94) rotate(-2deg)}}
+@keyframes br-fragment-${c.size}{0%,60%,100%{transform:translate(0,0) scale(0);opacity:0}30%{transform:translate(var(--bfx),var(--bfy)) scale(1);opacity:1}55%{opacity:.3;transform:translate(calc(var(--bfx)*1.5),calc(var(--bfy)*1.5)) scale(.5)}}
+@keyframes br-ring-pulse-${c.size}{0%,100%{transform:scale(1);border-color:var(--rc)}8%{transform:scale(1.06);border-color:${c.color}}
+.br-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.br-shock-ring-${c.size}{position:absolute;border-radius:50%;border:${c.thickness||2}px solid;animation:br-shock-${c.size} ${(1/c.speed).toFixed(2)}s ease-out infinite}
+.br-orbit-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%;animation:br-ring-pulse-${c.size} ${(1/c.speed).toFixed(2)}s ease-in-out infinite}
+.br-core-${c.size}{position:absolute;border-radius:50%;animation:br-beat-${c.size} ${(1/c.speed).toFixed(2)}s ease-out infinite,br-deform-${c.size} ${(1/c.speed).toFixed(2)}s ease-in-out infinite}
+.br-fragment-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0}`,
+    html: (()=>{
+      const s = c.size;
+      const numRings = Math.max(2,Math.min(8,c.rings));
+      const amp = Math.max(2,Math.min(30,c.amplitude));
+ 
+      const shockRings = Array.from({length:3},(_,i)=>{
+        const rc = i%2===0?c.color:c.secondColor;
+        const startSz = s*(0.15+i*.05);
+        const del = (i*.33/c.speed).toFixed(2);
+        return `<div class="br-shock-ring-${s}" style="width:${startSz}px;height:${startSz}px;border-color:${rc};box-shadow:0 0 ${c.glowSize*.5}px ${rc}77;animation-delay:${del}s"></div>`;
+      }).join('');
+ 
+      const orbitRings = Array.from({length:numRings},(_,ri)=>{
+        const sz = s*(0.28+ri*(0.6/numRings));
+        const off = -sz/2;
+        const col = ri%2===0?c.color:c.secondColor;
+        const alpha = Math.round((0.6-ri*.08)*255).toString(16).padStart(2,'0');
+        const bw = Math.max(1,c.thickness*(1.3-ri*.1));
+        const del = (ri*.12/c.speed).toFixed(2);
+        return `<div class="br-orbit-ring-${s}" style="--rc:${col}${alpha};width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border-width:${bw}px;border-color:${col}${alpha};box-shadow:0 0 ${c.glowSize*.4}px ${col}44;animation-delay:${del}s"></div>`;
+      }).join('');
+ 
+      // Flying fragments on beat
+      const fragments = Array.from({length:8},(_,i)=>{
+        const a = i*45*Math.PI/180;
+        const bfx = (Math.cos(a)*amp).toFixed(1);
+        const bfy = (Math.sin(a)*amp).toFixed(1);
+        const fsz = Math.max(2,s*.03);
+        const col = i%2===0?c.color:c.secondColor;
+        const del = (i*.06/c.speed).toFixed(2);
+        return `<div class="br-fragment-${s}" style="--bfx:${bfx}px;--bfy:${bfy}px;width:${fsz}px;height:${fsz}px;background:${col};margin-left:${(-fsz/2).toFixed(1)}px;margin-top:${(-fsz/2).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.4}px ${col};animation:br-fragment-${s} ${(1/c.speed).toFixed(2)}s ${del}s ease-out infinite"></div>`;
+      }).join('');
+ 
+      const coreS = s*.22;
+      return `<div class="br-wrap-${s}">${shockRings}${orbitRings}${fragments}<div class="br-core-${s}" style="width:${coreS}px;height:${coreS}px;background:radial-gradient(circle at 35% 35%,white,${c.color},${c.secondColor}44);box-shadow:0 0 ${c.glowSize*2}px ${c.color}"></div></div>`;
+    })()
+  })
+},
+ 
+/* ── HYBRID CONCEPTS ────────────────────────────────────────── */
+ 
+/* 337 */ {
+  id: 337, name: "Ferrophonic Reactor", tags: ["ferrofluid", "music", "magnetic", "bass", "liquid", "hybrid"],
+  controls: { speed: 1.0, size: 80, color: "#94a3b8", secondColor: "#a78bfa", glowSize: 10, particleCount: 10, amplitude: 16 },
+  render: (c) => ({
+    css: `
+@keyframes fpr-bass-spike-${c.size}{0%,100%{transform:rotate(var(--fa)) scaleY(.12)}12%{transform:rotate(var(--fa)) scaleY(var(--fh))}30%{transform:rotate(var(--fa)) scaleY(.6)}60%{transform:rotate(calc(var(--fa)+var(--sway))) scaleY(.35)}}
+@keyframes fpr-melody-pole-${c.size}{0%{transform:translate(-${(c.size*.18).toFixed(1)}px,-${(c.size*.1).toFixed(1)}px)}33%{transform:translate(${(c.size*.16).toFixed(1)}px,-${(c.size*.08).toFixed(1)}px)}66%{transform:translate(${(c.size*.08).toFixed(1)}px,${(c.size*.14).toFixed(1)}px)}100%{transform:translate(-${(c.size*.18).toFixed(1)}px,-${(c.size*.1).toFixed(1)}px)}}
+@keyframes fpr-pool-morph-${c.size}{0%,100%{border-radius:46% 54% 52% 48%/50% 46% 54% 50%}25%{border-radius:55% 45% 42% 58%/45% 55% 45% 55%}50%{border-radius:48% 52% 57% 43%/53% 47% 53% 47%}75%{border-radius:52% 48% 45% 55%/48% 52% 48% 52%}}
+@keyframes fpr-rhythm-ring-${c.size}{0%,100%{transform:scale(1);opacity:.4}12%{transform:scale(1.18);opacity:.9}50%{transform:scale(1.05);opacity:.5}}
+.fpr-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.fpr-pool-${c.size}{position:absolute;background:radial-gradient(circle at 38% 38%,${c.color}dd,#060614);animation:fpr-pool-morph-${c.size} ${(1.8/c.speed).toFixed(2)}s ease-in-out infinite}
+.fpr-spike-${c.size}{position:absolute;border-radius:2px 2px 0 0;bottom:50%;left:50%;transform-origin:bottom center;background:linear-gradient(to top,${c.color},${c.secondColor}66,transparent)}
+.fpr-pole-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle,${c.secondColor},${c.secondColor}44);animation:fpr-melody-pole-${c.size} ${(2.4/c.speed).toFixed(2)}s ease-in-out infinite}
+.fpr-rhythm-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%;animation:fpr-rhythm-ring-${c.size} ${(1/c.speed).toFixed(2)}s ease-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(4,Math.min(20,c.particleCount));
+      const amp = Math.max(2,Math.min(30,c.amplitude));
+ 
+      const poolSz = s*.55;
+      const spikes = Array.from({length:n},(_,i)=>{
+        const fa = (i/n)*360;
+        const pushR = (s*.22).toFixed(1);
+        const sh = ((amp*.6+amp*.4*(i%3)/2)).toFixed(2);
+        const sw = Math.max(1.5,s*.022);
+        const dur = ((0.6+i%3*.25)/c.speed).toFixed(2);
+        const del = (i*.1/c.speed).toFixed(2);
+        const sway = ((i%2===0?1:-1)*20).toFixed(0);
+        return `<div class="fpr-spike-${s}" style="--fa:${fa}deg;--fh:${sh};--sway:${sway}deg;width:${sw}px;height:${(amp*1.1).toFixed(1)}px;margin-left:${(-sw/2).toFixed(1)}px;transform:rotate(${fa}deg) translateY(-${pushR}px) scaleY(.12);animation:fpr-bass-spike-${s} ${dur}s ${del}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize*.4}px ${c.secondColor})"></div>`;
+      }).join('');
+ 
+      const rhythmRings = Array.from({length:3},(_,i)=>{
+        const sz = s*(0.35+i*.18);
+        const off = -sz/2;
+        const col = i%2===0?c.color:c.secondColor;
+        const del = (i*.33/c.speed).toFixed(2);
+        return `<div class="fpr-rhythm-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border:${c.thickness||1.5}px solid ${col}66;box-shadow:0 0 ${c.glowSize*.3}px ${col}44;animation-delay:${del}s"></div>`;
+      }).join('');
+ 
+      const poleSz = Math.max(4,s*.06);
+      return `<div class="fpr-wrap-${s}">${rhythmRings}${spikes}<div class="fpr-pool-${s}" style="width:${poolSz}px;height:${poolSz}px"></div><div class="fpr-pole-${s}" style="width:${poleSz}px;height:${poleSz}px;box-shadow:0 0 ${c.glowSize}px ${c.secondColor}"></div></div>`;
+    })()
+  })
+},
+ 
+/* 338 */ {
+  id: 338, name: "Turbine Orchestra", tags: ["turbine", "music", "notes", "mechanical", "rhythm", "hybrid"],
+  controls: { speed: 1.0, size: 80, color: "#f59e0b", secondColor: "#4ade80", glowSize: 8, rings: 3, particleCount: 8 },
+  render: (c) => ({
+    css: `
+@keyframes to-spin-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes to-spin-rev-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+@keyframes to-note-${c.size}{0%{transform:translate(0,0) scale(0);opacity:0}20%{transform:translate(var(--nx),var(--ny)) scale(1);opacity:1}70%{opacity:.5}100%{transform:translate(calc(var(--nx)*2),calc(var(--ny)*2)) scale(.3);opacity:0}}
+@keyframes to-beat-${c.size}{0%,100%{transform:rotate(0deg) scale(1)}8%{transform:rotate(5deg) scale(1.08)}16%{transform:rotate(-3deg) scale(.95)}}
+@keyframes to-harmonic-${c.size}{0%,100%{opacity:.3;transform:scaleY(.2)}50%{opacity:1;transform:scaleY(1)}}
+.to-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:to-beat-${c.size} ${(1/c.speed).toFixed(2)}s ease-out infinite}
+.to-stage-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:to-spin-${c.size} var(--tsd) linear infinite}
+.to-stage-rev-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;animation:to-spin-rev-${c.size} var(--tsd) linear infinite}
+.to-blade-${c.size}{position:absolute;border-radius:1px 4px 1px 1px;transform-origin:center}
+.to-note-${c.size}{position:absolute;top:50%;left:50%;border-radius:50%;transform-origin:0 0}
+.to-harmonic-bar-${c.size}{position:absolute;border-radius:2px 2px 0 0;bottom:${(c.size*.08).toFixed(1)}px;transform-origin:bottom}`,
+    html: (()=>{
+      const s = c.size;
+      const numStages = Math.max(2,Math.min(8,c.rings));
+      const nNotes = Math.max(4,Math.min(20,c.particleCount));
+ 
+      const stages = Array.from({length:numStages},(_,si)=>{
+        const stageR = s*(0.2+si*(0.68/numStages));
+        const bladeCount = 5+si*2;
+        const durSpeed = ((0.7+si*.3)/c.speed).toFixed(2);
+        const col = si%2===0?c.color:c.secondColor;
+        const bladeH = stageR*.4;
+        const bladeW = Math.max(2,s*.022);
+        const blades = Array.from({length:bladeCount},(_,bi)=>{
+          const a = (bi/bladeCount)*360;
+          return `<div class="to-blade-${s}" style="width:${bladeW.toFixed(1)}px;height:${bladeH.toFixed(1)}px;background:linear-gradient(to top,${col},${col}55);position:absolute;bottom:50%;left:50%;margin-left:${(-bladeW/2).toFixed(1)}px;transform:rotate(${a}deg) translateY(-${(stageR*.5).toFixed(1)}px) skewX(-10deg);box-shadow:0 0 ${c.glowSize*.25}px ${col}55"></div>`;
+        }).join('');
+        const cls = si%2===0?`to-stage-${s}`:`to-stage-rev-${s}`;
+        return `<div class="${cls}" style="--tsd:${durSpeed}s">${blades}</div>`;
+      }).join('');
+ 
+      // Musical notes flying off
+      const notes = Array.from({length:nNotes},(_,i)=>{
+        const a = (i/nNotes)*Math.PI*2;
+        const nr = s*(0.15+(i%4)*.05);
+        const nx = (Math.cos(a)*nr*.8).toFixed(1);
+        const ny = (Math.sin(a)*nr*.8-s*.2).toFixed(1);
+        const nsz = Math.max(3,s*.04);
+        const col = i%2===0?c.color:c.secondColor;
+        const dur = ((0.8+i%3*.3)/c.speed).toFixed(2);
+        const del = (i*.18/c.speed).toFixed(2);
+        return `<div class="to-note-${s}" style="--nx:${nx}px;--ny:${ny}px;width:${nsz}px;height:${nsz}px;background:${col};margin-left:${(-nsz/2).toFixed(1)}px;margin-top:${(-nsz/2).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.4}px ${col};transform:translate(0,0) scale(0);animation:to-note-${s} ${dur}s ${del}s ease-out infinite"></div>`;
+      }).join('');
+ 
+      // Harmonic bars at bottom
+      const hBars = Array.from({length:6},(_,i)=>{
+        const bw = Math.max(2,s*.03);
+        const bMaxH = s*(0.12+i%3*.04);
+        const bx = (s*.08+i*(s*.14)).toFixed(1);
+        const col = i%2===0?c.color:c.secondColor;
+        const dur = ((0.3+i*.05)/c.speed).toFixed(2);
+        const del = (i*.07/c.speed).toFixed(2);
+        return `<div class="to-harmonic-bar-${s}" style="width:${bw}px;height:${bMaxH.toFixed(1)}px;left:${bx}px;background:${col}88;animation:to-harmonic-${s} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      const coreS = s*.12;
+      const core = `<div style="position:absolute;width:${coreS}px;height:${coreS}px;background:radial-gradient(circle at 35% 35%,white,${c.color});border-radius:50%;box-shadow:0 0 ${c.glowSize}px ${c.color}"></div>`;
+ 
+      return `<div class="to-wrap-${s}">${stages}${notes}${hBars}${core}</div>`;
+    })()
+  })
+},
+ 
+/* 339 */ {
+  id: 339, name: "Magnetic Jazz", tags: ["magnetic", "jazz", "improvise", "choreography", "spheres"],
+  controls: { speed: 1.0, size: 80, color: "#fbbf24", secondColor: "#f472b6", glowSize: 10, particleCount: 8, amplitude: 20 },
+  render: (c) => ({
+    css: `
+@keyframes mj-improv-${c.size}{0%{transform:translate(var(--mx0),var(--my0))}20%{transform:translate(var(--mx1),var(--my1))}40%{transform:translate(var(--mx2),var(--my2))}60%{transform:translate(var(--mx3),var(--my3))}80%{transform:translate(var(--mx4),var(--my4))}100%{transform:translate(var(--mx0),var(--my0))}}
+@keyframes mj-attract-${c.size}{0%,100%{transform:translate(var(--ax),var(--ay)) scale(1)}50%{transform:translate(0,0) scale(1.4)}}
+@keyframes mj-field-${c.size}{0%,100%{opacity:.15;transform:scale(.8) rotate(0deg)}50%{opacity:.5;transform:scale(1.1) rotate(45deg)}}
+@keyframes mj-arc-flash-${c.size}{0%,80%,100%{opacity:0;stroke-dashoffset:80}40%{opacity:.9;stroke-dashoffset:0}}
+.mj-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.mj-sphere-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%}
+.mj-field-${c.size}{position:absolute;border-radius:50%;border:1px dashed;animation:mj-field-${c.size} ${(2.5/c.speed).toFixed(2)}s ease-in-out infinite}
+.mj-arc-svg-${c.size}{position:absolute;inset:0;pointer-events:none}
+.mj-arc-line-${c.size}{fill:none;stroke-dasharray:80;animation:mj-arc-flash-${c.size} ${(0.8/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(4,Math.min(20,c.particleCount));
+      const amp = Math.max(2,Math.min(30,c.amplitude));
+      const seed = (i,k=1)=>((Math.sin(i*127.1+k*311.7)*43758.5453)%1+1)%1;
+      const rnd = (i,k)=>((seed(i,k)-.5)*amp).toFixed(1);
+ 
+      const spheres = Array.from({length:n},(_,i)=>{
+        const sz = Math.max(4,s*(0.05+seed(i,8)*.04));
+        const col = i%2===0?c.color:c.secondColor;
+        const isAttract = i%3===0;
+        const anim = isAttract?`mj-attract-${s}`:`mj-improv-${s}`;
+        const dur = ((1.5+seed(i,9)*2)/c.speed).toFixed(2);
+        const del = (seed(i,10)*1.5/c.speed).toFixed(2);
+        const ax = rnd(i,11); const ay = rnd(i,12);
+        // 5 keyframe positions for improvisation
+        const [mx0,my0] = [rnd(i,1),rnd(i,2)];
+        const [mx1,my1] = [rnd(i,3),rnd(i,4)];
+        const [mx2,my2] = [rnd(i,5),rnd(i,6)];
+        const [mx3,my3] = [rnd(i+1,1),rnd(i+1,2)];
+        const [mx4,my4] = [rnd(i+2,3),rnd(i+1,4)];
+        return `<div class="mj-sphere-${s}" style="--mx0:${mx0}px;--my0:${my0}px;--mx1:${mx1}px;--my1:${my1}px;--mx2:${mx2}px;--my2:${my2}px;--mx3:${mx3}px;--my3:${my3}px;--mx4:${mx4}px;--my4:${my4}px;--ax:${ax}px;--ay:${ay}px;width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${(-sz/2).toFixed(1)}px;margin-top:${(-sz/2).toFixed(1)}px;background:radial-gradient(circle at 35% 35%,white,${col});box-shadow:0 0 ${c.glowSize*.6}px ${col};transform:translate(${mx0}px,${my0}px);animation:${anim} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      const fields = Array.from({length:3},(_,i)=>{
+        const fsz = s*(0.4+i*.18);
+        const col = i%2===0?c.color:c.secondColor;
+        return `<div class="mj-field-${s}" style="width:${fsz}px;height:${fsz}px;left:50%;top:50%;margin-left:${(-fsz/2).toFixed(1)}px;margin-top:${(-fsz/2).toFixed(1)}px;border-color:${col}55;animation-delay:${(i*.7/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+ 
+      // Magnetic arcs between spheres
+      const cx = s/2;
+      const arcs = Array.from({length:4},(_,i)=>{
+        const a1 = i*90*Math.PI/180;
+        const a2 = (i*90+70)*Math.PI/180;
+        const r = s*(0.2+i*.04);
+        const x1=(cx+Math.cos(a1)*r).toFixed(1); const y1=(cx+Math.sin(a1)*r).toFixed(1);
+        const x2=(cx+Math.cos(a2)*r).toFixed(1); const y2=(cx+Math.sin(a2)*r).toFixed(1);
+        const col=i%2===0?c.color:c.secondColor;
+        return `<path class="mj-arc-line-${s}" d="M${x1},${y1} Q${cx},${cx} ${x2},${y2}" stroke="${col}" stroke-width="${c.thickness||1.5}" style="animation-delay:${(i*.2/c.speed).toFixed(2)}s;filter:drop-shadow(0 0 ${c.glowSize*.4}px ${col})" />`;
+      }).join('');
+ 
+      return `<div class="mj-wrap-${s}">${fields}${spheres}<svg class="mj-arc-svg-${s}" viewBox="0 0 ${s} ${s}">${arcs}</svg></div>`;
+    })()
+  })
+},
+ 
+/* 340 */ {
+  id: 340, name: "Liquid Vinyl Engine", tags: ["liquid metal", "vinyl", "music", "engine", "hybrid"],
+  controls: { speed: 1.0, size: 80, color: "#94a3b8", secondColor: "#22d3ee", glowSize: 10, rings: 4, particleCount: 10 },
+  render: (c) => ({
+    css: `
+@keyframes lve-spin-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes lve-groove-flow-${c.size}{0%{stroke-dashoffset:500}100%{stroke-dashoffset:0}}
+@keyframes lve-mercury-${c.size}{0%{border-radius:50% 50% 48% 52%/50% 48% 52% 50%}25%{border-radius:54% 46% 45% 55%/47% 53% 47% 53%}50%{border-radius:48% 52% 52% 48%/52% 48% 52% 48%}75%{border-radius:52% 48% 48% 52%/48% 52% 46% 54%}}
+@keyframes lve-pressure-wave-${c.size}{0%{transform:scale(.2) rotate(0deg);opacity:.8}100%{transform:scale(1.8) rotate(180deg);opacity:0}}
+@keyframes lve-river-${c.size}{0%{stroke-dashoffset:400;opacity:.3}50%{opacity:.9}100%{stroke-dashoffset:0;opacity:.3}}
+.lve-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.lve-disc-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle at 40% 35%,${c.color}ee,#101018);animation:lve-spin-${c.size} ${(1.8/c.speed).toFixed(2)}s linear infinite,lve-mercury-${c.size} ${(2.2/c.speed).toFixed(2)}s ease-in-out infinite}
+.lve-groove-svg-${c.size}{position:absolute;inset:0;animation:lve-spin-${c.size} ${(1.8/c.speed).toFixed(2)}s linear infinite}
+.lve-groove-${c.size}{fill:none;stroke-linecap:round;stroke-dasharray:500;animation:lve-groove-flow-${c.size} ${(1.5/c.speed).toFixed(2)}s linear infinite}
+.lve-river-${c.size}{fill:none;stroke-linecap:round;stroke-dasharray:400;animation:lve-river-${c.size} ${(2/c.speed).toFixed(2)}s linear infinite}
+.lve-pw-${c.size}{position:absolute;border-radius:50%;border:1px solid;animation:lve-pressure-wave-${c.size} ${(1.2/c.speed).toFixed(2)}s ease-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const cx = s/2;
+      const numGrooves = Math.max(2,Math.min(8,c.rings));
+      const nPart = Math.max(4,Math.min(20,c.particleCount));
+      const discSz = s*.88;
+ 
+      // Groove spirals on SVG (inside the disc)
+      const grooves = Array.from({length:numGrooves},(_,gi)=>{
+        const r = s*(0.12+gi*(0.32/numGrooves));
+        const col = gi%2===0?c.color:c.secondColor;
+        const dur = ((1.5+gi*.3)/c.speed).toFixed(2);
+        const del = (gi*.2/c.speed).toFixed(2);
+        return `<circle cx="${cx}" cy="${cx}" r="${r.toFixed(1)}" class="lve-groove-${s}" stroke="${col}" stroke-width="${c.thickness||1.2}" stroke-opacity="${0.4+gi*.08}" style="animation-duration:${dur}s;animation-delay:${del}s" />`;
+      }).join('');
+ 
+      // River channels (radial flows)
+      const rivers = Array.from({length:nPart},(_,i)=>{
+        const a = (i/nPart)*Math.PI*2;
+        const r1 = s*.1, r2 = s*.42;
+        const x1=(cx+Math.cos(a)*r1).toFixed(1); const y1=(cx+Math.sin(a)*r1).toFixed(1);
+        const x2=(cx+Math.cos(a)*r2).toFixed(1); const y2=(cx+Math.sin(a)*r2).toFixed(1);
+        const col=i%2===0?c.color:c.secondColor;
+        const del=(i*.15/c.speed).toFixed(2);
+        return `<line x1="${x1}" y1="${y1}" x2="${x2}" y2="${y2}" class="lve-river-${s}" stroke="${col}" stroke-width="${c.thickness*.5||.6}" style="animation-delay:${del}s" />`;
+      }).join('');
+ 
+      // Pressure waves
+      const pWaves = Array.from({length:3},(_,i)=>{
+        const psz = s*(0.1+i*.07);
+        const col=i%2===0?c.color:c.secondColor;
+        return `<div class="lve-pw-${s}" style="width:${psz}px;height:${psz}px;border-color:${col}88;box-shadow:0 0 ${c.glowSize*.4}px ${col}44;animation-delay:${(i*.4/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+ 
+      const labelSz = s*.22;
+      const center = `<div style="position:absolute;width:${labelSz}px;height:${labelSz}px;border-radius:50%;background:radial-gradient(circle at 40% 40%,${c.secondColor},${c.color}88);box-shadow:0 0 ${c.glowSize}px ${c.secondColor}"></div>`;
+      const hub = `<div style="position:absolute;width:${(s*.04).toFixed(1)}px;height:${(s*.04).toFixed(1)}px;background:#e2e8f0;border-radius:50%"></div>`;
+ 
+      return `<div class="lve-wrap-${s}"><div class="lve-disc-${s}" style="width:${discSz}px;height:${discSz}px"></div><svg class="lve-groove-svg-${s}" viewBox="0 0 ${s} ${s}">${grooves}${rivers}</svg>${pWaves}${center}${hub}</div>`;
+    })()
+  })
+},
+ 
+/* 341 */ {
+  id: 341, name: "The Grand Machine", tags: ["grand", "ecosystem", "flagship", "heart", "fluid", "engine", "magnetic", "music"],
+  controls: { speed: 1.0, size: 80, color: "#f97316", secondColor: "#818cf8", glowSize: 14, particleCount: 16, rings: 5, amplitude: 18, thickness: 1.2 },
+  render: (c) => ({
+    css: `
+@keyframes gm-heartbeat-${c.size}{0%,100%{transform:scale(.88)}8%{transform:scale(1.12)}18%{transform:scale(.94)}28%{transform:scale(1.06)}38%{transform:scale(.97)}}
+@keyframes gm-turb-cw-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes gm-turb-ccw-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+@keyframes gm-ferrofluid-${c.size}{0%,100%{border-radius:48% 52% 50% 50%/48% 50% 52% 50%}33%{border-radius:54% 46% 44% 56%/50% 46% 54% 50%}66%{border-radius:46% 54% 56% 44%/52% 54% 46% 48%}}
+@keyframes gm-spike-${c.size}{0%,100%{transform:rotate(var(--ga)) scaleY(.1)}12%{transform:rotate(var(--ga)) scaleY(var(--gh))}35%{transform:rotate(var(--ga)) scaleY(.5)}}
+@keyframes gm-infall-${c.size}{0%{transform:rotate(var(--ia)) translateX(var(--ir));opacity:.9}100%{transform:rotate(calc(var(--ia)+540deg)) translateX(0);opacity:0}}
+@keyframes gm-shockwave-${c.size}{0%{transform:scale(.2);opacity:.9}100%{transform:scale(2.5);opacity:0}}
+@keyframes gm-oscX-${c.size}{0%,100%{transform:translateX(0)}50%{transform:translateX(var(--ox))}}
+@keyframes gm-oscY-${c.size}{0%,100%{transform:translateY(0)}50%{transform:translateY(var(--oy))}}
+@keyframes gm-arc-${c.size}{0%,75%,100%{opacity:0;stroke-dashoffset:150}38%{opacity:1;stroke-dashoffset:0}}
+@keyframes gm-master-glow-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color},0 0 ${c.glowSize*2}px ${c.secondColor}33}8%{box-shadow:0 0 ${c.glowSize*4}px ${c.color},0 0 ${c.glowSize*8}px ${c.secondColor}77,0 0 ${c.glowSize*12}px ${c.color}44}}
+.gm-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:${c.size*3}px;animation:gm-master-glow-${c.size} ${(1/c.speed).toFixed(2)}s ease-out infinite}
+.gm-orbit-layer-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transform-style:preserve-3d}
+.gm-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%}
+.gm-turbine-layer-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.gm-blade-${c.size}{position:absolute;border-radius:1px 4px 1px 1px;transform-origin:center}
+.gm-fluid-pool-${c.size}{position:absolute;background:radial-gradient(circle at 38% 38%,${c.color}cc,#080810);animation:gm-ferrofluid-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite,gm-heartbeat-${c.size} ${(1/c.speed).toFixed(2)}s ease-out infinite}
+.gm-spike-${c.size}{position:absolute;border-radius:2px 2px 0 0;bottom:50%;left:50%;transform-origin:bottom center;background:linear-gradient(to top,${c.color},${c.secondColor}55,transparent)}
+.gm-particle-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0}
+.gm-oscnode-${c.size}{position:absolute;top:50%;left:50%}
+.gm-shockwave-${c.size}{position:absolute;border-radius:50%;border:1px solid;animation:gm-shockwave-${c.size} ${(1/c.speed).toFixed(2)}s ease-out infinite}
+.gm-arc-svg-${c.size}{position:absolute;inset:0;pointer-events:none}
+.gm-arc-${c.size}{fill:none;stroke-dasharray:150;animation:gm-arc-${c.size} ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const cx = s/2;
+      const numRings = Math.max(2,Math.min(8,c.rings));
+      const nPart = Math.max(4,Math.min(20,c.particleCount));
+      const amp = Math.max(2,Math.min(30,c.amplitude));
+      const seed = (i,k=1)=>((Math.sin(i*127.1+k*311.7)*43758.5453)%1+1)%1;
+      const tilts = [[72,20],[45,60],[80,10],[30,75],[55,35],[65,50],[25,80],[40,15]];
+ 
+      // Layer 1: Orbital rings (Dyson/Orrery style)
+      const orbitRings = Array.from({length:numRings},(_,ri)=>{
+        const sz = s*(0.3+ri*(0.62/numRings));
+        const off = -sz/2;
+        const [rx,ry] = tilts[ri%tilts.length];
+        const anim = ri%2===0?`gm-turb-cw-${s}`:`gm-turb-ccw-${s}`;
+        const dur = ((1.5+ri*.5)/c.speed).toFixed(2);
+        const col = ri%2===0?c.color:c.secondColor;
+        const alpha = Math.round((0.55-ri*.05)*255).toString(16).padStart(2,'0');
+        const bw = Math.max(.8,c.thickness*(1.3-ri*.08));
+        // planet dot
+        const pSz = Math.max(2,s*.035);
+        const planet = `<div style="position:absolute;width:${pSz}px;height:${pSz}px;background:${col};border-radius:50%;top:-${(pSz/2).toFixed(1)}px;left:50%;margin-left:-${(pSz/2).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.5}px ${col}"></div>`;
+        return `<div class="gm-orbit-layer-${s}" style="transform:rotateX(${rx}deg) rotateY(${ry}deg);animation:${anim} ${dur}s linear infinite"><div class="gm-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border-width:${bw}px;border-color:${col}${alpha};box-shadow:0 0 ${c.glowSize*.3}px ${col}33">${planet}</div></div>`;
+      }).join('');
+ 
+      // Layer 2: Turbine blades (intermediate rings)
+      const turbineLayers = Array.from({length:2},(_,ti)=>{
+        const stageR = s*(0.22+ti*.14);
+        const bladeCount = 6+ti*3;
+        const dur = ((0.8+ti*.4)/c.speed).toFixed(2);
+        const col = ti%2===0?c.color:c.secondColor;
+        const bladeH = stageR*.38;
+        const bladeW = Math.max(2,s*.02);
+        const anim = ti%2===0?`gm-turb-cw-${s}`:`gm-turb-ccw-${s}`;
+        const blades = Array.from({length:bladeCount},(_,bi)=>{
+          const a = (bi/bladeCount)*360;
+          return `<div class="gm-blade-${s}" style="width:${bladeW.toFixed(1)}px;height:${bladeH.toFixed(1)}px;background:linear-gradient(to top,${col},${col}33);position:absolute;bottom:50%;left:50%;margin-left:${(-bladeW/2).toFixed(1)}px;transform:rotate(${a}deg) translateY(-${(stageR*.48).toFixed(1)}px) skewX(-12deg)"></div>`;
+        }).join('');
+        return `<div class="gm-turbine-layer-${s}" style="animation:${anim} ${dur}s linear infinite">${blades}</div>`;
+      }).join('');
+ 
+      // Layer 3: Ferrofluid pool with magnetic spikes
+      const poolSz = s*.32;
+      const nSpikes = Math.ceil(nPart/2);
+      const spikes = Array.from({length:nSpikes},(_,i)=>{
+        const ga = (i/nSpikes)*360;
+        const gh = (0.6+seed(i)*0.9).toFixed(2);
+        const sw = Math.max(1.5,s*.018);
+        const sh = (amp*.6).toFixed(1);
+        const pushR = (s*.13).toFixed(1);
+        const dur = ((0.5+seed(i)*0.4)/c.speed).toFixed(2);
+        const del = (i*.09/c.speed).toFixed(2);
+        return `<div class="gm-spike-${s}" style="--ga:${ga}deg;--gh:${gh};width:${sw}px;height:${sh}px;margin-left:${(-sw/2).toFixed(1)}px;transform:rotate(${ga}deg) translateY(-${pushR}px) scaleY(.1);animation:gm-spike-${s} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+ 
+      // Layer 4: Infalling magnetic particles
+      const infallParticles = Array.from({length:nPart},(_,i)=>{
+        const ia = (i/nPart)*360;
+        const ir = s*(0.15+(i%4)*.06);
+        const psz = Math.max(1.5,s*.025);
+        const col = i%2===0?c.color:c.secondColor;
+        const dur = ((0.7+(i%3)*.25)/c.speed).toFixed(2);
+        const del = (i*.13/c.speed).toFixed(2);
+        return `<div class="gm-particle-${s}" style="--ia:${ia}deg;--ir:${ir.toFixed(1)}px;width:${psz}px;height:${psz}px;background:${col};box-shadow:0 0 ${c.glowSize*.35}px ${col};margin-left:${(-psz/2).toFixed(1)}px;margin-top:${(-psz/2).toFixed(1)}px;transform:rotate(${ia}deg) translateX(${ir.toFixed(1)}px);animation:gm-infall-${s} ${dur}s ${del}s ease-in infinite"></div>`;
+      }).join('');
+ 
+      // Layer 5: Oscillating harmonic nodes (Lissajous)
+      const harmNodes = Array.from({length:4},(_,i)=>{
+        const ox = ((i%2===0?1:-1)*amp*.55).toFixed(1);
+        const oy = (((i<2)?-1:1)*amp*.45).toFixed(1);
+        const col = i%2===0?c.color:c.secondColor;
+        const durX = ((1+i*.25)/c.speed).toFixed(2);
+        const durY = ((0.75+i*.18)/c.speed).toFixed(2);
+        const del = (i*.25/c.speed).toFixed(2);
+        const nsz = Math.max(3,s*.04);
+        return `<div class="gm-oscnode-${s}" style="margin-left:${(-nsz/2).toFixed(1)}px;margin-top:${(-nsz/2).toFixed(1)}px;animation:gm-oscX-${s} ${durX}s ${del}s ease-in-out infinite;--ox:${ox}px"><div style="animation:gm-oscY-${s} ${durY}s ${del}s ease-in-out infinite;--oy:${oy}px"><div style="width:${nsz}px;height:${nsz}px;background:${col};border-radius:50%;box-shadow:0 0 ${c.glowSize*.5}px ${col}"></div></div></div>`;
+      }).join('');
+ 
+      // Shockwaves
+      const shockWaves = Array.from({length:3},(_,i)=>{
+        const wsz = s*(0.08+i*.05);
+        const col = i%2===0?c.color:c.secondColor;
+        return `<div class="gm-shockwave-${s}" style="width:${wsz}px;height:${wsz}px;border-color:${col}88;box-shadow:0 0 ${c.glowSize*.4}px ${col}44;animation-delay:${(i*.33/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+ 
+      // Energy arcs (SVG)
+      const arcs = Array.from({length:4},(_,i)=>{
+        const a1=(i*90)*Math.PI/180; const a2=(i*90+65)*Math.PI/180;
+        const r=s*(0.18+i*.035);
+        const x1=(cx+Math.cos(a1)*r).toFixed(1); const y1=(cx+Math.sin(a1)*r).toFixed(1);
+        const x2=(cx+Math.cos(a2)*r).toFixed(1); const y2=(cx+Math.sin(a2)*r).toFixed(1);
+        const col=i%2===0?c.color:c.secondColor;
+        const del=(i*.3/c.speed).toFixed(2);
+        return `<path class="gm-arc-${s}" d="M${x1},${y1} A${r},${r} 0 0,1 ${x2},${y2}" stroke="${col}" stroke-width="${c.thickness*1.5}" style="animation-delay:${del}s;filter:drop-shadow(0 0 ${c.glowSize*.4}px ${col})" />`;
+      }).join('');
+ 
+      // Central beating reactor core
+      const coreS = s*.14;
+      const core = `<div class="gm-fluid-pool-${s}" style="width:${poolSz}px;height:${poolSz}px;box-shadow:0 0 ${c.glowSize*1.5}px ${c.color}88">${spikes}</div>`;
+      const innerCore = `<div style="position:absolute;width:${coreS}px;height:${coreS}px;background:radial-gradient(circle at 35% 35%,white,${c.color},${c.secondColor}44);border-radius:50%;box-shadow:0 0 ${c.glowSize*2}px ${c.color};animation:gm-heartbeat-${c.size} ${(1/c.speed).toFixed(2)}s ease-out infinite"></div>`;
+ 
+      return `<div class="gm-wrap-${s}">${orbitRings}${turbineLayers}${infallParticles}${harmNodes}${shockWaves}${core}${innerCore}<svg class="gm-arc-svg-${s}" viewBox="0 0 ${s} ${s}">${arcs}</svg></div>`;
+    })()
+  })
+},
+  /* ─────────────────────────────────────────────────────────────
+   LOADERS 300–316  (drop-in additions for LoaderVault)
+   All controls are fully dynamic and wired to c (controls).
+───────────────────────────────────────────────────────────── */
+
+/* 300 */ {
+  id: 300, name: "Quantum Fabric", tags: ["particles", "network", "mesh", "glow", "sci-fi"],
+  controls: { speed: 1.0, size: 80, color: "#7dd3fc", secondColor: "#a78bfa", particleCount: 12, glowSize: 8, thickness: 1.5 },
+  render: (c) => ({
+    css: `
+@keyframes qf-float-${c.size}{0%,100%{transform:translate(0,0)}50%{transform:translate(4px,-6px)}}
+@keyframes qf-pulse-${c.size}{0%,100%{opacity:.4;r:2}50%{opacity:1;r:3.5}}
+@keyframes qf-wave-${c.size}{0%{opacity:0;transform:scale(.6)}50%{opacity:.7}100%{opacity:0;transform:scale(1.4)}}
+@keyframes qf-burst-${c.size}{0%,100%{opacity:0;transform:scale(.5)}40%{opacity:.9;transform:scale(1)}80%{opacity:0;transform:scale(1.3)}}
+.qf-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.qf-svg-${c.size}{position:absolute;inset:0;filter:drop-shadow(0 0 ${c.glowSize}px ${c.color}88)}
+.qf-wave-ring-${c.size}{position:absolute;inset:${c.size*.25}px;border-radius:50%;border:1px solid ${c.color}44;animation:qf-wave-${c.size} ${(2.4/c.speed).toFixed(2)}s ease-out infinite}
+.qf-wave-ring2-${c.size}{position:absolute;inset:${c.size*.15}px;border-radius:50%;border:1px solid ${c.secondColor}33;animation:qf-wave-${c.size} ${(2.4/c.speed).toFixed(2)}s ease-out ${(0.8/c.speed).toFixed(2)}s infinite}
+.qf-core-${c.size}{position:absolute;width:${Math.max(4,c.size*.1)}px;height:${Math.max(4,c.size*.1)}px;background:radial-gradient(circle,${c.color},${c.secondColor});border-radius:50%;animation:qf-burst-${c.size} ${(1.8/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize*1.5}px ${c.color}}`,
+    html: (()=>{
+      const n = Math.max(4, Math.min(20, c.particleCount));
+      const r = c.size * 0.42;
+      const cx = c.size / 2;
+      const particles = Array.from({length: n}, (_, i) => {
+        const angle = (i / n) * Math.PI * 2;
+        const jitter = (i % 3 - 1) * r * 0.22;
+        const px = cx + Math.cos(angle) * (r * 0.7 + jitter);
+        const py = cx + Math.sin(angle) * (r * 0.7 + jitter);
+        return { px, py, i };
+      });
+      const lines = particles.map((p, i) => {
+        const next = particles[(i + 1) % n];
+        const skip = particles[(i + 3) % n];
+        return `<line x1="${p.px.toFixed(1)}" y1="${p.py.toFixed(1)}" x2="${next.px.toFixed(1)}" y2="${next.py.toFixed(1)}" stroke="${c.color}" stroke-width="${c.thickness}" stroke-opacity="${0.3 + (i % 3) * 0.15}" />`
+          + `<line x1="${p.px.toFixed(1)}" y1="${p.py.toFixed(1)}" x2="${skip.px.toFixed(1)}" y2="${skip.py.toFixed(1)}" stroke="${c.secondColor}" stroke-width="${c.thickness * 0.6}" stroke-opacity="0.18" />`;
+      }).join('');
+      const dots = particles.map((p, i) => {
+        const delay = (i * 0.15 / c.speed).toFixed(2);
+        return `<circle cx="${p.px.toFixed(1)}" cy="${p.py.toFixed(1)}" r="2.5" fill="${i % 2 === 0 ? c.color : c.secondColor}" style="animation:qf-pulse-${c.size} ${(1.4/c.speed).toFixed(2)}s ${delay}s ease-in-out infinite" />`;
+      }).join('');
+      return `<div class="qf-wrap-${c.size}"><svg class="qf-svg-${c.size}" viewBox="0 0 ${c.size} ${c.size}" xmlns="http://www.w3.org/2000/svg">${lines}${dots}</svg><div class="qf-wave-ring-${c.size}"></div><div class="qf-wave-ring2-${c.size}"></div><div class="qf-core-${c.size}"></div></div>`;
+    })()
+  })
+},
+
+/* 301 */ {
+  id: 301, name: "Mechanical Infinity Engine", tags: ["gears", "clockwork", "bronze", "mechanical", "neon"],
+  controls: { speed: 1.0, size: 80, color: "#f59e0b", secondColor: "#22d3ee", thickness: 2.0, glowSize: 6 },
+  render: (c) => ({
+    css: `
+@keyframes mie-cw-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes mie-ccw-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+@keyframes mie-spark-${c.size}{0%,100%{opacity:0;transform:scale(0)}30%{opacity:1;transform:scale(1)}70%{opacity:.5}90%{opacity:0}}
+.mie-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.mie-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;border-color:transparent}
+.mie-r1-${c.size}{width:${c.size*.9}px;height:${c.size*.9}px;border-width:${c.thickness}px;border-top-color:${c.color};border-right-color:${c.color}88;animation:mie-cw-${c.size} ${(3/c.speed).toFixed(2)}s linear infinite;filter:drop-shadow(0 0 ${c.glowSize}px ${c.color})}
+.mie-r2-${c.size}{width:${c.size*.7}px;height:${c.size*.7}px;border-width:${c.thickness*1.2}px;border-bottom-color:${c.secondColor};border-left-color:${c.secondColor}88;animation:mie-ccw-${c.size} ${(2/c.speed).toFixed(2)}s linear infinite;filter:drop-shadow(0 0 ${c.glowSize}px ${c.secondColor})}
+.mie-r3-${c.size}{width:${c.size*.5}px;height:${c.size*.5}px;border-width:${c.thickness}px;border-top-color:${c.color}cc;border-left-color:${c.color}cc;animation:mie-cw-${c.size} ${(1.4/c.speed).toFixed(2)}s linear infinite}
+.mie-r4-${c.size}{width:${c.size*.32}px;height:${c.size*.32}px;border-width:${c.thickness*1.5}px;border-right-color:${c.secondColor}cc;border-bottom-color:${c.secondColor}cc;animation:mie-ccw-${c.size} ${(0.9/c.speed).toFixed(2)}s linear infinite}
+.mie-teeth-${c.size}{position:absolute;width:${c.size*.9}px;height:${c.size*.9}px;animation:mie-cw-${c.size} ${(3/c.speed).toFixed(2)}s linear infinite}
+.mie-tooth-${c.size}{position:absolute;width:${c.thickness*1.2}px;height:${c.size*.06}px;background:${c.color};border-radius:1px;top:0;left:50%;transform-origin:50% ${c.size*.45}px;box-shadow:0 0 ${c.glowSize*.5}px ${c.color}}
+.mie-core-${c.size}{position:absolute;width:${Math.max(5,c.size*.1)}px;height:${Math.max(5,c.size*.1)}px;background:radial-gradient(circle,${c.secondColor},${c.color}88);border-radius:50%;box-shadow:0 0 ${c.glowSize*2}px ${c.secondColor}}
+.mie-spark-${c.size}{position:absolute;width:2px;height:2px;background:${c.color};border-radius:50%;box-shadow:0 0 4px ${c.color};animation:mie-spark-${c.size} ${(0.7/c.speed).toFixed(2)}s ease-out infinite}`,
+    html: (()=>{
+      const teeth = Array.from({length: 12}, (_, i) =>
+        `<div class="mie-tooth-${c.size}" style="transform:translateX(-50%) rotate(${i*30}deg)"></div>`
+      ).join('');
+      const sparks = Array.from({length: 4}, (_, i) => {
+        const a = i * 90;
+        const sr = c.size * 0.38;
+        const sx = c.size/2 + Math.cos(a*Math.PI/180)*sr;
+        const sy = c.size/2 + Math.sin(a*Math.PI/180)*sr;
+        return `<div class="mie-spark-${c.size}" style="left:${sx.toFixed(1)}px;top:${sy.toFixed(1)}px;animation-delay:${(i*0.18/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+      return `<div class="mie-wrap-${c.size}">${sparks}<div class="mie-ring-${c.size} mie-r1-${c.size}"></div><div class="mie-teeth-${c.size}">${teeth}</div><div class="mie-ring-${c.size} mie-r2-${c.size}"></div><div class="mie-ring-${c.size} mie-r3-${c.size}"></div><div class="mie-ring-${c.size} mie-r4-${c.size}"></div><div class="mie-core-${c.size}"></div></div>`;
+    })()
+  })
+},
+
+/* 302 */ {
+  id: 302, name: "Dimensional Portal", tags: ["portal", "3d", "polygon", "depth", "space"],
+  controls: { speed: 1.0, size: 80, color: "#818cf8", secondColor: "#34d399", thickness: 1.5, glowSize: 10, ringCount: 5 },
+  render: (c) => ({
+    css: `
+@keyframes dp-fold-${c.size}{0%{transform:perspective(300px) rotateX(0deg) rotateZ(0deg) scale(1)}50%{transform:perspective(300px) rotateX(180deg) rotateZ(90deg) scale(.85)}100%{transform:perspective(300px) rotateX(360deg) rotateZ(180deg) scale(1)}}
+@keyframes dp-ccw-fold-${c.size}{0%{transform:perspective(300px) rotateY(0deg) rotateZ(0deg)}100%{transform:perspective(300px) rotateY(-360deg) rotateZ(-180deg)}}
+@keyframes dp-pulse-${c.size}{0%,100%{opacity:.3}50%{opacity:.9}}
+@keyframes dp-ripple-${c.size}{0%{transform:perspective(300px) rotateX(70deg) scale(.2);opacity:.8}100%{transform:perspective(300px) rotateX(70deg) scale(1.4);opacity:0}}
+.dp-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:400px}
+.dp-poly-${c.size}{position:absolute;border-radius:${c.size*.04}px;border-style:solid;animation:dp-fold-${c.size} ${(3/c.speed).toFixed(2)}s ease-in-out infinite}
+.dp-ripple-${c.size}{position:absolute;border-radius:50%;border:1px solid ${c.color}66;animation:dp-ripple-${c.size} ${(1.8/c.speed).toFixed(2)}s ease-out infinite}
+.dp-core-${c.size}{position:absolute;width:${Math.max(4,c.size*.08)}px;height:${Math.max(4,c.size*.08)}px;background:white;border-radius:50%;box-shadow:0 0 ${c.glowSize*2}px ${c.color},0 0 ${c.glowSize}px white;animation:dp-pulse-${c.size} ${(1/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const rings = Math.max(2, Math.min(8, c.ringCount));
+      const polys = Array.from({length: rings}, (_, i) => {
+        const frac = 1 - i / rings;
+        const sz = c.size * 0.9 * frac;
+        const sides = [6, 8, 4, 5, 7, 3, 6, 8][i % 8];
+        const dur = ((2.5 + i * 0.4) / c.speed).toFixed(2);
+        const delay = (i * 0.25 / c.speed).toFixed(2);
+        const col = i % 2 === 0 ? c.color : c.secondColor;
+        const anim = i % 2 === 0 ? `dp-fold-${c.size}` : `dp-ccw-fold-${c.size}`;
+        const clip = sides === 6 ? '50%' : sides === 4 ? `${sz*.06}px` : '50%';
+        return `<div class="dp-poly-${c.size}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;border-width:${c.thickness}px;border-color:${col}${Math.round(55+i*25).toString(16).padStart(2,'0')};animation-name:${anim};animation-duration:${dur}s;animation-delay:${delay}s;border-radius:${clip};filter:drop-shadow(0 0 ${c.glowSize*.7}px ${col})"></div>`;
+      }).join('');
+      const ripples = Array.from({length: 3}, (_, i) => {
+        const sz = c.size * (0.5 + i * 0.2);
+        return `<div class="dp-ripple-${c.size}" style="width:${sz}px;height:${sz}px;animation-delay:${(i*0.6/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+      return `<div class="dp-wrap-${c.size}">${ripples}${polys}<div class="dp-core-${c.size}"></div></div>`;
+    })()
+  })
+},
+
+/* 303 */ {
+  id: 303, name: "Neural Intelligence Core", tags: ["neural", "brain", "nodes", "synapses", "AI"],
+  controls: { speed: 1.0, size: 80, color: "#4ade80", secondColor: "#f472b6", nodeSize: 3, glowSize: 6, particleCount: 14, lineOpacity: 0.35 },
+  render: (c) => ({
+    css: `
+@keyframes nic-signal-${c.size}{0%{stroke-dashoffset:200;opacity:0}20%{opacity:1}80%{opacity:.8}100%{stroke-dashoffset:0;opacity:0}}
+@keyframes nic-node-${c.size}{0%,100%{opacity:.4;transform:scale(.8)}50%{opacity:1;transform:scale(1)}}
+@keyframes nic-fire-${c.size}{0%,90%,100%{opacity:.3;r:${c.nodeSize}}45%{opacity:1;r:${c.nodeSize*1.8}}}
+.nic-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.nic-svg-${c.size}{position:absolute;inset:0;overflow:visible}
+.nic-signal-path-${c.size}{fill:none;stroke:${c.color};stroke-width:1.2;stroke-dasharray:200;animation:nic-signal-${c.size} ${(1.8/c.speed).toFixed(2)}s linear infinite}`,
+    html: (()=>{
+      const n = Math.max(4, Math.min(20, c.particleCount));
+      const half = c.size / 2;
+      // Deterministic pseudo-random positions
+      const seed = (i, s=1) => ((Math.sin(i*127.1+s*311.7)*43758.5453)%1+1)%1;
+      const nodes = Array.from({length: n}, (_, i) => {
+        const angle = (i / n) * Math.PI * 2 + seed(i)*0.8;
+        const r = half * (0.25 + seed(i,2) * 0.55);
+        return {
+          x: half + Math.cos(angle) * r,
+          y: half + Math.sin(angle) * r,
+          i
+        };
+      });
+      nodes.push({x: half, y: half, i: n}); // center hub
+
+      const edges = nodes.slice(0,-1).map((nd, i) => {
+        const targets = [nodes[(i+1)%n], nodes[(i+3)%n], nodes[n]];
+        return targets.map(t =>
+          `<line x1="${nd.x.toFixed(1)}" y1="${nd.y.toFixed(1)}" x2="${t.x.toFixed(1)}" y2="${t.y.toFixed(1)}" stroke="${i%2?c.secondColor:c.color}" stroke-width="${c.thickness||1}" stroke-opacity="${c.lineOpacity}" />`
+        ).join('');
+      }).join('');
+
+      const signals = Array.from({length: 5}, (_, i) => {
+        const from = nodes[i * Math.floor(n/5)];
+        const to = nodes[n]; // center
+        const dur = ((1.4 + i*0.3)/c.speed).toFixed(2);
+        const del = (i*0.36/c.speed).toFixed(2);
+        return `<path class="nic-signal-path-${c.size}" d="M${from.x.toFixed(1)},${from.y.toFixed(1)} Q${half},${half*.7} ${to.x.toFixed(1)},${to.y.toFixed(1)}" stroke="${i%2?c.secondColor:c.color}" style="animation-duration:${dur}s;animation-delay:${del}s" />`;
+      }).join('');
+
+      const dots = nodes.map((nd, i) => {
+        const isHub = i === n;
+        const del = (i * 0.1 / c.speed).toFixed(2);
+        const col = isHub ? c.color : (i%2 ? c.secondColor : c.color);
+        const ns = isHub ? c.nodeSize * 1.6 : c.nodeSize;
+        return `<circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${ns}" fill="${col}" style="animation:nic-fire-${c.size} ${((isHub?1:1.8)/c.speed).toFixed(2)}s ${del}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize}px ${col})" />`;
+      }).join('');
+
+      return `<div class="nic-wrap-${c.size}"><svg class="nic-svg-${c.size}" viewBox="0 0 ${c.size} ${c.size}">${edges}${signals}${dots}</svg></div>`;
+    })()
+  })
+},
+
+/* 304 */ {
+  id: 304, name: "Liquid Metal Reactor", tags: ["liquid", "mercury", "metaball", "plasma", "gooey"],
+  controls: { speed: 1.0, size: 80, color: "#94a3b8", secondColor: "#38bdf8", glowSize: 8, particleCount: 6 },
+  render: (c) => ({
+    css: `
+@keyframes lmr-orbit-${c.size}{0%{transform:rotate(0deg) translateX(${(c.size*.28).toFixed(1)}px) rotate(0deg)}100%{transform:rotate(360deg) translateX(${(c.size*.28).toFixed(1)}px) rotate(-360deg)}}
+@keyframes lmr-orbit2-${c.size}{0%{transform:rotate(0deg) translateX(${(c.size*.18).toFixed(1)}px) rotate(0deg)}100%{transform:rotate(-360deg) translateX(${(c.size*.18).toFixed(1)}px) rotate(360deg)}}
+@keyframes lmr-pulse-${c.size}{0%,100%{transform:scale(1);opacity:.8}50%{transform:scale(1.18);opacity:1}}
+@keyframes lmr-ripple-${c.size}{0%{transform:scale(.5);opacity:.7}100%{transform:scale(1.5);opacity:0}}
+@keyframes lmr-arc-${c.size}{0%,80%,100%{opacity:0}40%{opacity:.9}}
+.lmr-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;filter:url(#lmr-goo-${c.size})}
+.lmr-outer-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;filter:none}
+.lmr-core-${c.size}{position:absolute;width:${(c.size*.22).toFixed(1)}px;height:${(c.size*.22).toFixed(1)}px;background:radial-gradient(circle at 35% 35%,white,${c.color},${c.secondColor}88);border-radius:50%;animation:lmr-pulse-${c.size} ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize*2}px ${c.secondColor},0 0 ${c.glowSize}px white}
+.lmr-blob-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle at 35% 35%,${c.color}ee,${c.secondColor}88);top:50%;left:50%;margin-top:${(-(c.size*.1)).toFixed(1)}px;margin-left:${(-(c.size*.1)).toFixed(1)}px;width:${(c.size*.2).toFixed(1)}px;height:${(c.size*.2).toFixed(1)}px}
+.lmr-blob2-${c.size}{position:absolute;border-radius:50%;background:radial-gradient(circle,${c.secondColor},${c.color}aa);top:50%;left:50%;margin-top:${(-(c.size*.07)).toFixed(1)}px;margin-left:${(-(c.size*.07)).toFixed(1)}px;width:${(c.size*.14).toFixed(1)}px;height:${(c.size*.14).toFixed(1)}px}
+.lmr-ripple-${c.size}{position:absolute;width:${(c.size*.5).toFixed(1)}px;height:${(c.size*.5).toFixed(1)}px;border:1px solid ${c.secondColor}55;border-radius:50%;animation:lmr-ripple-${c.size} ${(2/c.speed).toFixed(2)}s ease-out infinite}`,
+    html: (()=>{
+      const n = Math.max(4, Math.min(20, c.particleCount));
+      const blobs = Array.from({length: n}, (_, i) => {
+        const isInner = i >= n/2;
+        const dur = ((1.6 + i*0.25)/c.speed).toFixed(2);
+        const del = (i*0.55/c.speed).toFixed(2);
+        const sz = (c.size * (isInner ? 0.13 : 0.18)).toFixed(1);
+        const anim = isInner ? `lmr-orbit2-${c.size}` : `lmr-orbit-${c.size}`;
+        const initRot = (i / n) * 360;
+        return `<div class="lmr-blob-${c.size}" style="animation:${anim} ${dur}s ${del}s linear infinite;transform:rotate(${initRot}deg) translateX(${isInner?c.size*.18:c.size*.28}px) rotate(-${initRot}deg);width:${sz}px;height:${sz}px;margin-top:${-(parseFloat(sz)/2).toFixed(1)}px;margin-left:${-(parseFloat(sz)/2).toFixed(1)}px"></div>`;
+      }).join('');
+      const ripples = Array.from({length:2},(_,i)=>
+        `<div class="lmr-ripple-${c.size}" style="animation-delay:${(i*1/c.speed).toFixed(2)}s"></div>`
+      ).join('');
+      const gooFilter = `<svg style="position:absolute;width:0;height:0"><defs><filter id="lmr-goo-${c.size}"><feGaussianBlur in="SourceGraphic" stdDeviation="${(c.size*.04).toFixed(1)}" result="blur"/><feColorMatrix in="blur" mode="matrix" values="1 0 0 0 0 0 1 0 0 0 0 0 1 0 0 0 0 0 22 -9" result="goo"/></filter></defs></svg>`;
+      return `${gooFilter}<div class="lmr-wrap-${c.size}">${blobs}<div class="lmr-core-${c.size}"></div></div><div class="lmr-outer-${c.size}">${ripples}</div>`;
+    })()
+  })
+},
+
+/* 305 */ {
+  id: 305, name: "Celestial Orrery", tags: ["orbit", "planets", "space", "orrery", "3d", "celestial"],
+  controls: { speed: 1.0, size: 80, color: "#818cf8", secondColor: "#fbbf24", rings: 3, glowSize: 6, thickness: 1.0 },
+  render: (c) => ({
+    css: `
+@keyframes co-cw-${c.size}{0%{transform:rotateX(72deg) rotate(0deg)}100%{transform:rotateX(72deg) rotate(360deg)}}
+@keyframes co-ccw-${c.size}{0%{transform:rotateX(72deg) rotate(0deg)}100%{transform:rotateX(72deg) rotate(-360deg)}}
+@keyframes co-tilt-${c.size}{0%{transform:rotateX(60deg) rotateZ(0deg)}100%{transform:rotateX(60deg) rotateZ(360deg)}}
+@keyframes co-planet-${c.size}{0%,100%{transform:scale(1)}50%{transform:scale(1.3)}}
+@keyframes co-star-${c.size}{0%,100%{opacity:.3}50%{opacity:1}}
+@keyframes co-eclipse-${c.size}{0%,85%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color}}43%{box-shadow:0 0 ${c.glowSize*3}px white,0 0 ${c.glowSize*5}px ${c.secondColor}}}
+.co-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:600px}
+.co-orbit-${c.size}{position:absolute;border-radius:50%;border:${c.thickness}px solid;top:50%;left:50%}
+.co-planet-${c.size}{position:absolute;border-radius:50%;top:0;left:50%}
+.co-sun-${c.size}{position:absolute;width:${(c.size*.14).toFixed(1)}px;height:${(c.size*.14).toFixed(1)}px;background:radial-gradient(circle at 35% 35%,white,${c.secondColor},${c.color}88);border-radius:50%;animation:co-eclipse-${c.size} ${(4/c.speed).toFixed(2)}s ease-in-out infinite;box-shadow:0 0 ${c.glowSize*2}px ${c.secondColor}}`,
+    html: (()=>{
+      const numRings = Math.max(2, Math.min(8, c.rings));
+      const colors = [c.color, c.secondColor, `${c.color}bb`, `${c.secondColor}bb`, c.color, c.secondColor, c.color, c.secondColor];
+      const orbits = Array.from({length: numRings}, (_, i) => {
+        const frac = 0.28 + (i / numRings) * 0.62;
+        const diameter = c.size * frac;
+        const offset = -diameter/2;
+        const dur = ((1.5 + i*0.8)/c.speed).toFixed(2);
+        const anim = i % 3 === 0 ? `co-tilt-${c.size}` : i % 2 === 0 ? `co-ccw-${c.size}` : `co-cw-${c.size}`;
+        const col = colors[i % colors.length];
+        const pSize = Math.max(3, c.size * (0.055 - i*0.003));
+        const initDeg = i * 47;
+        return `<div class="co-orbit-${c.size}" style="width:${diameter.toFixed(1)}px;height:${diameter.toFixed(1)}px;margin-left:${offset.toFixed(1)}px;margin-top:${offset.toFixed(1)}px;border-color:${col}44;animation:${anim} ${dur}s linear infinite">
+          <div class="co-planet-${c.size}" style="width:${pSize.toFixed(1)}px;height:${pSize.toFixed(1)}px;background:radial-gradient(circle at 35% 35%,white,${col});margin-left:${(-pSize/2).toFixed(1)}px;margin-top:${(-pSize/2).toFixed(1)}px;box-shadow:0 0 ${c.glowSize}px ${col};animation:co-planet-${c.size} ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite"></div>
+          <div class="co-planet-${c.size}" style="width:${(pSize*.7).toFixed(1)}px;height:${(pSize*.7).toFixed(1)}px;background:${col}88;margin-left:${(diameter/2-pSize*.35).toFixed(1)}px;margin-top:${(-pSize*.35).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.7}px ${col}"></div>
+        </div>`;
+      }).join('');
+      return `<div class="co-wrap-${c.size}">${orbits}<div class="co-sun-${c.size}"></div></div>`;
+    })()
+  })
+},
+
+/* 306 */ {
+  id: 306, name: "Fractal Bloom", tags: ["fractal", "bloom", "recursive", "organic", "golden"],
+  controls: { speed: 1.0, size: 80, color: "#f472b6", secondColor: "#fbbf24", glowSize: 8, layers: 4, thickness: 1.5 },
+  render: (c) => ({
+    css: `
+@keyframes fb-bloom-${c.size}{0%{transform:scale(.1) rotate(0deg);opacity:0}30%{opacity:1}70%{transform:scale(1) rotate(180deg);opacity:.9}100%{transform:scale(1.1) rotate(360deg);opacity:0}}
+@keyframes fb-branch-${c.size}{0%{transform:rotate(0deg) scaleY(0);transform-origin:50% 100%}50%{transform:rotate(180deg) scaleY(1);transform-origin:50% 100%}100%{transform:rotate(360deg) scaleY(0);transform-origin:50% 100%}}
+@keyframes fb-glow-${c.size}{0%,100%{filter:drop-shadow(0 0 ${c.glowSize*.5}px ${c.color})}50%{filter:drop-shadow(0 0 ${c.glowSize*1.5}px ${c.secondColor})}}
+@keyframes fb-rot-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes fb-rrot-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+.fb-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:fb-glow-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite}
+.fb-layer-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.fb-petal-${c.size}{position:absolute;border-radius:50% 50% 50% 0;transform-origin:bottom right}
+.fb-core-${c.size}{position:absolute;width:${Math.max(4,c.size*.08)}px;height:${Math.max(4,c.size*.08)}px;background:white;border-radius:50%;box-shadow:0 0 ${c.glowSize*2}px ${c.color}}`,
+    html: (()=>{
+      const numLayers = Math.max(1, Math.min(5, c.layers));
+      const phi = 1.618;
+      const layers = Array.from({length: numLayers}, (_, li) => {
+        const layerR = c.size * (0.18 + li * 0.16);
+        const petalCount = 5 + li * 2;
+        const dur = ((2 + li * 0.5) / c.speed).toFixed(2);
+        const del = (li * 0.3 / c.speed).toFixed(2);
+        const anim = li % 2 === 0 ? `fb-rot-${c.size}` : `fb-rrot-${c.size}`;
+        const col = li % 2 === 0 ? c.color : c.secondColor;
+        const petalSz = (layerR * 0.55).toFixed(1);
+        const petals = Array.from({length: petalCount}, (_, pi) => {
+          const angle = (pi / petalCount) * 360 + li * (360/phi);
+          const pr = (layerR * 0.6).toFixed(1);
+          const rot = (angle - 45).toFixed(1);
+          return `<div class="fb-petal-${c.size}" style="width:${petalSz}px;height:${petalSz}px;background:${col}${Math.round(80+li*20).toString(16).padStart(2,'0')};transform:rotate(${rot}deg) translate(${pr}px,0);filter:drop-shadow(0 0 ${c.glowSize*.4}px ${col});border-width:${c.thickness}px;border-style:none"></div>`;
+        }).join('');
+        return `<div class="fb-layer-${c.size}" style="animation:${anim} ${dur}s ${del}s linear infinite">${petals}</div>`;
+      }).join('');
+      return `<div class="fb-wrap-${c.size}">${layers}<div class="fb-core-${c.size}"></div></div>`;
+    })()
+  })
+},
+
+/* 307 */ {
+  id: 307, name: "Holographic Blueprint", tags: ["hologram", "wireframe", "blueprint", "scan", "tech"],
+  controls: { speed: 1.0, size: 80, color: "#22d3ee", secondColor: "#818cf8", thickness: 1.0, glowSize: 6, opacity: 0.85 },
+  render: (c) => ({
+    css: `
+@keyframes hb-scan-${c.size}{0%{top:-4px;opacity:0}10%{opacity:.9}90%{opacity:.7}100%{top:100%;opacity:0}}
+@keyframes hb-assemble-${c.size}{0%{opacity:0;transform:translateY(-4px) scale(.92)}100%{opacity:1;transform:translateY(0) scale(1)}}
+@keyframes hb-blink-${c.size}{0%,89%,100%{opacity:0}90%,95%{opacity:1}}
+@keyframes hb-flicker-${c.size}{0%,100%{opacity:${c.opacity}}50%{opacity:${(c.opacity*.7).toFixed(2)}}75%{opacity:${c.opacity}}}
+@keyframes hb-rotate-${c.size}{0%{transform:rotateY(0deg)}100%{transform:rotateY(360deg)}}
+.hb-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;overflow:hidden;animation:hb-flicker-${c.size} ${(3/c.speed).toFixed(2)}s ease-in-out infinite}
+.hb-scan-line-${c.size}{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,${c.color},transparent);box-shadow:0 0 ${c.glowSize}px ${c.color};animation:hb-scan-${c.size} ${(2/c.speed).toFixed(2)}s linear infinite;z-index:10}
+.hb-grid-${c.size}{position:absolute;inset:0;background-image:linear-gradient(${c.color}22 1px,transparent 1px),linear-gradient(90deg,${c.color}22 1px,transparent 1px);background-size:${(c.size*.14).toFixed(1)}px ${(c.size*.14).toFixed(1)}px}
+.hb-frame-${c.size}{position:absolute;border:${c.thickness}px solid ${c.color}88;animation:hb-assemble-${c.size} ${(0.6/c.speed).toFixed(2)}s ease-out forwards}
+.hb-corner-${c.size}{position:absolute;width:${(c.size*.12).toFixed(1)}px;height:${(c.size*.12).toFixed(1)}px;border-color:${c.color};border-style:solid}
+.hb-label-${c.size}{position:absolute;font-family:monospace;font-size:${Math.max(5,c.size*.072).toFixed(1)}px;color:${c.color};animation:hb-blink-${c.size} ${(2.5/c.speed).toFixed(2)}s ease-in-out infinite;white-space:nowrap}
+.hb-axis-${c.size}{position:absolute;background:${c.color}66}
+.hb-core-${c.size}{position:absolute;width:${(c.size*.16).toFixed(1)}px;height:${(c.size*.16).toFixed(1)}px;border:${c.thickness}px solid ${c.color};transform:rotate(45deg);box-shadow:0 0 ${c.glowSize}px ${c.color};animation:hb-blink-${c.size} ${(1.5/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const frames = [
+        {w:s*.7,h:s*.7,del:0,col:c.color},
+        {w:s*.45,h:s*.45,del:.15,col:c.secondColor},
+        {w:s*.25,h:s*.25,del:.3,col:c.color},
+      ].map(({w,h,del,col})=>{
+        const ml = (-w/2).toFixed(1), mt = (-h/2).toFixed(1);
+        return `<div class="hb-frame-${s}" style="width:${w.toFixed(1)}px;height:${h.toFixed(1)}px;left:50%;top:50%;margin-left:${ml}px;margin-top:${mt}px;border-color:${col}88;animation-delay:${(del/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+
+      const corners = [
+        {t:s*.08,l:s*.08,bt:'top',bl:'left'},
+        {t:s*.08,l:s*.72,bt:'top',bl:'right'},
+        {t:s*.72,l:s*.08,bt:'bottom',bl:'left'},
+        {t:s*.72,l:s*.72,bt:'bottom',bl:'right'},
+      ].map(({t,l,bt,bl})=>
+        `<div class="hb-corner-${s}" style="top:${t.toFixed(1)}px;left:${l.toFixed(1)}px;border-width:0;border-${bt}-width:${c.thickness*1.5}px;border-${bl}-width:${c.thickness*1.5}px"></div>`
+      ).join('');
+
+      const labels = [
+        {t:s*.08,l:s*.22,txt:'SYS',del:.6},
+        {t:s*.82,l:s*.55,txt:'0x4F',del:1.2},
+        {t:s*.47,l:s*.72,txt:'INIT',del:2.1},
+      ].map(({t,l,txt,del})=>
+        `<div class="hb-label-${s}" style="top:${t.toFixed(1)}px;left:${l.toFixed(1)}px;animation-delay:${(del/c.speed).toFixed(2)}s">${txt}</div>`
+      ).join('');
+
+      return `<div class="hb-wrap-${s}"><div class="hb-grid-${s}"></div>${frames}${corners}${labels}<div class="hb-scan-line-${s}"></div><div class="hb-core-${s}"></div></div>`;
+    })()
+  })
+},
+
+/* 308 */ {
+  id: 308, name: "Cosmic Weaver", tags: ["threads", "cosmic", "weave", "parallax", "particles"],
+  controls: { speed: 1.0, size: 80, color: "#c084fc", secondColor: "#38bdf8", glowSize: 8, particleCount: 10, thickness: 1.2 },
+  render: (c) => ({
+    css: `
+@keyframes cw-thread-${c.size}{0%{stroke-dashoffset:300;opacity:0}25%{opacity:.9}75%{opacity:.7}100%{stroke-dashoffset:-300;opacity:0}}
+@keyframes cw-breathe-${c.size}{0%,100%{transform:scale(.97);opacity:.8}50%{transform:scale(1.03);opacity:1}}
+@keyframes cw-star-${c.size}{0%,100%{opacity:.2;transform:scale(.7)}50%{opacity:1;transform:scale(1)}}
+@keyframes cw-dust-${c.size}{0%{transform:translateY(0) translateX(0);opacity:.5}100%{transform:translateY(-${c.size*.5}px) translateX(${c.size*.15}px);opacity:0}}
+.cw-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:cw-breathe-${c.size} ${(3/c.speed).toFixed(2)}s ease-in-out infinite}
+.cw-svg-${c.size}{position:absolute;inset:0;overflow:visible}
+.cw-thread-${c.size}{fill:none;stroke-width:${c.thickness};stroke-dasharray:300;animation:cw-thread-${c.size} ${(2.5/c.speed).toFixed(2)}s ease-in-out infinite}
+.cw-star-dot-${c.size}{position:absolute;border-radius:50%;animation:cw-star-${c.size} ${(1.5/c.speed).toFixed(2)}s ease-in-out infinite}
+.cw-dust-${c.size}{position:absolute;width:1px;height:1px;border-radius:50%;background:${c.color};animation:cw-dust-${c.size} ${(2/c.speed).toFixed(2)}s ease-out infinite}`,
+    html: (()=>{
+      const n = Math.max(4, Math.min(20, c.particleCount));
+      const half = c.size / 2;
+      const seed = (i,s=1) => ((Math.sin(i*127.1+s*311.7)*43758.5453)%1+1)%1;
+
+      // Galaxy nodes at intersections
+      const nodes = Array.from({length: n}, (_, i) => {
+        const angle = (i/n)*Math.PI*2;
+        const r = half * (0.2 + seed(i)*0.65);
+        return { x: half + Math.cos(angle)*r, y: half + Math.sin(angle)*r };
+      });
+
+      const threads = Array.from({length: n}, (_, i) => {
+        const from = nodes[i];
+        const to = nodes[(i+2)%n];
+        const mid = nodes[(i+1)%n];
+        const dur = ((2 + seed(i)*1.5)/c.speed).toFixed(2);
+        const del = (i*0.25/c.speed).toFixed(2);
+        const col = i%2===0 ? c.color : c.secondColor;
+        return `<path class="cw-thread-${c.size}" d="M${from.x.toFixed(1)},${from.y.toFixed(1)} Q${mid.x.toFixed(1)},${mid.y.toFixed(1)} ${to.x.toFixed(1)},${to.y.toFixed(1)}" stroke="${col}" style="animation-duration:${dur}s;animation-delay:${del}s;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${col})" />`;
+      }).join('');
+
+      const galaxies = nodes.map((nd, i) => {
+        const sz = Math.max(2, c.size * (0.025 + seed(i,3)*0.025));
+        const col = i%2===0 ? c.color : c.secondColor;
+        const del = (i*0.15/c.speed).toFixed(2);
+        const dur = ((1.5+seed(i)*1)/c.speed).toFixed(2);
+        return `<circle cx="${nd.x.toFixed(1)}" cy="${nd.y.toFixed(1)}" r="${sz.toFixed(1)}" fill="${col}" style="animation:cw-star-${c.size} ${dur}s ${del}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize*.6}px ${col})" />`;
+      }).join('');
+
+      const dust = Array.from({length:6},(_,i)=>{
+        const dx = (seed(i+100)*c.size*.8).toFixed(1);
+        const dy = (c.size*.3+seed(i+200)*c.size*.5).toFixed(1);
+        const dur = ((1.5+seed(i+300)*1.5)/c.speed).toFixed(2);
+        const del = (i*0.35/c.speed).toFixed(2);
+        const col = i%2===0?c.color:c.secondColor;
+        return `<div class="cw-dust-${c.size}" style="left:${dx}px;top:${dy}px;background:${col};animation-duration:${dur}s;animation-delay:${del}s"></div>`;
+      }).join('');
+
+      const center = `<circle cx="${half}" cy="${half}" r="${(c.size*.07).toFixed(1)}" fill="${c.color}" style="filter:drop-shadow(0 0 ${c.glowSize*1.5}px ${c.color});animation:cw-star-${c.size} ${(1/c.speed).toFixed(2)}s ease-in-out infinite" />`;
+
+      return `<div class="cw-wrap-${c.size}"><svg class="cw-svg-${c.size}" viewBox="0 0 ${c.size} ${c.size}">${threads}${galaxies}${center}</svg>${dust}</div>`;
+    })()
+  })
+},
+
+/* 309 */ {
+  id: 309, name: "Infinity Cathedral", tags: ["gothic", "cathedral", "arches", "sacred", "architectural"],
+  controls: { speed: 1.0, size: 80, color: "#e2e8f0", secondColor: "#818cf8", glowSize: 8, thickness: 1.0, opacity: 0.9 },
+  render: (c) => ({
+    css: `
+@keyframes ic-rise-${c.size}{0%{transform:scaleY(0) translateY(100%);transform-origin:bottom;opacity:0}60%{opacity:1}100%{transform:scaleY(1) translateY(0);transform-origin:bottom;opacity:${c.opacity}}}
+@keyframes ic-dissolve-${c.size}{0%,60%{opacity:${c.opacity}}80%{opacity:0}85%{opacity:0;transform:scale(1.05)}100%{opacity:${c.opacity};transform:scale(1)}}
+@keyframes ic-light-${c.size}{0%,100%{opacity:0}50%{opacity:.6}}
+@keyframes ic-rot-${c.size}{0%{transform:rotateY(0deg)}100%{transform:rotateY(360deg)}}
+@keyframes ic-particle-${c.size}{0%{transform:translateY(0);opacity:.8}100%{transform:translateY(-${(c.size*.6).toFixed(1)}px);opacity:0}}
+.ic-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:flex-end;justify-content:center;overflow:hidden;perspective:300px}
+.ic-svg-${c.size}{position:absolute;inset:0;overflow:visible}
+.ic-light-ray-${c.size}{position:absolute;bottom:0;width:1px;background:linear-gradient(to top,${c.secondColor}88,transparent);animation:ic-light-${c.size} ${(2.5/c.speed).toFixed(2)}s ease-in-out infinite;transform-origin:bottom}
+.ic-particle-${c.size}{position:absolute;width:1px;height:2px;background:${c.secondColor};border-radius:50%;animation:ic-particle-${c.size} ${(1.5/c.speed).toFixed(2)}s ease-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      // SVG Gothic arches
+      const archH = s * 0.75;
+      const archW = s * 0.28;
+      const archX1 = s * 0.15;
+      const archX2 = s * 0.5;
+      const archX3 = s * 0.85;
+      const archBase = s;
+
+      const arch = (x, w, delay, col, scale=1) => {
+        const hw = w/2;
+        const top = archBase - archH*scale;
+        const pts = `M${(x-hw).toFixed(1)},${archBase} L${(x-hw).toFixed(1)},${(top+hw*0.7).toFixed(1)} Q${(x-hw).toFixed(1)},${top.toFixed(1)} ${x.toFixed(1)},${top.toFixed(1)} Q${(x+hw).toFixed(1)},${top.toFixed(1)} ${(x+hw).toFixed(1)},${(top+hw*0.7).toFixed(1)} L${(x+hw).toFixed(1)},${archBase}`;
+        return `<path d="${pts}" fill="none" stroke="${col}" stroke-width="${c.thickness}" opacity="${c.opacity}" style="animation:ic-dissolve-${s} ${(4/c.speed).toFixed(2)}s ${delay}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize*.5}px ${col})" />`;
+      };
+
+      const arches = [
+        arch(archX1, archW*.7, 0.4, c.color, 0.7),
+        arch(archX3, archW*.7, 0.8, c.color, 0.7),
+        arch(archX2, archW, 0, c.secondColor, 1),
+        arch(archX2, archW*.55, 0.2, c.color, 0.85),
+        // rose window circle
+        `<circle cx="${archX2.toFixed(1)}" cy="${(archBase-archH*.85).toFixed(1)}" r="${(archW*.28).toFixed(1)}" fill="none" stroke="${c.secondColor}" stroke-width="${c.thickness}" opacity="${(c.opacity*.7).toFixed(2)}" style="animation:ic-dissolve-${s} ${(4/c.speed).toFixed(2)}s .3s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize}px ${c.secondColor})" />`,
+        `<circle cx="${archX2.toFixed(1)}" cy="${(archBase-archH*.85).toFixed(1)}" r="${(archW*.14).toFixed(1)}" fill="${c.secondColor}33" stroke="${c.secondColor}88" stroke-width="${c.thickness*.7}" opacity="${c.opacity}" style="animation:ic-dissolve-${s} ${(4/c.speed).toFixed(2)}s .5s ease-in-out infinite" />`,
+      ].join('');
+
+      const rays = Array.from({length:5},(_,i)=>{
+        const rx = s*0.2 + i*(s*0.15);
+        const rh = s*(0.3+i%2*0.2);
+        return `<div class="ic-light-ray-${s}" style="left:${rx.toFixed(1)}px;height:${rh.toFixed(1)}px;animation-delay:${(i*0.4/c.speed).toFixed(2)}s;transform:skewX(${(i-2)*8}deg)"></div>`;
+      }).join('');
+
+      const particles = Array.from({length:6},(_,i)=>{
+        const px = s*0.2+i*(s*.12);
+        const py = s*0.6;
+        return `<div class="ic-particle-${s}" style="left:${px.toFixed(1)}px;bottom:${(s*.3).toFixed(1)}px;animation-delay:${(i*0.25/c.speed).toFixed(2)}s;animation-duration:${(1.2+i*0.2).toFixed(2)}s"></div>`;
+      }).join('');
+
+      return `<div class="ic-wrap-${s}"><svg class="ic-svg-${s}" viewBox="0 0 ${s} ${s}">${arches}</svg>${rays}${particles}</div>`;
+    })()
+  })
+},
+
+/* 310 */ {
+  id: 310, name: "Hypercube Processor", tags: ["tesseract", "4d", "hypercube", "math", "dimension"],
+  controls: { speed: 1.0, size: 80, color: "#818cf8", secondColor: "#34d399", thickness: 1.5, glowSize: 6 },
+  render: (c) => ({
+    css: `
+@keyframes hcp-rotX-${c.size}{0%{transform:rotateX(0deg) rotateY(0deg) rotateZ(0deg)}100%{transform:rotateX(360deg) rotateY(180deg) rotateZ(90deg)}}
+@keyframes hcp-rotY-${c.size}{0%{transform:rotateX(0deg) rotateY(0deg)}100%{transform:rotateX(180deg) rotateY(360deg)}}
+@keyframes hcp-energy-${c.size}{0%{stroke-dashoffset:${c.size*4};opacity:0}30%{opacity:1}100%{stroke-dashoffset:0;opacity:.4}}
+@keyframes hcp-phase-${c.size}{0%,100%{opacity:.25}50%{opacity:.9}}
+@keyframes hcp-pulse-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color}}50%{box-shadow:0 0 ${c.glowSize*2.5}px ${c.color},0 0 ${c.glowSize*4}px ${c.secondColor}44}}
+.hcp-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:${c.size*3}px;animation:hcp-pulse-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite}
+.hcp-outer-${c.size}{position:absolute;width:${(c.size*.75).toFixed(1)}px;height:${(c.size*.75).toFixed(1)}px;transform-style:preserve-3d;animation:hcp-rotX-${c.size} ${(4/c.speed).toFixed(2)}s linear infinite}
+.hcp-inner-${c.size}{position:absolute;width:${(c.size*.38).toFixed(1)}px;height:${(c.size*.38).toFixed(1)}px;left:50%;top:50%;margin-left:${(-(c.size*.19)).toFixed(1)}px;margin-top:${(-(c.size*.19)).toFixed(1)}px;transform-style:preserve-3d;animation:hcp-rotY-${c.size} ${(2.2/c.speed).toFixed(2)}s linear infinite reverse}
+.hcp-face-${c.size}{position:absolute;border:${c.thickness}px solid;border-radius:1px;backface-visibility:visible}
+.hcp-edge-${c.size}{position:absolute;background:${c.color};transform-origin:left center}
+.hcp-svg-${c.size}{position:absolute;inset:0;pointer-events:none}
+.hcp-energy-path-${c.size}{fill:none;stroke-dasharray:${c.size*4};animation:hcp-energy-${c.size} ${(1.8/c.speed).toFixed(2)}s linear infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const osz = s * 0.75;
+      const isz = s * 0.38;
+      const off = -osz/2;
+
+      // 6 faces of outer cube
+      const transforms = [
+        `translateZ(${osz/2}px)`,
+        `translateZ(-${osz/2}px)`,
+        `rotateY(90deg) translateZ(${osz/2}px)`,
+        `rotateY(-90deg) translateZ(${osz/2}px)`,
+        `rotateX(90deg) translateZ(${osz/2}px)`,
+        `rotateX(-90deg) translateZ(${osz/2}px)`,
+      ];
+      const outerFaces = transforms.map((t, i) => {
+        const col = i % 2 === 0 ? c.color : c.secondColor;
+        const op = (0.12 + (i%3)*0.06).toFixed(2);
+        return `<div class="hcp-face-${s}" style="width:${osz}px;height:${osz}px;left:0;top:0;border-color:${col}88;background:${col}${Math.round(parseFloat(op)*255).toString(16).padStart(2,'0')};transform:${t}"></div>`;
+      }).join('');
+
+      const ioff = -isz/2;
+      const innerFaces = transforms.map((t, i) => {
+        const col = i % 2 === 0 ? c.secondColor : c.color;
+        return `<div class="hcp-face-${s}" style="width:${isz}px;height:${isz}px;left:0;top:0;border-color:${col}cc;background:${col}22;transform:${t}"></div>`;
+      }).join('');
+
+      // Energy paths on SVG
+      const energyPaths = Array.from({length:4},(_,i)=>{
+        const r = s*(0.28+i*.04);
+        const cx = s/2, cy = s/2;
+        const dur = ((1.5+i*0.3)/c.speed).toFixed(2);
+        const del = (i*0.45/c.speed).toFixed(2);
+        const col = i%2===0?c.color:c.secondColor;
+        return `<rect x="${(cx-r/2).toFixed(1)}" y="${(cy-r/2).toFixed(1)}" width="${r.toFixed(1)}" height="${r.toFixed(1)}" class="hcp-energy-path-${s}" stroke="${col}" stroke-width="${c.thickness*.8}" style="animation-duration:${dur}s;animation-delay:${del}s" />`;
+      }).join('');
+
+      return `<div class="hcp-wrap-${s}"><div class="hcp-outer-${s}" style="left:${off.toFixed(1)}px;top:${off.toFixed(1)}px">${outerFaces}</div><div class="hcp-inner-${s}">${innerFaces}</div><svg class="hcp-svg-${s}" viewBox="0 0 ${s} ${s}">${energyPaths}</svg></div>`;
+    })()
+  })
+},
+
+/* 311 */ {
+  id: 311, name: "Temporal Loop Machine", tags: ["clock", "time", "loop", "rewind", "motion"],
+  controls: { speed: 1.0, size: 80, color: "#f472b6", secondColor: "#fbbf24", thickness: 1.5, glowSize: 6, rings: 3 },
+  render: (c) => ({
+    css: `
+@keyframes tlm-hand-fast-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes tlm-hand-slow-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+@keyframes tlm-hand-med-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(720deg)}}
+@keyframes tlm-wave-${c.size}{0%{transform:scale(.5) rotate(0deg);opacity:.8}100%{transform:scale(1.5) rotate(180deg);opacity:0}}
+@keyframes tlm-echo-${c.size}{0%{opacity:.6;transform:scale(1) rotate(0deg)}100%{opacity:0;transform:scale(1.3) rotate(45deg)}}
+@keyframes tlm-tick-${c.size}{0%,49%{opacity:0}50%,100%{opacity:1}}
+.tlm-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center}
+.tlm-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;border-color:transparent}
+.tlm-hand-${c.size}{position:absolute;bottom:50%;left:50%;transform-origin:bottom center;border-radius:2px}
+.tlm-wave-ring-${c.size}{position:absolute;border-radius:50%;border:1px solid ${c.color}55;animation:tlm-wave-${c.size} ${(2/c.speed).toFixed(2)}s ease-out infinite}
+.tlm-echo-${c.size}{position:absolute;border-radius:50%;border:${c.thickness}px dashed ${c.color}44;animation:tlm-echo-${c.size} ${(1.5/c.speed).toFixed(2)}s ease-out infinite}
+.tlm-center-${c.size}{position:absolute;width:${Math.max(3,c.size*.06)}px;height:${Math.max(3,c.size*.06)}px;background:${c.color};border-radius:50%;box-shadow:0 0 ${c.glowSize}px ${c.color};z-index:10}`,
+    html: (()=>{
+      const s = c.size;
+      const numRings = Math.max(2, Math.min(8, c.rings));
+
+      const outerRings = Array.from({length: numRings}, (_, i) => {
+        const sz = s * (0.9 - i * (0.75/numRings));
+        const off = -sz/2;
+        const col = i%2===0 ? c.color : c.secondColor;
+        // tick marks
+        const ticks = Array.from({length: 12}, (_, t) => {
+          const angle = t * 30;
+          const isMain = t % 3 === 0;
+          const tickH = sz * (isMain ? 0.1 : 0.06);
+          return `<div style="position:absolute;width:${c.thickness}px;height:${tickH.toFixed(1)}px;background:${col}${isMain?'cc':'66'};bottom:50%;left:50%;margin-left:${(-c.thickness/2).toFixed(1)}px;transform-origin:bottom center;transform:rotate(${angle}deg) translateY(-${(sz/2-tickH*.5).toFixed(1)}px)"></div>`;
+        }).join('');
+        return `<div class="tlm-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;border-width:${c.thickness}px;border-top-color:${col}88;border-right-color:${col}44;left:50%;top:50%;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px">${ticks}</div>`;
+      }).join('');
+
+      const hands = [
+        {len:s*.32,w:c.thickness*1.8,anim:`tlm-hand-fast-${s}`,dur:(0.9/c.speed).toFixed(2),col:c.color},
+        {len:s*.24,w:c.thickness*1.2,anim:`tlm-hand-slow-${s}`,dur:(2.4/c.speed).toFixed(2),col:c.secondColor},
+        {len:s*.16,w:c.thickness*2.2,anim:`tlm-hand-med-${s}`,dur:(1.5/c.speed).toFixed(2),col:c.color},
+      ].map(({len,w,anim,dur,col})=>
+        `<div class="tlm-hand-${s}" style="width:${w.toFixed(1)}px;height:${len.toFixed(1)}px;background:${col};margin-left:${(-w/2).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.6}px ${col};animation:${anim} ${dur}s linear infinite"></div>`
+      ).join('');
+
+      const waves = Array.from({length:3},(_,i)=>{
+        const sz = s*(0.3+i*0.22);
+        const off2 = -sz/2;
+        return `<div class="tlm-wave-ring-${s}" style="width:${sz}px;height:${sz}px;left:50%;top:50%;margin-left:${off2}px;margin-top:${off2}px;animation-delay:${(i*0.65/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+
+      const echo = `<div class="tlm-echo-${s}" style="width:${(s*.6).toFixed(1)}px;height:${(s*.6).toFixed(1)}px;left:50%;top:50%;margin-left:${(-(s*.3)).toFixed(1)}px;margin-top:${(-(s*.3)).toFixed(1)}px"></div>`;
+
+      return `<div class="tlm-wrap-${s}">${waves}${echo}${outerRings}${hands}<div class="tlm-center-${s}"></div></div>`;
+    })()
+  })
+},
+
+/* 312 */ {
+  id: 312, name: "Black Hole Accretion Disk", tags: ["black hole", "accretion", "space", "gravity", "sci-fi"],
+  controls: { speed: 1.0, size: 80, color: "#f59e0b", secondColor: "#f472b6", glowSize: 10, thickness: 1.2, rings: 4 },
+  render: (c) => ({
+    css: `
+@keyframes bh-disk-${c.size}{0%{transform:rotateX(75deg) rotate(0deg)}100%{transform:rotateX(75deg) rotate(360deg)}}
+@keyframes bh-disk-rev-${c.size}{0%{transform:rotateX(75deg) rotate(0deg)}100%{transform:rotateX(75deg) rotate(-360deg)}}
+@keyframes bh-stretch-${c.size}{0%{opacity:1;transform:rotate(var(--a)) translateX(var(--r)) scaleX(1)}80%{opacity:.8;transform:rotate(calc(var(--a)+160deg)) translateX(calc(var(--r)*.3)) scaleX(3)}100%{opacity:0;transform:rotate(calc(var(--a)+200deg)) translateX(0) scaleX(0)}}
+@keyframes bh-lens-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize*2}px ${c.glowSize}px ${c.color}44,inset 0 0 ${c.glowSize}px ${c.color}22}50%{box-shadow:0 0 ${c.glowSize*3}px ${c.glowSize*1.5}px ${c.secondColor}44,inset 0 0 ${c.glowSize*2}px ${c.color}33}}
+@keyframes bh-arc-${c.size}{0%,85%,100%{opacity:0}50%{opacity:1}}
+.bh-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:${c.size*2}px}
+.bh-disk-ring-${c.size}{position:absolute;border-radius:50%;left:50%;top:50%}
+.bh-hole-${c.size}{position:absolute;width:${(c.size*.28).toFixed(1)}px;height:${(c.size*.28).toFixed(1)}px;background:radial-gradient(circle,#000 60%,${c.color}22);border-radius:50%;animation:bh-lens-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite;z-index:2}
+.bh-particle-${c.size}{position:absolute;width:2px;height:2px;border-radius:50%;top:50%;left:50%;transform-origin:0 0}`,
+    html: (()=>{
+      const s = c.size;
+      const numRings = Math.max(2, Math.min(8, c.rings));
+
+      const diskRings = Array.from({length: numRings}, (_, i) => {
+        const sz = s * (0.32 + i * (0.56/numRings));
+        const off = -sz/2;
+        const anim = i%2===0 ? `bh-disk-${s}` : `bh-disk-rev-${s}`;
+        const dur = ((1.2 + i*0.5)/c.speed).toFixed(2);
+        const cols = [c.color, c.secondColor, `${c.color}aa`, `${c.secondColor}88`, `${c.color}66`];
+        const col = cols[i % cols.length];
+        const alpha = Math.round((0.7 - i*0.12) * 255).toString(16).padStart(2,'0');
+        const bw = Math.max(1, c.thickness * (1.5 - i*0.25));
+        return `<div class="bh-disk-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border:${bw}px solid ${col}${alpha};box-shadow:0 0 ${c.glowSize*(1-i*.15)}px ${col}66;animation:${anim} ${dur}s linear infinite"></div>`;
+      }).join('');
+
+      // Infalling particles
+      const particles = Array.from({length: 10}, (_, i) => {
+        const angle = i * 36;
+        const r = s * (0.15 + (i%4)*0.08);
+        const dur = ((0.8 + (i%3)*0.4)/c.speed).toFixed(2);
+        const del = (i*0.2/c.speed).toFixed(2);
+        const col = i%2===0 ? c.color : c.secondColor;
+        return `<div class="bh-particle-${s}" style="--a:${angle}deg;--r:${r}px;background:${col};box-shadow:0 0 3px ${col};transform:rotate(${angle}deg) translateX(${r}px);animation:bh-stretch-${s} ${dur}s ${del}s ease-in infinite;width:${Math.max(1,c.size*.025)}px;height:${Math.max(1,c.size*.012)}px"></div>`;
+      }).join('');
+
+      return `<div class="bh-wrap-${s}">${diskRings}${particles}<div class="bh-hole-${s}"></div></div>`;
+    })()
+  })
+},
+
+/* 313 */ {
+  id: 313, name: "Origami Singularity", tags: ["origami", "paper", "fold", "geometry", "elegant"],
+  controls: { speed: 1.0, size: 80, color: "#e2e8f0", secondColor: "#818cf8", glowSize: 6, thickness: 1.0, layers: 4 },
+  render: (c) => ({
+    css: `
+@keyframes os-fold-${c.size}{0%{transform:perspective(300px) rotateY(0deg) rotateX(0deg)}25%{transform:perspective(300px) rotateY(90deg) rotateX(15deg)}50%{transform:perspective(300px) rotateY(180deg) rotateX(0deg)}75%{transform:perspective(300px) rotateY(270deg) rotateX(-15deg)}100%{transform:perspective(300px) rotateY(360deg) rotateX(0deg)}}
+@keyframes os-unfold-${c.size}{0%{transform:perspective(300px) rotateX(0deg) rotateZ(0deg)}33%{transform:perspective(300px) rotateX(120deg) rotateZ(60deg)}66%{transform:perspective(300px) rotateX(240deg) rotateZ(120deg)}100%{transform:perspective(300px) rotateX(360deg) rotateZ(180deg)}}
+@keyframes os-shimmer-${c.size}{0%,100%{opacity:.6}50%{opacity:1}}
+@keyframes os-crease-${c.size}{0%{transform:scaleX(0);opacity:0}50%{transform:scaleX(1);opacity:.8}100%{transform:scaleX(0);opacity:0}}
+.os-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:${c.size*4}px}
+.os-facet-${c.size}{position:absolute;border:${c.thickness}px solid;clip-path:polygon(50% 0%,100% 100%,0% 100%)}
+.os-facet2-${c.size}{position:absolute;border:${c.thickness}px solid;clip-path:polygon(50% 100%,0% 0%,100% 0%)}
+.os-crease-${c.size}{position:absolute;height:1px;background:${c.color}88;transform-origin:left;animation:os-crease-${c.size} ${(1.6/c.speed).toFixed(2)}s ease-in-out infinite}`,
+    html: (()=>{
+      const s = c.size;
+      const numLayers = Math.max(1, Math.min(5, c.layers));
+
+      const facets = Array.from({length: numLayers * 2}, (_, i) => {
+        const isFlip = i % 2 === 1;
+        const li = Math.floor(i / 2);
+        const frac = 1 - li / numLayers;
+        const sz = (s * 0.85 * frac).toFixed(1);
+        const off = -(s * 0.85 * frac / 2).toFixed(1);
+        const dur = ((2.5 + li*0.6)/c.speed).toFixed(2);
+        const del = (i*0.18/c.speed).toFixed(2);
+        const anim = (i % 4 < 2) ? `os-fold-${s}` : `os-unfold-${s}`;
+        const col = li % 2 === 0 ? c.color : c.secondColor;
+        const alpha = Math.round((0.4 + li*0.15) * 255).toString(16).padStart(2,'0');
+        const cls = isFlip ? `os-facet2-${s}` : `os-facet-${s}`;
+        return `<div class="${cls}" style="width:${sz}px;height:${sz}px;left:50%;top:50%;margin-left:${off}px;margin-top:${off}px;border-color:${col}${alpha};background:${col}${Math.round((0.04+li*0.03)*255).toString(16).padStart(2,'0')};animation:${anim} ${dur}s ${del}s ease-in-out infinite;filter:drop-shadow(0 0 ${c.glowSize*.4}px ${col})"></div>`;
+      }).join('');
+
+      const creases = Array.from({length: 4}, (_, i) => {
+        const w = s * (0.3 + i*0.1);
+        const top = s * (0.2 + i*0.15);
+        return `<div class="os-crease-${s}" style="width:${w.toFixed(1)}px;left:${((s-w)/2).toFixed(1)}px;top:${top.toFixed(1)}px;animation-delay:${(i*0.4/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+
+      const core = `<div style="position:absolute;width:${(s*.08).toFixed(1)}px;height:${(s*.08).toFixed(1)}px;background:${c.secondColor};clip-path:polygon(50% 0%,100% 100%,0% 100%);box-shadow:0 0 ${c.glowSize}px ${c.secondColor}"></div>`;
+
+      return `<div class="os-wrap-${s}">${facets}${creases}${core}</div>`;
+    })()
+  })
+},
+
+/* 314 */ {
+  id: 314, name: "Data Forge", tags: ["factory", "cyberpunk", "industrial", "particles", "conveyor"],
+  controls: { speed: 1.0, size: 80, color: "#f97316", secondColor: "#22d3ee", glowSize: 8, particleCount: 8, thickness: 1.5 },
+  render: (c) => ({
+    css: `
+@keyframes df-conveyor-${c.size}{0%{transform:translateX(-${(c.size*.4).toFixed(1)}px)}100%{transform:translateX(${(c.size*.4).toFixed(1)}px)}}
+@keyframes df-particle-in-${c.size}{0%{left:-6px;opacity:.8;transform:scale(.5)}100%{left:50%;opacity:0;transform:scale(0)}}
+@keyframes df-cube-out-${c.size}{0%{right:50%;opacity:0;transform:scale(0) rotate(0deg)}50%{opacity:1}100%{right:-6px;opacity:0;transform:scale(1) rotate(90deg)}}
+@keyframes df-module-${c.size}{0%,100%{transform:rotate(0deg) scale(1)}50%{transform:rotate(180deg) scale(1.1)}}
+@keyframes df-spark-${c.size}{0%{opacity:0;transform:translate(0,0) scale(0)}40%{opacity:1;transform:translate(var(--sx),var(--sy)) scale(1)}100%{opacity:0;transform:translate(calc(var(--sx)*2),calc(var(--sy)*2)) scale(.3)}}
+@keyframes df-flash-${c.size}{0%,90%,100%{opacity:.5}45%{opacity:1}}
+.df-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;overflow:hidden}
+.df-track-${c.size}{position:absolute;top:50%;left:0;right:0;height:${(c.size*.06).toFixed(1)}px;background:${c.color}33;margin-top:${(-(c.size*.03)).toFixed(1)}px;border-radius:2px}
+.df-conveyor-${c.size}{position:absolute;top:50%;left:0;right:0;height:1px;margin-top:-1px;background:repeating-linear-gradient(90deg,${c.color}44 0,${c.color}44 4px,transparent 4px,transparent 8px);animation:df-conveyor-${c.size} ${(0.6/c.speed).toFixed(2)}s linear infinite}
+.df-particle-${c.size}{position:absolute;width:${Math.max(3,c.size*.05)}px;height:${Math.max(3,c.size*.05)}px;background:${c.color};border-radius:50%;top:50%;margin-top:${(-(c.size*.025)).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.6}px ${c.color};animation:df-particle-in-${c.size} ${(0.8/c.speed).toFixed(2)}s linear infinite}
+.df-cube-${c.size}{position:absolute;width:${Math.max(3,c.size*.06)}px;height:${Math.max(3,c.size*.06)}px;background:${c.secondColor};top:50%;margin-top:${(-(c.size*.03)).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.6}px ${c.secondColor};animation:df-cube-out-${c.size} ${(0.8/c.speed).toFixed(2)}s linear infinite}
+.df-module-${c.size}{position:absolute;border:${c.thickness}px solid;top:50%;border-radius:2px;animation:df-module-${c.size} ${(1/c.speed).toFixed(2)}s ease-in-out infinite}
+.df-spark-${c.size}{position:absolute;width:2px;height:2px;border-radius:50%;animation:df-spark-${c.size} ${(0.5/c.speed).toFixed(2)}s ease-out infinite}
+.df-stack-row-${c.size}{position:absolute;display:flex;gap:2px}`,
+    html: (()=>{
+      const s = c.size;
+      const n = Math.max(4, Math.min(20, c.particleCount));
+
+      const particles = Array.from({length: Math.ceil(n/2)}, (_, i) =>
+        `<div class="df-particle-${s}" style="animation-delay:${(i*(0.8/Math.ceil(n/2))/c.speed).toFixed(2)}s"></div>`
+      ).join('');
+
+      const cubes = Array.from({length: Math.ceil(n/2)}, (_, i) =>
+        `<div class="df-cube-${s}" style="animation-delay:${(i*(0.8/Math.ceil(n/2))/c.speed).toFixed(2)}s"></div>`
+      ).join('');
+
+      const modules = [
+        {x:s*.35,sz:s*.18,col:c.color},
+        {x:s*.5,sz:s*.14,col:c.secondColor},
+        {x:s*.65,sz:s*.18,col:c.color},
+      ].map(({x,sz,col},i)=>{
+        const off = -sz/2;
+        const dur = ((0.8+i*0.2)/c.speed).toFixed(2);
+        const del = (i*0.2/c.speed).toFixed(2);
+        return `<div class="df-module-${s}" style="left:${(x-sz/2).toFixed(1)}px;width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-top:${(-sz/2).toFixed(1)}px;border-color:${col}88;background:${col}11;animation-duration:${dur}s;animation-delay:${del}s"></div>`;
+      }).join('');
+
+      const sparks = Array.from({length:6},(_,i)=>{
+        const sx = (s*.3+i*(s*.08)).toFixed(1);
+        const sy = (s*.5).toFixed(1);
+        const dvx = ((i%3-1)*5).toFixed(0);
+        const dvy = (-(3+i%3)*4).toFixed(0);
+        const col = i%2===0?c.color:c.secondColor;
+        return `<div class="df-spark-${s}" style="left:${sx}px;top:${sy}px;background:${col};box-shadow:0 0 3px ${col};--sx:${dvx}px;--sy:${dvy}px;animation-delay:${(i*0.08/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+
+      // stacked cubes top right corner
+      const stack = Array.from({length:3},(_,i)=>
+        `<div style="width:${(s*.065).toFixed(1)}px;height:${(s*.065).toFixed(1)}px;background:${c.secondColor}${Math.round((0.4+i*0.2)*255).toString(16).padStart(2,'0')};border:1px solid ${c.secondColor};box-shadow:0 0 ${c.glowSize*.4}px ${c.secondColor}"></div>`
+      ).join('');
+      const stackRow = `<div class="df-stack-row-${s}" style="top:${(s*.12).toFixed(1)}px;right:${(s*.08).toFixed(1)}px">${stack}</div>`;
+
+      return `<div class="df-wrap-${s}"><div class="df-track-${s}"></div><div class="df-conveyor-${s}"></div>${particles}${cubes}${modules}${sparks}${stackRow}</div>`;
+    })()
+  })
+},
+
+/* 315 */ {
+  id: 315, name: "Living Crystal Matrix", tags: ["crystal", "lattice", "growth", "refraction", "premium"],
+  controls: { speed: 1.0, size: 80, color: "#a5f3fc", secondColor: "#818cf8", glowSize: 10, thickness: 1.0, layers: 3 },
+  render: (c) => ({
+    css: `
+@keyframes lcm-grow-${c.size}{0%{transform:scale(0) rotate(0deg);opacity:0}40%{opacity:1}80%{transform:scale(1) rotate(45deg);opacity:.9}100%{transform:scale(1.05) rotate(90deg);opacity:.7}}
+@keyframes lcm-pulse-${c.size}{0%,100%{opacity:.4;transform:scale(.9) rotate(var(--init-rot))}50%{opacity:1;transform:scale(1.05) rotate(calc(var(--init-rot)+15deg))}}
+@keyframes lcm-refract-${c.size}{0%{opacity:0;transform:translate(0,0)}50%{opacity:.8}100%{opacity:0;transform:translate(var(--rx),var(--ry))}}
+@keyframes lcm-rot-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(360deg)}}
+@keyframes lcm-rrot-${c.size}{0%{transform:rotate(0deg)}100%{transform:rotate(-360deg)}}
+@keyframes lcm-energy-${c.size}{0%,100%{box-shadow:0 0 ${c.glowSize}px ${c.color}88}50%{box-shadow:0 0 ${c.glowSize*2}px ${c.color},0 0 ${c.glowSize*3}px ${c.secondColor}44}}
+.lcm-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;animation:lcm-energy-${c.size} ${(2/c.speed).toFixed(2)}s ease-in-out infinite}
+.lcm-layer-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center}
+.lcm-crystal-${c.size}{position:absolute;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);border:none}
+.lcm-branch-${c.size}{position:absolute;width:${c.thickness}px;transform-origin:bottom center}
+.lcm-refract-${c.size}{position:absolute;width:2px;height:2px;border-radius:50%;animation:lcm-refract-${c.size} ${(1.2/c.speed).toFixed(2)}s ease-out infinite}
+.lcm-core-${c.size}{position:absolute;width:${Math.max(5,c.size*.1)}px;height:${Math.max(5,c.size*.1)}px;clip-path:polygon(50% 0%,100% 50%,50% 100%,0% 50%);background:white;box-shadow:0 0 ${c.glowSize*2}px ${c.color},0 0 ${c.glowSize}px white}`,
+    html: (()=>{
+      const s = c.size;
+      const numLayers = Math.max(1, Math.min(5, c.layers));
+
+      const layers = Array.from({length: numLayers}, (_, li) => {
+        const crystalCount = 4 + li * 2;
+        const layerR = s * (0.15 + li * 0.18);
+        const crystalSz = s * (0.22 - li * 0.04);
+        const anim = li % 2 === 0 ? `lcm-rot-${s}` : `lcm-rrot-${s}`;
+        const dur = ((3 + li * 0.8) / c.speed).toFixed(2);
+        const col = li % 2 === 0 ? c.color : c.secondColor;
+
+        const crystals = Array.from({length: crystalCount}, (_, ci) => {
+          const angle = (ci / crystalCount) * 360;
+          const initRot = angle;
+          const delay = (ci * 0.12 / c.speed).toFixed(2);
+          const alpha = Math.round((0.35 + li*0.15) * 255).toString(16).padStart(2,'0');
+          return `<div class="lcm-crystal-${s}" style="width:${crystalSz.toFixed(1)}px;height:${crystalSz.toFixed(1)}px;--init-rot:${initRot}deg;background:${col}${alpha};position:absolute;left:50%;top:50%;margin-left:${(-crystalSz/2).toFixed(1)}px;margin-top:${(-crystalSz/2).toFixed(1)}px;transform:rotate(${initRot}deg) translateY(-${layerR.toFixed(1)}px);filter:drop-shadow(0 0 ${c.glowSize*.5}px ${col});animation:lcm-pulse-${s} ${((1.5+ci*0.2)/c.speed).toFixed(2)}s ${delay}s ease-in-out infinite"></div>`;
+        }).join('');
+
+        // Connecting lines (branches)
+        const branches = Array.from({length: crystalCount}, (_, ci) => {
+          const angle = (ci / crystalCount) * 360;
+          return `<div class="lcm-branch-${s}" style="height:${layerR.toFixed(1)}px;background:linear-gradient(to top,${col}cc,transparent);position:absolute;left:50%;bottom:50%;margin-left:${(-c.thickness/2).toFixed(1)}px;transform:rotate(${angle}deg);transform-origin:bottom center"></div>`;
+        }).join('');
+
+        return `<div class="lcm-layer-${s}" style="animation:${anim} ${dur}s linear infinite">${branches}${crystals}</div>`;
+      }).join('');
+
+      const refracts = Array.from({length: 8}, (_, i) => {
+        const angle = i * 45 * Math.PI / 180;
+        const rx = (Math.cos(angle) * s * 0.35).toFixed(1);
+        const ry = (Math.sin(angle) * s * 0.35).toFixed(1);
+        const col = i%2===0 ? c.color : c.secondColor;
+        return `<div class="lcm-refract-${s}" style="left:50%;top:50%;--rx:${rx}px;--ry:${ry}px;background:${col};box-shadow:0 0 4px ${col};animation-delay:${(i*0.15/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+
+      return `<div class="lcm-wrap-${s}">${layers}${refracts}<div class="lcm-core-${s}"></div></div>`;
+    })()
+  })
+},
+
+/* 316 */ {
+  id: 316, name: "Singularity Event Horizon", tags: ["singularity", "fractal", "particles", "orbit", "3d", "masterpiece"],
+  controls: { speed: 1.0, size: 80, color: "#818cf8", secondColor: "#f472b6", glowSize: 12, particleCount: 16, rings: 5, thickness: 1.0 },
+  render: (c) => ({
+    css: `
+@keyframes seh-orbit-${c.size}{0%{transform:rotate(0deg) rotateX(var(--tilt))}100%{transform:rotate(360deg) rotateX(var(--tilt))}}
+@keyframes seh-orbit-rev-${c.size}{0%{transform:rotate(0deg) rotateX(var(--tilt))}100%{transform:rotate(-360deg) rotateX(var(--tilt))}}
+@keyframes seh-infall-${c.size}{0%{transform:rotate(var(--a)) translateX(var(--r));opacity:.9}100%{transform:rotate(calc(var(--a)+540deg)) translateX(0);opacity:0}}
+@keyframes seh-emerge-${c.size}{0%{transform:scale(0) rotate(0deg);opacity:0}50%{opacity:1}100%{transform:scale(1.2) rotate(180deg);opacity:0}}
+@keyframes seh-pulse-${c.size}{0%,100%{transform:scale(.85);opacity:.5;box-shadow:0 0 ${c.glowSize}px ${c.color}}50%{transform:scale(1.05);opacity:1;box-shadow:0 0 ${c.glowSize*2}px ${c.color},0 0 ${c.glowSize*4}px ${c.secondColor}44}}
+@keyframes seh-bend-${c.size}{0%{border-radius:50%;transform:rotate(0deg) scaleX(1)}50%{border-radius:40% 60%;transform:rotate(90deg) scaleX(1.08)}100%{border-radius:50%;transform:rotate(180deg) scaleX(1)}}
+@keyframes seh-geo-${c.size}{0%{transform:rotate(0deg) scale(.8);opacity:0}30%{opacity:.9;transform:rotate(90deg) scale(1)}70%{opacity:.6}100%{opacity:0;transform:rotate(270deg) scale(1.3)}}
+.seh-wrap-${c.size}{position:relative;width:${c.size}px;height:${c.size}px;display:flex;align-items:center;justify-content:center;perspective:${c.size*3}px}
+.seh-ring-layer-${c.size}{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;transform-style:preserve-3d}
+.seh-ring-${c.size}{position:absolute;border-radius:50%;border-style:solid;left:50%;top:50%}
+.seh-particle-${c.size}{position:absolute;border-radius:50%;top:50%;left:50%;transform-origin:0 0;width:${Math.max(1.5,c.size*.025)}px;height:${Math.max(1.5,c.size*.025)}px}
+.seh-geo-${c.size}{position:absolute;border:${c.thickness}px solid;left:50%;top:50%}
+.seh-core-ring-${c.size}{position:absolute;border-radius:50%;border:${c.thickness}px solid;animation:seh-bend-${c.size} ${(3/c.speed).toFixed(2)}s ease-in-out infinite}
+.seh-singularity-${c.size}{position:absolute;width:${Math.max(5,c.size*.1)}px;height:${Math.max(5,c.size*.1)}px;background:radial-gradient(circle,white,${c.color},transparent);border-radius:50%;animation:seh-pulse-${c.size} ${(1.2/c.speed).toFixed(2)}s ease-in-out infinite;z-index:10}`,
+    html: (()=>{
+      const s = c.size;
+      const numRings = Math.max(2, Math.min(8, c.rings));
+      const numParticles = Math.max(4, Math.min(20, c.particleCount));
+
+      const ringLayers = Array.from({length: numRings}, (_, ri) => {
+        const frac = 0.22 + (ri / numRings) * 0.72;
+        const sz = s * frac;
+        const off = -sz/2;
+        const tilt = [72, 45, 60, 30, 80, 55, 40, 65][ri % 8];
+        const anim = ri % 2 === 0 ? `seh-orbit-${s}` : `seh-orbit-rev-${s}`;
+        const dur = ((1.4 + ri * 0.55) / c.speed).toFixed(2);
+        const col = ri % 2 === 0 ? c.color : c.secondColor;
+        const alpha = Math.round((0.4 + (numRings-ri)*(0.4/numRings)) * 255).toString(16).padStart(2,'0');
+        const bw = Math.max(0.8, c.thickness * (1.3 - ri*0.1));
+
+        // planet/dot on each ring
+        const planet = `<div style="position:absolute;width:${Math.max(2,s*.04)}px;height:${Math.max(2,s*.04)}px;background:${col};border-radius:50%;top:-${Math.max(1,s*.02)}px;left:50%;margin-left:${(-Math.max(1,s*.02)).toFixed(1)}px;box-shadow:0 0 ${c.glowSize*.6}px ${col}"></div>`;
+
+        return `<div class="seh-ring-layer-${s}" style="animation:${anim} ${dur}s linear infinite;--tilt:${tilt}deg"><div class="seh-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border-width:${bw}px;border-color:${col}${alpha};box-shadow:0 0 ${c.glowSize*.5}px ${col}44">${planet}</div></div>`;
+      }).join('');
+
+      // Infalling particles
+      const particles = Array.from({length: numParticles}, (_, pi) => {
+        const angle = (pi / numParticles) * 360;
+        const r = s * (0.12 + (pi % 5) * 0.07);
+        const dur = ((0.9 + (pi%4)*0.3)/c.speed).toFixed(2);
+        const del = (pi*0.18/c.speed).toFixed(2);
+        const col = pi%2===0 ? c.color : c.secondColor;
+        return `<div class="seh-particle-${s}" style="--a:${angle}deg;--r:${r.toFixed(1)}px;background:${col};box-shadow:0 0 ${c.glowSize*.4}px ${col};transform:rotate(${angle}deg) translateX(${r.toFixed(1)}px);animation:seh-infall-${s} ${dur}s ${del}s ease-in infinite"></div>`;
+      }).join('');
+
+      // Emerging geometric structures from center
+      const geos = Array.from({length: 4}, (_, gi) => {
+        const sz = s * (0.12 + gi*0.06);
+        const off = -sz/2;
+        const col = gi%2===0 ? c.color : c.secondColor;
+        const dur = ((2+gi*0.5)/c.speed).toFixed(2);
+        const del = (gi*0.5/c.speed).toFixed(2);
+        const shape = gi%2===0 ?
+          `polygon(50% 0%,100% 100%,0% 100%)` :
+          `polygon(50% 0%,100% 50%,50% 100%,0% 50%)`;
+        return `<div class="seh-geo-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border-color:${col}88;clip-path:${shape};background:${col}11;animation:seh-geo-${s} ${dur}s ${del}s ease-in-out infinite"></div>`;
+      }).join('');
+
+      const coreRings = Array.from({length: 3}, (_, i) => {
+        const sz = s * (0.08 + i*0.06);
+        const off = -sz/2;
+        const col = i%2===0 ? c.color : c.secondColor;
+        return `<div class="seh-core-ring-${s}" style="width:${sz.toFixed(1)}px;height:${sz.toFixed(1)}px;left:50%;top:50%;margin-left:${off.toFixed(1)}px;margin-top:${off.toFixed(1)}px;border-color:${col};box-shadow:0 0 ${c.glowSize*.7}px ${col};animation-delay:${(i*0.3/c.speed).toFixed(2)}s"></div>`;
+      }).join('');
+
+      return `<div class="seh-wrap-${s}">${ringLayers}${particles}${geos}${coreRings}<div class="seh-singularity-${s}"></div></div>`;
+    })()
+  })
+},
+  /* 40 */ {
+  id: 40, name: "Neural Pulse", tags: ["AI", "network", "nodes", "synaptic"],
+  controls: { speed: 1.0, size: 72, color: "#818cf8", secondColor: "#34d399", thirdColor: "#f472b6", thickness: 1.5 },
+  render: (c) => ({
+    css: `@keyframes np-pulse{0%,100%{transform:scale(.7);opacity:.4}50%{transform:scale(1.4);opacity:1}}
+@keyframes np-blink{0%,100%{opacity:.1}50%{opacity:.9}}
+${[[36,12],[12,40],[60,40],[24,65],[48,65]].map((p,i)=>`.np-n${i}{animation:np-pulse ${(1.2/c.speed+i*.18).toFixed(2)}s ease-in-out infinite;transform-origin:${p[0]}px ${p[1]}px}`).join('')}
+${[[0,1],[0,2],[1,3],[2,4],[1,2],[0,3],[0,4]].map((_,i)=>`.np-l${i}{animation:np-blink ${(1.5/c.speed+i*.12).toFixed(2)}s ease-in-out ${(i*.08).toFixed(2)}s infinite}`).join('')}`,
+    html: `<svg width="${c.size}" height="${c.size}" viewBox="0 0 72 72">
+<line class="np-l0" x1="36" y1="12" x2="12" y2="40" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
+<line class="np-l1" x1="36" y1="12" x2="60" y2="40" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
+<line class="np-l2" x1="12" y1="40" x2="24" y2="65" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
+<line class="np-l3" x1="60" y1="40" x2="48" y2="65" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
+<line class="np-l4" x1="12" y1="40" x2="60" y2="40" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
+<line class="np-l5" x1="36" y1="12" x2="24" y2="65" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
+<line class="np-l6" x1="36" y1="12" x2="48" y2="65" stroke="${c.color}" stroke-width="${c.thickness}" opacity=".3"/>
+<circle class="np-n0" cx="36" cy="12" r="5" fill="${c.color}" opacity=".9"/>
+<circle class="np-n1" cx="12" cy="40" r="5" fill="${c.color}" opacity=".9"/>
+<circle class="np-n2" cx="60" cy="40" r="5" fill="${c.color}" opacity=".9"/>
+<circle class="np-n3" cx="24" cy="65" r="5" fill="${c.secondColor}" opacity=".9"/>
+<circle class="np-n4" cx="48" cy="65" r="5" fill="${c.secondColor}" opacity=".9"/>
+</svg>`
+  })
+},
+
+
 
 /* 63 */ {
   id: 63, name: "Ocean Swell", tags: ["water", "ocean", "wave", "fluid"],
