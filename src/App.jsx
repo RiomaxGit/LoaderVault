@@ -5077,10 +5077,88 @@ export default function App() {
         .app{max-width:1380px;margin:0 auto;padding:0 24px 80px}
 
         /* ── Header ── */
-        .hdr{padding:42px 0 10px;display:flex;justify-content:space-between;align-items:flex-start;gap:16px;flex-wrap:wrap}
-        .hdr-center{flex:1;display:flex;flex-direction:column;align-items:center;text-align:center;opacity:0;transform:translateY(20px) scale(.96);transition:opacity 1.2s ease,transform 1.2s cubic-bezier(.22,1,.36,1)}
-        .hdr-center.visible{opacity:1;transform:none}
-        .hdr-actions{display:flex;align-items:center;gap:10px;padding-top:8px}
+.hdr {
+  padding: 42px 16px 10px;
+  display: grid;
+  grid-template-columns: 1fr auto 1fr;
+  align-items: start;
+  gap: 16px;
+}
+
+/* Center block */
+.hdr-center {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+  opacity: 0;
+  transform: translateY(20px) scale(.96);
+  transition: opacity 1.2s ease, transform 1.2s cubic-bezier(.22,1,.36,1);
+}
+
+.hdr-center.visible {
+  opacity: 1;
+  transform: none;
+}
+
+/* Right actions */
+.hdr-actions {
+  justify-self: end;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  padding-top: 8px;
+}
+
+/* Left spacer (now real grid slot, no fake div needed) */
+.hdr-left {
+  justify-self: start;
+}
+
+/* Site styling unchanged */
+.site-name {
+  font-family: 'UnifrakturCook', cursive;
+  font-size: clamp(42px, 7vw, 82px);
+  font-weight: 700;
+  line-height: 1;
+  letter-spacing: .05em;
+  background: linear-gradient(120deg,#eef2ff 0%,#d8b4fe 30%,#f9a8d4 60%,#a5b4fc 100%);
+  -webkit-background-clip: text;
+  -webkit-text-fill-color: transparent;
+  background-clip: text;
+  filter: drop-shadow(0 0 10px rgba(255,255,255,.08))
+          drop-shadow(0 0 24px rgba(168,85,247,.18));
+  animation: chalkReveal 2.4s ease forwards, chalkFloat 6s ease-in-out infinite;
+}
+
+.site-sub {
+  font-family: 'Ballet', cursive;
+  font-size: clamp(18px, 3vw, 30px);
+  margin-top: 12px;
+  color: #d8c4ff;
+  opacity: .88;
+  letter-spacing: .03em;
+  text-shadow: 0 0 12px rgba(216,180,254,.18);
+  animation: fadeGlow 4s ease-in-out infinite;
+}
+
+@keyframes chalkFloat {
+  0%,100% { transform: translateY(0); }
+  50% { transform: translateY(-5px); }
+}
+
+@keyframes chalkReveal {
+  0% { opacity: 0; filter: blur(8px); letter-spacing: .25em; }
+  100% { opacity: 1; filter: drop-shadow(0 0 10px rgba(255,255,255,.08))
+                      drop-shadow(0 0 24px rgba(168,85,247,.18));
+          letter-spacing: .05em; }
+}
+
+@keyframes fadeGlow {
+  0%,100% { opacity: .75; text-shadow: 0 0 10px rgba(216,180,254,.12); }
+  50% { opacity: 1; text-shadow: 0 0 18px rgba(216,180,254,.22),
+                             0 0 32px rgba(168,85,247,.12); }
+}
 
         .site-name{font-family:'UnifrakturCook',cursive;font-size:clamp(42px,7vw,82px);font-weight:700;line-height:1;letter-spacing:.05em;background:linear-gradient(120deg,#eef2ff 0%,#d8b4fe 30%,#f9a8d4 60%,#a5b4fc 100%);-webkit-background-clip:text;-webkit-text-fill-color:transparent;background-clip:text;filter:drop-shadow(0 0 10px rgba(255,255,255,.08)) drop-shadow(0 0 24px rgba(168,85,247,.18));animation:chalkReveal 2.4s ease forwards,chalkFloat 6s ease-in-out infinite}
         .site-sub{font-family:'Ballet',cursive;font-size:clamp(18px,3vw,30px);margin-top:12px;color:#d8c4ff;opacity:.88;letter-spacing:.03em;text-shadow:0 0 12px rgba(216,180,254,.18);animation:fadeGlow 4s ease-in-out infinite}
@@ -5195,20 +5273,25 @@ export default function App() {
       <div className="app">
 
         {/* ── Header ── */}
-        <header className="hdr">
-          {/* Spacer to balance the right actions */}
-          <div style={{width:52, flexShrink:0}}/>
+<header className="hdr">
 
-          <div className={`hdr-center${headerVisible?" visible":""}`}>
-            <div className="site-name">LoaderVault</div>
-            <div className="site-sub">A curated collection of fine CSS animations</div>
-          </div>
+  {/* Left slot (keeps symmetry, optional) */}
+  <div className="hdr-left" />
 
-          {/* Right-side actions */}
-          <div className="hdr-actions">
-            <ThemeToggle theme={theme} setTheme={setTheme}/>
-          </div>
-        </header>
+  {/* Center */}
+  <div className={`hdr-center${headerVisible ? " visible" : ""}`}>
+    <div className="site-name">LoaderVault</div>
+    <div className="site-sub">
+      A curated collection of fine CSS animations
+    </div>
+  </div>
+
+  {/* Right-side actions */}
+  <div className="hdr-actions">
+    <ThemeToggle theme={theme} setTheme={setTheme} />
+  </div>
+
+</header>
 
         {/* ── Search ── */}
         <div className="search-area">
